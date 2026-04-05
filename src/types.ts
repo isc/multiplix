@@ -1,0 +1,86 @@
+// === Multiplix — Types partagés ===
+
+export interface Attempt {
+  date: string;
+  correct: boolean;
+  responseTimeMs: number;
+  answeredWith: number | null;
+}
+
+export interface MultiFact {
+  a: number;           // premier opérande (2-9)
+  b: number;           // second opérande (a ≤ b), (2-9)
+  product: number;
+  box: 1 | 2 | 3 | 4 | 5;
+  lastSeen: string;    // ISO date
+  nextDue: string;     // ISO date
+  history: Attempt[];
+  introduced: boolean; // le fait a-t-il été présenté conceptuellement ?
+}
+
+export interface Badge {
+  id: string;
+  name: string;
+  description: string;
+  earnedDate: string;
+  icon: string;
+}
+
+export interface UserProfile {
+  name: string;
+  startDate: string;
+  facts: MultiFact[];
+  totalSessions: number;
+  currentStreak: number;
+  longestStreak: number;
+  lastSessionDate: string | null;
+  badges: Badge[];
+  mascotLevel: number;
+}
+
+export type BoxLevel = 1 | 2 | 3 | 4 | 5;
+
+export const BOX_INTERVALS: Record<BoxLevel, number> = {
+  1: 0,
+  2: 1,
+  3: 3,
+  4: 7,
+  5: 21,
+};
+
+// Seuils de temps de réponse (ms)
+export const RESPONSE_TIME = {
+  FAST: 3000,
+  SLOW: 5000,
+} as const;
+
+export interface SessionQuestion {
+  fact: MultiFact;
+  displayA: number;  // peut être inversé pour varier a×b / b×a
+  displayB: number;
+  isIntroduction: boolean;
+  isRetry: boolean;   // re-posée après erreur dans la même séance
+}
+
+export interface SessionResult {
+  date: string;
+  questionsCount: number;
+  correctCount: number;
+  averageTimeMs: number;
+  newFactsIntroduced: number;
+  factsPromoted: number;   // faits montés de boîte
+  factsDemoted: number;    // faits redescendus en boîte 1
+}
+
+// Badges IDs
+export const BADGE_IDS = {
+  PREMIER_PAS: 'premier-pas',
+  REGULIER: 'regulier',
+  MACHINE: 'machine',
+  EXPLORATRICE: 'exploratrice',
+  TABLE_PREFIX: 'table-',
+  MATHEMATICIENNE: 'mathematicienne',
+  VELOCE: 'veloce',
+  PERSEVERANTE: 'perseverante',
+  FLAMME_ETERNELLE: 'flamme-eternelle',
+} as const;
