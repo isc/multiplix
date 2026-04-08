@@ -19,7 +19,7 @@
 .dot-grid {
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: var(--dot-gap, 6px);
   transition: transform 0.8s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
@@ -29,9 +29,14 @@
 
 .dot-grid-row {
   display: flex;
-  gap: 6px;
+  gap: var(--dot-gap, 6px);
   opacity: 0;
   animation: rowAppear 0.4s ease forwards;
+}
+
+.dot-grid-row.hidden {
+  opacity: 0;
+  animation: none;
 }
 
 .dot-grid-row.no-animation {
@@ -51,8 +56,8 @@
 }
 
 .dot {
-  width: 16px;
-  height: 16px;
+  width: var(--dot-size, 16px);
+  height: var(--dot-size, 16px);
   border-radius: 50%;
   background: var(--primary);
   flex-shrink: 0;
@@ -76,6 +81,12 @@
   font-weight: 600;
   color: var(--text-light);
   margin-top: 4px;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.dot-grid-result.visible {
+  opacity: 1;
 }
 
 .dot-grid-result strong {

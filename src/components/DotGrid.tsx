@@ -34,7 +34,7 @@ export default function DotGrid({
       if (row >= a) {
         clearInterval(interval);
       }
-    }, 300);
+    }, 600);
     return () => clearInterval(interval);
   }, [a, b, animated]);
 
@@ -47,31 +47,38 @@ export default function DotGrid({
     return () => clearTimeout(timeout);
   }, [showRotation, visibleRows, a]);
 
-  const rows = Array.from({ length: a }, (_, rowIndex) => (
-    <div
-      key={rowIndex}
-      className={`dot-grid-row ${!animated ? 'no-animation' : ''}`}
-      style={animated ? { animationDelay: `${rowIndex * 0.3}s` } : undefined}
-    >
-      {Array.from({ length: b }, (_, colIndex) => (
-        <div key={colIndex} className="dot" />
-      ))}
-    </div>
-  ));
+  // Scale dots down for large grids so they don't overflow on mobile
+  const maxDim = Math.max(a, b);
+  const dotSize = maxDim >= 8 ? 12 : maxDim >= 6 ? 14 : 16;
+  const dotGap = maxDim >= 8 ? 4 : 6;
 
   return (
-    <div className={`dot-grid-wrapper ${size}`}>
+    <div
+      className={`dot-grid-wrapper ${size}`}
+      style={{ '--dot-size': `${dotSize}px`, '--dot-gap': `${dotGap}px` } as React.CSSProperties}
+    >
       <div className="dot-grid-label">
         <span>{a}</span> {'\u00D7'} <span>{b}</span>
       </div>
       <div className={`dot-grid ${rotated ? 'rotating' : ''}`}>
-        {rows.slice(0, visibleRows)}
+        {Array.from({ length: a }, (_, rowIndex) => {
+          const visible = rowIndex < visibleRows;
+          return (
+            <div
+              key={rowIndex}
+              className={`dot-grid-row ${!animated ? 'no-animation' : visible ? '' : 'hidden'}`}
+              style={animated && visible ? { animationDelay: `${rowIndex * 0.6}s` } : undefined}
+            >
+              {Array.from({ length: b }, (_, colIndex) => (
+                <div key={colIndex} className="dot" />
+              ))}
+            </div>
+          );
+        })}
       </div>
-      {visibleRows >= a && (
-        <div className="dot-grid-result">
-          = <strong>{a * b}</strong>
-        </div>
-      )}
+      <div className={`dot-grid-result ${visibleRows >= a ? 'visible' : ''}`}>
+        = <strong>{a * b}</strong>
+      </div>
     </div>
   );
 }
