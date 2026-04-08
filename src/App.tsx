@@ -14,6 +14,7 @@ import SessionScreen from './screens/SessionScreen';
 import RecapScreen from './screens/RecapScreen';
 import ProgressScreen from './screens/ProgressScreen';
 import BadgesScreen from './screens/BadgesScreen';
+import RulesScreen from './screens/RulesScreen';
 import ParentDashboard from './screens/ParentDashboard';
 import './App.css';
 
@@ -24,6 +25,7 @@ type Screen =
   | 'recap'
   | 'progress'
   | 'badges'
+  | 'rules'
   | 'parent';
 
 export default function App() {
@@ -273,6 +275,7 @@ export default function App() {
           onStart={handleStartSession}
           onShowProgress={() => setScreen('progress')}
           onShowBadges={() => setScreen('badges')}
+          onShowRules={() => setScreen('rules')}
           onShowParent={() => setScreen('parent')}
         />
       )}
@@ -306,6 +309,10 @@ export default function App() {
           earnedBadges={profile.badges}
           onBack={() => setScreen('home')}
         />
+      )}
+
+      {screen === 'rules' && (
+        <RulesScreen onBack={() => setScreen('home')} />
       )}
 
       {screen === 'parent' && profile && (
