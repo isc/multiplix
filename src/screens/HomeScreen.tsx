@@ -97,13 +97,13 @@ export default function HomeScreen({
 
       <div className="home-nav">
         <button className="home-nav-btn" onClick={onShowProgress}>
-          {'\uD83D\uDDFA\uFE0F'} Progr\u00E8s
+          {'\uD83D\uDDFA\uFE0F'} Progrès
         </button>
         <button className="home-nav-btn" onClick={onShowBadges}>
           {'\uD83C\uDFC5'} Badges
         </button>
         <button className="home-nav-btn" onClick={onShowRules}>
-          {'\uD83D\uDCCF'} R\u00E8gles
+          {'\uD83D\uDCCF'} Règles
         </button>
       </div>
     </div>

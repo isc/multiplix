@@ -175,7 +175,7 @@ export default function ParentDashboard({
       {/* Evolution graph */}
       {evolutionChart && (
         <div className="parent-section">
-          <h3>{'\u00C9'}volution</h3>
+          <h3>Évolution</h3>
           <div className="parent-evolution-chart">
             <svg viewBox={`0 0 ${evolutionChart.svgW} ${evolutionChart.svgH}`} preserveAspectRatio="xMidYMid meet">
               {Y_TICKS.map((tick) => {
@@ -316,7 +316,7 @@ export default function ParentDashboard({
       {/* Session history */}
       {profile.sessionHistory.length > 0 && (
         <div className="parent-section">
-          <h3>Historique des s{'\u00E9'}ances</h3>
+          <h3>Historique des séances</h3>
           <div className="parent-session-history">
             {recentSessions.map((session) => {
               const dateStr = new Date(session.date).toLocaleDateString('fr-FR', {
@@ -341,7 +341,7 @@ export default function ParentDashboard({
 
       {/* Reset table */}
       <div className="parent-section">
-        <h3>R{'\u00E9'}initialiser une table</h3>
+        <h3>Réinitialiser une table</h3>
         <div className="parent-reset-tables">
           {[2, 3, 4, 5, 6, 7, 8, 9].map((t) => {
             const tableFacts = factsForTable(profile.facts, t).filter((f) => f.introduced);
