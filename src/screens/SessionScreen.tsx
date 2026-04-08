@@ -50,9 +50,9 @@ export default function SessionScreen({
   const questionStartTime = useRef(Date.now());
   const correctCount = useRef(0);
   const totalTimeMs = useRef(0);
-  const factsPromoted = useRef(0);
-  const factsDemoted = useRef(0);
-  const newFactsIntroduced = useRef(0);
+  const promotedFacts = useRef(new Set<string>());
+  const demotedFacts = useRef(new Set<string>());
+  const introducedFacts = useRef(new Set<string>());
 
   const currentQuestion = questions[currentIndex] as SessionQuestion | undefined;
 
@@ -70,8 +70,8 @@ export default function SessionScreen({
     if (currentQuestion.isIntroduction) {
       setShowIntro(true);
       setIntroStep('grid');
-      // Count new introductions
-      newFactsIntroduced.current++;
+      const key = `${currentQuestion.fact.a}x${currentQuestion.fact.b}`;
+      introducedFacts.current.add(key);
     } else {
       setShowIntro(false);
     }
@@ -93,9 +93,9 @@ export default function SessionScreen({
         questionsCount: questions.length,
         correctCount: correctCount.current,
         averageTimeMs: Math.round(avgTime),
-        newFactsIntroduced: newFactsIntroduced.current,
-        factsPromoted: factsPromoted.current,
-        factsDemoted: factsDemoted.current,
+        newFactsIntroduced: introducedFacts.current.size,
+        factsPromoted: promotedFacts.current.size,
+        factsDemoted: demotedFacts.current.size,
       });
     } else {
       setCurrentIndex(nextIndex);
@@ -115,12 +115,13 @@ export default function SessionScreen({
       totalTimeMs.current += timeMs;
       if (correct) correctCount.current++;
 
-      // Track promotions/demotions
+      // Track distinct promoted/demoted facts
+      const factKey = `${currentQuestion.fact.a}x${currentQuestion.fact.b}`;
       if (correct && timeMs < RESPONSE_TIME.SLOW) {
-        factsPromoted.current++;
+        promotedFacts.current.add(factKey);
       }
       if (!correct) {
-        factsDemoted.current++;
+        demotedFacts.current.add(factKey);
       }
 
       if (correct) playCorrect();
