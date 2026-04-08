@@ -9,6 +9,7 @@ interface HomeScreenProps {
   onStart: () => void;
   onShowProgress: () => void;
   onShowBadges: () => void;
+  onShowRules: () => void;
   onShowParent: () => void;
 }
 
@@ -17,6 +18,7 @@ export default function HomeScreen({
   onStart,
   onShowProgress,
   onShowBadges,
+  onShowRules,
   onShowParent,
 }: HomeScreenProps) {
   const { isMuted, toggleMute } = useSound();
@@ -95,10 +97,13 @@ export default function HomeScreen({
 
       <div className="home-nav">
         <button className="home-nav-btn" onClick={onShowProgress}>
-          {'\uD83D\uDDFA\uFE0F'} Progrès
+          {'\uD83D\uDDFA\uFE0F'} Progr\u00E8s
         </button>
         <button className="home-nav-btn" onClick={onShowBadges}>
           {'\uD83C\uDFC5'} Badges
+        </button>
+        <button className="home-nav-btn" onClick={onShowRules}>
+          {'\uD83D\uDCCF'} R\u00E8gles
         </button>
       </div>
     </div>
