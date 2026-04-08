@@ -1,30 +1,142 @@
-import { useState } from 'react';
+import { useState, useRef, useCallback } from 'react';
 import Mascot from '../components/Mascot';
+import NumPad from '../components/NumPad';
 import './WelcomeScreen.css';
 
+export interface PlacementResult {
+  factKey: string; // e.g. "3x7"
+  correct: boolean;
+  timeMs: number;
+}
+
 interface WelcomeScreenProps {
-  onComplete: (name: string) => void;
+  onComplete: (name: string, placementResults: PlacementResult[]) => void;
+}
+
+// 15 well-spread facts for the placement test (mix of easy and hard)
+const PLACEMENT_FACTS = [
+  [2, 5], [3, 4], [5, 5], [2, 8], [3, 6],
+  [4, 7], [6, 6], [5, 8], [3, 9], [7, 7],
+  [4, 9], [6, 8], [7, 9], [8, 8], [6, 9],
+];
+
+function shuffleArray<T>(arr: T[]): T[] {
+  const a = [...arr];
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
 }
 
 export default function WelcomeScreen({ onComplete }: WelcomeScreenProps) {
   const [step, setStep] = useState(0);
   const [name, setName] = useState('');
 
+  // Placement test state
+  const [testFacts] = useState(() => shuffleArray(PLACEMENT_FACTS));
+  const [testIndex, setTestIndex] = useState(0);
+  const [testResults, setTestResults] = useState<PlacementResult[]>([]);
+  const [numpadDisabled, setNumpadDisabled] = useState(false);
+  const [feedback, setFeedback] = useState<'correct' | 'incorrect' | null>(null);
+  const questionStartTime = useRef(Date.now());
+
   const handleNext = () => {
-    if (step < 2) {
-      setStep(step + 1);
-    } else {
-      if (name.trim()) {
-        onComplete(name.trim());
-      }
+    if (step === 0) {
+      setStep(1);
+    } else if (step === 1 && name.trim()) {
+      setStep(2);
+    } else if (step === 2) {
+      // Start placement test
+      setStep(3);
+      questionStartTime.current = Date.now();
     }
   };
+
+  const handleSkipTest = () => {
+    onComplete(name.trim(), []);
+  };
+
+  const handleTestAnswer = useCallback(
+    (value: number) => {
+      if (numpadDisabled) return;
+      setNumpadDisabled(true);
+
+      const fact = testFacts[testIndex];
+      const [a, b] = fact;
+      const timeMs = Date.now() - questionStartTime.current;
+      const correct = value === a * b;
+      const lo = Math.min(a, b);
+      const hi = Math.max(a, b);
+
+      const result: PlacementResult = {
+        factKey: `${lo}x${hi}`,
+        correct,
+        timeMs,
+      };
+
+      const updatedResults = [...testResults, result];
+      setTestResults(updatedResults);
+
+      // Brief feedback
+      setFeedback(correct ? 'correct' : 'incorrect');
+
+      setTimeout(() => {
+        setFeedback(null);
+        setNumpadDisabled(false);
+
+        if (testIndex + 1 >= testFacts.length) {
+          // Test complete
+          onComplete(name.trim(), updatedResults);
+        } else {
+          setTestIndex(testIndex + 1);
+          questionStartTime.current = Date.now();
+        }
+      }, correct ? 600 : 1200);
+    },
+    [numpadDisabled, testFacts, testIndex, testResults, name, onComplete],
+  );
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === 'Enter' && name.trim()) {
       handleNext();
     }
   };
+
+  // Placement test screen
+  if (step === 3) {
+    const fact = testFacts[testIndex];
+    const [a, b] = fact;
+    // Randomly show a×b or b×a
+    const [displayA, displayB] = Math.random() > 0.5 ? [a, b] : [b, a];
+
+    return (
+      <div className="welcome-screen">
+        <div className="welcome-step" key="test">
+          <div className="welcome-test-progress">
+            {testIndex + 1} / {testFacts.length}
+          </div>
+          <div className="welcome-test-question">
+            {displayA}
+            <span className="welcome-test-operator">{'\u00D7'}</span>
+            {displayB}
+            <span className="welcome-test-equals">=</span>
+          </div>
+          {feedback && (
+            <div className={`welcome-test-feedback ${feedback}`}>
+              {feedback === 'correct' ? '✓' : `${a * b}`}
+            </div>
+          )}
+          {!feedback && (
+            <NumPad onSubmit={handleTestAnswer} disabled={numpadDisabled} />
+          )}
+        </div>
+        <div className="welcome-test-hint">
+          Réponds du mieux que tu peux !
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="welcome-screen">
@@ -74,13 +186,17 @@ export default function WelcomeScreen({ onComplete }: WelcomeScreenProps) {
             Salut {name} !
           </div>
           <div className="welcome-subtitle">
-            On va apprendre les multiplications ensemble, 5 minutes par jour.
+            Avant de commencer, je vais te poser quelques questions
+            pour voir ce que tu connais déjà.
             <br />
             <br />
-            Plus tu progresses, plus je grandis !
+            Pas de stress, il n'y a pas de piège !
           </div>
           <button className="welcome-btn welcome-btn-primary" onClick={handleNext}>
             C'est parti !
+          </button>
+          <button className="welcome-btn welcome-btn-skip" onClick={handleSkipTest}>
+            Passer le test
           </button>
         </div>
       )}

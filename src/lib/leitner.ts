@@ -4,7 +4,7 @@ import { BOX_INTERVALS, RESPONSE_TIME } from '../types';
 /**
  * Adds `days` calendar days to an ISO date string and returns the new ISO date string.
  */
-function addDays(isoDate: string, days: number): string {
+export function addDays(isoDate: string, days: number): string {
   const d = new Date(isoDate);
   d.setDate(d.getDate() + days);
   return d.toISOString().slice(0, 10);

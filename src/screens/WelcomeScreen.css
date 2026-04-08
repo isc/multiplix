@@ -83,6 +83,64 @@
   box-shadow: 0 4px 16px var(--shadow);
 }
 
+.welcome-btn-skip {
+  background: transparent;
+  color: var(--text-light);
+  font-size: 0.95rem;
+  font-weight: 600;
+  padding: 10px 24px;
+  text-decoration: underline;
+  box-shadow: none;
+}
+
+.welcome-btn-skip:active {
+  color: var(--text);
+}
+
+/* Placement test */
+.welcome-test-progress {
+  font-size: 0.95rem;
+  color: var(--text-light);
+  font-weight: 600;
+}
+
+.welcome-test-question {
+  font-size: 2.8rem;
+  font-weight: 800;
+  color: var(--text);
+  letter-spacing: 2px;
+}
+
+.welcome-test-operator {
+  color: var(--primary);
+  margin: 0 4px;
+}
+
+.welcome-test-equals {
+  color: var(--text-muted);
+  margin-left: 8px;
+}
+
+.welcome-test-feedback {
+  font-size: 2.5rem;
+  font-weight: 800;
+  animation: slideUp 0.2s ease;
+}
+
+.welcome-test-feedback.correct {
+  color: var(--success);
+}
+
+.welcome-test-feedback.incorrect {
+  color: var(--secondary);
+}
+
+.welcome-test-hint {
+  font-size: 0.9rem;
+  color: var(--text-muted);
+  font-style: italic;
+}
+
 .welcome-dots {
   display: flex;
   gap: 8px;

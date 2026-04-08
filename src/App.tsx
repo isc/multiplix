@@ -1,9 +1,12 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
-import type { UserProfile, SessionQuestion, SessionResult, MultiFact, Badge } from './types';
+import type { UserProfile, SessionQuestion, SessionResult, MultiFact, Badge, BoxLevel } from './types';
+import { BOX_INTERVALS } from './types';
 import { composeSession } from './lib/sessionComposer';
-import { processAnswer } from './lib/leitner';
+import { processAnswer, addDays } from './lib/leitner';
 import { checkBadges, computeMascotLevel } from './lib/badges';
 import { loadProfile, saveProfile, createNewProfile } from './lib/storage';
+import { getFactKey } from './lib/facts';
+import type { PlacementResult } from './screens/WelcomeScreen';
 import WelcomeScreen from './screens/WelcomeScreen';
 import HomeScreen from './screens/HomeScreen';
 import SessionScreen from './screens/SessionScreen';
@@ -54,9 +57,41 @@ export default function App() {
     }
   }, [profile]);
 
-  // Welcome: create new profile
-  const handleWelcomeComplete = useCallback((name: string) => {
+  // Welcome: create new profile with optional placement test results
+  const handleWelcomeComplete = useCallback((name: string, placementResults: PlacementResult[]) => {
     const newProfile = createNewProfile(name);
+    const today = new Date().toISOString().slice(0, 10);
+
+    // Apply placement test results to calibrate initial box levels
+    if (placementResults.length > 0) {
+      for (const result of placementResults) {
+        const fact = newProfile.facts.find((f) => getFactKey(f.a, f.b) === result.factKey);
+        if (!fact) continue;
+
+        fact.introduced = true;
+        fact.lastSeen = today;
+
+        if (result.correct && result.timeMs < 3000) {
+          // Fast and correct → box 3 (well known)
+          fact.box = 3 as BoxLevel;
+        } else if (result.correct && result.timeMs < 5000) {
+          // Correct but slower → box 2
+          fact.box = 2 as BoxLevel;
+        } else {
+          // Incorrect or very slow → box 1
+          fact.box = 1 as BoxLevel;
+        }
+
+        fact.nextDue = addDays(today, BOX_INTERVALS[fact.box]);
+        fact.history = [{
+          date: today,
+          correct: result.correct,
+          responseTimeMs: result.timeMs,
+          answeredWith: null,
+        }];
+      }
+    }
+
     setProfile(newProfile);
     setScreen('home');
   }, []);
