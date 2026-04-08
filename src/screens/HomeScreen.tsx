@@ -1,6 +1,7 @@
 import { useRef, useCallback } from 'react';
 import type { UserProfile } from '../types';
 import Mascot from '../components/Mascot';
+import { useSound } from '../hooks/useSound';
 import './HomeScreen.css';
 
 interface HomeScreenProps {
@@ -18,6 +19,7 @@ export default function HomeScreen({
   onShowBadges,
   onShowParent,
 }: HomeScreenProps) {
+  const { isMuted, toggleMute } = useSound();
   const longPressTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const handleParentPressStart = useCallback(() => {
@@ -43,18 +45,27 @@ export default function HomeScreen({
   return (
     <div className="home-screen">
       {/* Parent access: hidden gear icon with long press */}
-      <button
-        className="home-parent-btn"
-        onMouseDown={handleParentPressStart}
-        onMouseUp={handleParentPressEnd}
-        onMouseLeave={handleParentPressEnd}
-        onTouchStart={handleParentPressStart}
-        onTouchEnd={handleParentPressEnd}
-        onTouchCancel={handleParentPressEnd}
-        aria-label="Accès parent (appui long)"
-      >
-        {'\u2699\uFE0F'}
-      </button>
+      <div className="home-top-bar">
+        <button
+          className="home-mute-btn"
+          onClick={toggleMute}
+          aria-label={isMuted ? 'Activer le son' : 'Couper le son'}
+        >
+          {isMuted ? '\uD83D\uDD07' : '\uD83D\uDD0A'}
+        </button>
+        <button
+          className="home-parent-btn"
+          onMouseDown={handleParentPressStart}
+          onMouseUp={handleParentPressEnd}
+          onMouseLeave={handleParentPressEnd}
+          onTouchStart={handleParentPressStart}
+          onTouchEnd={handleParentPressEnd}
+          onTouchCancel={handleParentPressEnd}
+          aria-label="Accès parent (appui long)"
+        >
+          {'\u2699\uFE0F'}
+        </button>
+      </div>
 
       <Mascot level={profile.mascotLevel} mood="idle" size="large" showLabel />
 

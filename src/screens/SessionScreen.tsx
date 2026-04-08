@@ -4,6 +4,7 @@ import NumPad from '../components/NumPad';
 import DotGrid from '../components/DotGrid';
 import FeedbackOverlay from '../components/FeedbackOverlay';
 import { RESPONSE_TIME } from '../types';
+import { useSound } from '../hooks/useSound';
 import './SessionScreen.css';
 
 interface SessionScreenProps {
@@ -40,6 +41,7 @@ export default function SessionScreen({
   } | null>(null);
   const [numpadDisabled, setNumpadDisabled] = useState(false);
 
+  const { playCorrect, playIncorrect } = useSound();
   const questionStartTime = useRef(Date.now());
   const correctCount = useRef(0);
   const totalTimeMs = useRef(0);
@@ -109,6 +111,9 @@ export default function SessionScreen({
         factsDemoted.current++;
       }
 
+      if (correct) playCorrect();
+      else playIncorrect();
+
       // Notify parent (App) to update Leitner state
       onAnswer(currentQuestion.fact, correct, timeMs, value);
 
@@ -144,7 +149,7 @@ export default function SessionScreen({
         },
       });
     },
-    [currentQuestion, numpadDisabled, currentIndex, questions.length, onAnswer],
+    [currentQuestion, numpadDisabled, currentIndex, questions.length, onAnswer, playCorrect, playIncorrect],
   );
 
   const handleFeedbackDismiss = useCallback(() => {

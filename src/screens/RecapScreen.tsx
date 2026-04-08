@@ -1,12 +1,16 @@
+import { useEffect, useRef } from 'react';
 import type { SessionResult, Badge as BadgeType } from '../types';
 import Mascot from '../components/Mascot';
 import Badge from '../components/Badge';
+import { useSound } from '../hooks/useSound';
+import { useConfetti } from '../hooks/useConfetti';
 import './RecapScreen.css';
 
 interface RecapScreenProps {
   result: SessionResult;
   newBadges: BadgeType[];
   mascotLevel: number;
+  previousMascotLevel: number;
   onFinish: () => void;
 }
 
@@ -37,10 +41,31 @@ export default function RecapScreen({
   result,
   newBadges,
   mascotLevel,
+  previousMascotLevel,
   onFinish,
 }: RecapScreenProps) {
   const starCount = getStarCount(result);
   const message = getEncouragingMessage(result);
+  const { playBadge, playLevelUp } = useSound();
+  const { triggerConfetti } = useConfetti();
+  const hasPlayedRef = useRef(false);
+
+  useEffect(() => {
+    if (hasPlayedRef.current) return;
+    hasPlayedRef.current = true;
+
+    const leveledUp = mascotLevel > previousMascotLevel;
+
+    if (leveledUp) {
+      playLevelUp();
+      triggerConfetti();
+    } else if (newBadges.length > 0) {
+      playBadge();
+      triggerConfetti();
+    } else if (starCount >= 3) {
+      triggerConfetti();
+    }
+  }, [mascotLevel, previousMascotLevel, newBadges.length, starCount, playBadge, playLevelUp, triggerConfetti]);
   const mascotMood =
     starCount >= 3
       ? 'celebrate'

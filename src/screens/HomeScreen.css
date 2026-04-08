@@ -86,10 +86,17 @@
   transform: scale(0.95);
 }
 
-.home-parent-btn {
+.home-top-bar {
   position: absolute;
   top: 12px;
   right: 12px;
+  display: flex;
+  gap: 4px;
+  align-items: center;
+}
+
+.home-mute-btn,
+.home-parent-btn {
   width: 36px;
   height: 36px;
   font-size: 1.1rem;

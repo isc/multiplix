@@ -32,6 +32,7 @@ export default function App() {
   const [sessionQuestions, setSessionQuestions] = useState<SessionQuestion[]>([]);
   const [sessionResult, setSessionResult] = useState<SessionResult | null>(null);
   const [newBadges, setNewBadges] = useState<Badge[]>([]);
+  const [previousMascotLevel, setPreviousMascotLevel] = useState(1);
   const [loading, setLoading] = useState(true);
 
   // Track session stats for badge checking
@@ -188,6 +189,7 @@ export default function App() {
         lastSessionDate: today,
       };
 
+      setPreviousMascotLevel(profile.mascotLevel);
       updatedProfile.mascotLevel = computeMascotLevel(updatedProfile);
 
       // Pass previousLastSessionDate so PERSEVERANTE badge can check the gap
@@ -271,6 +273,7 @@ export default function App() {
           result={sessionResult}
           newBadges={newBadges}
           mascotLevel={profile.mascotLevel}
+          previousMascotLevel={previousMascotLevel}
           onFinish={handleRecapFinish}
         />
       )}
