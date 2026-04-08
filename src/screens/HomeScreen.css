@@ -63,6 +63,17 @@
   box-shadow: 0 3px 10px var(--shadow);
 }
 
+.home-done-msg {
+  padding: 18px 32px;
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--success);
+  background: var(--surface);
+  border-radius: 20px;
+  border: 2px solid var(--success);
+  text-align: center;
+}
+
 .home-nav {
   display: flex;
   gap: 12px;

@@ -294,6 +294,7 @@ export default function App() {
       {screen === 'home' && profile && (
         <HomeScreen
           profile={profile}
+          sessionDoneToday={profile.lastSessionDate === todayISO()}
           onStart={handleStartSession}
           onShowProgress={() => setScreen('progress')}
           onShowBadges={() => setScreen('badges')}
