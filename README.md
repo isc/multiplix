@@ -1,6 +1,6 @@
 # Multiplix
 
-App d'apprentissage des tables de multiplication pour enfants (CE2), basée sur la recherche en sciences cognitives.
+App d'apprentissage des tables de multiplication pour enfants, basée sur la recherche en sciences cognitives.
 
 **https://isc.github.io/multiplix/**
 
