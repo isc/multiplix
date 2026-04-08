@@ -51,7 +51,7 @@ export function processAnswer(
     answeredWith: null, // the caller can fill this in before calling
   };
 
-  const updatedHistory = [...fact.history, attempt];
+  const updatedHistory = [...fact.history, attempt].slice(-30);
 
   if (!correct) {
     const newBox: BoxLevel = 1;

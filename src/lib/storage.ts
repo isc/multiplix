@@ -1,5 +1,6 @@
 import type { UserProfile } from '../types';
 import { createInitialFacts } from './facts';
+import { todayISO } from './utils';
 
 const STORAGE_KEY = 'multiplix-profile';
 
@@ -52,7 +53,7 @@ export function importProfile(json: string): UserProfile | null {
  * All 36 facts start in box 1, not yet introduced.
  */
 export function createNewProfile(name: string): UserProfile {
-  const now = new Date().toISOString().slice(0, 10);
+  const now = todayISO();
   return {
     name,
     startDate: now,

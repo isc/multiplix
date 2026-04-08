@@ -1,20 +1,9 @@
-import { useState } from 'react';
+import { useState, useMemo, Fragment } from 'react';
 import type { MultiFact } from '../types';
 import './ProgressGrid.css';
 
 interface ProgressGridProps {
   facts: MultiFact[];
-  onCellTap?: (fact: MultiFact | null) => void;
-}
-
-function getFactForCell(
-  facts: MultiFact[],
-  row: number,
-  col: number,
-): MultiFact | undefined {
-  const a = Math.min(row, col);
-  const b = Math.max(row, col);
-  return facts.find((f) => f.a === a && f.b === b);
 }
 
 function getBoxClass(fact: MultiFact | undefined): string {
@@ -26,30 +15,33 @@ export default function ProgressGrid({ facts }: ProgressGridProps) {
   const [selectedFact, setSelectedFact] = useState<MultiFact | null>(null);
   const headers = [2, 3, 4, 5, 6, 7, 8, 9];
 
+  const factMap = useMemo(() => {
+    const m = new Map<string, MultiFact>();
+    for (const f of facts) m.set(`${f.a},${f.b}`, f);
+    return m;
+  }, [facts]);
+
   return (
     <div className="progress-grid-container">
       <div className="progress-grid">
-        {/* Corner */}
         <div className="progress-grid-header progress-grid-corner">{'\u00D7'}</div>
 
-        {/* Column headers */}
         {headers.map((h) => (
           <div key={`col-${h}`} className="progress-grid-header">
             {h}
           </div>
         ))}
 
-        {/* Rows */}
         {headers.map((row) => (
-          <>
-            {/* Row header */}
-            <div key={`row-${row}`} className="progress-grid-header">
+          <Fragment key={row}>
+            <div className="progress-grid-header">
               {row}
             </div>
 
-            {/* Cells */}
             {headers.map((col) => {
-              const fact = getFactForCell(facts, row, col);
+              const a = Math.min(row, col);
+              const b = Math.max(row, col);
+              const fact = factMap.get(`${a},${b}`);
               const boxClass = getBoxClass(fact);
               const isDiagonal = row === col;
 
@@ -66,11 +58,10 @@ export default function ProgressGrid({ facts }: ProgressGridProps) {
                 </button>
               );
             })}
-          </>
+          </Fragment>
         ))}
       </div>
 
-      {/* Fact detail popup */}
       {selectedFact && (
         <div
           className="fact-detail-overlay"

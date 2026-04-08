@@ -1,5 +1,8 @@
-import { useState } from 'react';
+import { useState, useMemo, Fragment } from 'react';
 import type { UserProfile } from '../types';
+import { RESPONSE_TIME } from '../types';
+import { factsForTable } from '../lib/badges';
+import { getFactKey } from '../lib/facts';
 import './ParentDashboard.css';
 
 interface ParentDashboardProps {
@@ -18,54 +21,45 @@ export default function ParentDashboard({
   const [showImport, setShowImport] = useState(false);
   const [importJson, setImportJson] = useState('');
 
-  // Box distribution
-  const boxCounts = [0, 0, 0, 0, 0, 0]; // index 0 = not introduced, 1-5 = boxes
-  for (const fact of profile.facts) {
-    if (!fact.introduced) {
-      boxCounts[0]++;
-    } else {
-      boxCounts[fact.box]++;
+  const { boxCounts, maxBoxCount, hardFacts, tableAvgTimes } = useMemo(() => {
+    const counts = [0, 0, 0, 0, 0, 0];
+    for (const fact of profile.facts) {
+      if (!fact.introduced) counts[0]++;
+      else counts[fact.box]++;
     }
-  }
 
-  const maxBoxCount = Math.max(...boxCounts, 1);
+    const hard = profile.facts
+      .filter((f) => f.introduced)
+      .map((f) => ({
+        ...f,
+        errorCount: f.history.filter((h) => !h.correct).length,
+      }))
+      .sort((a, b) => b.errorCount - a.errorCount || a.box - b.box)
+      .slice(0, 5)
+      .filter((f) => f.errorCount > 0);
+
+    const avgTimes: { table: number; avgMs: number }[] = [];
+    for (let t = 2; t <= 9; t++) {
+      const allAttempts = factsForTable(profile.facts, t).flatMap((f) => f.history);
+      if (allAttempts.length > 0) {
+        const avg = allAttempts.reduce((sum, a) => sum + a.responseTimeMs, 0) / allAttempts.length;
+        avgTimes.push({ table: t, avgMs: Math.round(avg) });
+      }
+    }
+
+    return {
+      boxCounts: counts,
+      maxBoxCount: Math.max(...counts, 1),
+      hardFacts: hard,
+      tableAvgTimes: avgTimes,
+    };
+  }, [profile.facts]);
 
   const boxColors = [
-    'var(--box-gray)',
-    'var(--box-red)',
-    'var(--box-orange)',
-    'var(--box-yellow)',
-    'var(--box-lightgreen)',
-    'var(--box-green)',
+    'var(--box-gray)', 'var(--box-red)', 'var(--box-orange)',
+    'var(--box-yellow)', 'var(--box-lightgreen)', 'var(--box-green)',
   ];
-
   const boxLabels = ['N/A', 'B1', 'B2', 'B3', 'B4', 'B5'];
-
-  // Hardest facts: box 1 with most errors
-  const hardFacts = profile.facts
-    .filter((f) => f.introduced)
-    .map((f) => ({
-      ...f,
-      errorCount: f.history.filter((h) => !h.correct).length,
-    }))
-    .sort((a, b) => b.errorCount - a.errorCount || a.box - b.box)
-    .slice(0, 5)
-    .filter((f) => f.errorCount > 0);
-
-  // Average response time per table
-  const tableAvgTimes: { table: number; avgMs: number }[] = [];
-  for (let t = 2; t <= 9; t++) {
-    const tableFacts = profile.facts.filter(
-      (f) => f.a === t || f.b === t,
-    );
-    const allAttempts = tableFacts.flatMap((f) => f.history);
-    if (allAttempts.length > 0) {
-      const avg =
-        allAttempts.reduce((sum, a) => sum + a.responseTimeMs, 0) /
-        allAttempts.length;
-      tableAvgTimes.push({ table: t, avgMs: Math.round(avg) });
-    }
-  }
 
   const handleImport = () => {
     if (importJson.trim()) {
@@ -136,7 +130,7 @@ export default function ParentDashboard({
           <h3>Faits les plus difficiles</h3>
           <div className="parent-hard-facts">
             {hardFacts.map((f) => (
-              <div key={`${f.a}x${f.b}`} className="parent-hard-fact">
+              <div key={getFactKey(f.a, f.b)} className="parent-hard-fact">
                 <span className="parent-hard-fact-name">
                   {f.a} {'\u00D7'} {f.b} = {f.product}
                 </span>
@@ -162,26 +156,20 @@ export default function ParentDashboard({
             {tableAvgTimes.map((t) => {
               const seconds = (t.avgMs / 1000).toFixed(1);
               const speedClass =
-                t.avgMs < 3000
+                t.avgMs < RESPONSE_TIME.FAST
                   ? 'fast'
-                  : t.avgMs < 5000
+                  : t.avgMs < RESPONSE_TIME.SLOW
                     ? 'medium'
                     : 'slow';
               return (
-                <>
-                  <div
-                    key={`label-${t.table}`}
-                    className="parent-time-cell header"
-                  >
+                <Fragment key={t.table}>
+                  <div className="parent-time-cell header">
                     {'\u00D7'}{t.table}
                   </div>
-                  <div
-                    key={`time-${t.table}`}
-                    className={`parent-time-cell ${speedClass}`}
-                  >
+                  <div className={`parent-time-cell ${speedClass}`}>
                     {seconds}s
                   </div>
-                </>
+                </Fragment>
               );
             })}
           </div>

@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import DotGrid from './DotGrid';
 import './FeedbackOverlay.css';
 
@@ -40,28 +40,22 @@ export default function FeedbackOverlay({
   fact,
   onDismiss,
 }: FeedbackOverlayProps) {
-  // Auto-dismiss
+  // Pick message once on mount (stable across re-renders)
+  const [message] = useState(() =>
+    pickRandom(correct ? CORRECT_MESSAGES : INCORRECT_MESSAGES),
+  );
+
   useEffect(() => {
     const delay = correct ? 1800 : 3000;
     const timer = setTimeout(onDismiss, delay);
     return () => clearTimeout(timer);
   }, [correct, onDismiss]);
 
-  // Tap to dismiss
-  const handleTap = () => {
-    onDismiss();
-  };
-
   if (correct) {
-    const message = pickRandom(CORRECT_MESSAGES);
-    const subMessage = slow
-      ? 'Essaie un peu plus vite la prochaine fois !'
-      : fast
-        ? ''
-        : '';
+    const subMessage = slow ? 'Essaie un peu plus vite la prochaine fois !' : '';
 
     return (
-      <div className="feedback-overlay correct" onClick={handleTap}>
+      <div className="feedback-overlay correct" onClick={onDismiss}>
         <div className="feedback-card">
           {fast && (
             <div className="feedback-star" aria-label="Étoile dorée">
@@ -78,11 +72,8 @@ export default function FeedbackOverlay({
     );
   }
 
-  // Incorrect
-  const message = pickRandom(INCORRECT_MESSAGES);
-
   return (
-    <div className="feedback-overlay incorrect" onClick={handleTap}>
+    <div className="feedback-overlay incorrect" onClick={onDismiss}>
       <div className="feedback-card">
         <div className="feedback-emoji">{'\uD83E\uDD14'}</div>
         <div className="feedback-message incorrect">{message}</div>

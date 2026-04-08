@@ -1,6 +1,8 @@
-import { useState, useRef, useCallback } from 'react';
+import { useState, useRef, useCallback, useMemo } from 'react';
 import Mascot from '../components/Mascot';
 import NumPad from '../components/NumPad';
+import { shuffle } from '../lib/utils';
+import { getFactKey } from '../lib/facts';
 import './WelcomeScreen.css';
 
 export interface PlacementResult {
@@ -20,21 +22,12 @@ const PLACEMENT_FACTS = [
   [4, 9], [6, 8], [7, 9], [8, 8], [6, 9],
 ];
 
-function shuffleArray<T>(arr: T[]): T[] {
-  const a = [...arr];
-  for (let i = a.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [a[i], a[j]] = [a[j], a[i]];
-  }
-  return a;
-}
-
 export default function WelcomeScreen({ onComplete }: WelcomeScreenProps) {
   const [step, setStep] = useState(0);
   const [name, setName] = useState('');
 
   // Placement test state
-  const [testFacts] = useState(() => shuffleArray(PLACEMENT_FACTS));
+  const [testFacts] = useState(() => shuffle(PLACEMENT_FACTS));
   const [testIndex, setTestIndex] = useState(0);
   const [testResults, setTestResults] = useState<PlacementResult[]>([]);
   const [numpadDisabled, setNumpadDisabled] = useState(false);
@@ -66,11 +59,9 @@ export default function WelcomeScreen({ onComplete }: WelcomeScreenProps) {
       const [a, b] = fact;
       const timeMs = Date.now() - questionStartTime.current;
       const correct = value === a * b;
-      const lo = Math.min(a, b);
-      const hi = Math.max(a, b);
 
       const result: PlacementResult = {
-        factKey: `${lo}x${hi}`,
+        factKey: getFactKey(a, b),
         correct,
         timeMs,
       };
@@ -103,12 +94,17 @@ export default function WelcomeScreen({ onComplete }: WelcomeScreenProps) {
     }
   };
 
+  // Pre-compute display orders once per test (stable across re-renders)
+  const displayOrders = useMemo(
+    () => testFacts.map(([a, b]) => (Math.random() > 0.5 ? [a, b] : [b, a])),
+    [testFacts],
+  );
+
   // Placement test screen
   if (step === 3) {
     const fact = testFacts[testIndex];
     const [a, b] = fact;
-    // Randomly show a×b or b×a
-    const [displayA, displayB] = Math.random() > 0.5 ? [a, b] : [b, a];
+    const [displayA, displayB] = displayOrders[testIndex];
 
     return (
       <div className="welcome-screen">

@@ -1,5 +1,6 @@
 import type { Badge as BadgeType } from '../types';
-import BadgeComponent, { ALL_BADGES } from '../components/Badge';
+import BadgeComponent from '../components/Badge';
+import { ALL_BADGE_DEFINITIONS } from '../lib/badges';
 import './BadgesScreen.css';
 
 interface BadgesScreenProps {
@@ -8,7 +9,7 @@ interface BadgesScreenProps {
 }
 
 export default function BadgesScreen({ earnedBadges, onBack }: BadgesScreenProps) {
-  const earnedIds = new Set(earnedBadges.map((b) => b.id));
+  const earnedMap = new Map(earnedBadges.map((b) => [b.id, b]));
 
   return (
     <div className="badges-screen">
@@ -20,18 +21,18 @@ export default function BadgesScreen({ earnedBadges, onBack }: BadgesScreenProps
       </div>
 
       <div className="badges-count">
-        {earnedBadges.length} / {ALL_BADGES.length} badges obtenus
+        {earnedBadges.length} / {ALL_BADGE_DEFINITIONS.length} badges obtenus
       </div>
 
       <div className="badges-grid">
-        {ALL_BADGES.map((badgeDef) => {
-          const earnedBadge = earnedBadges.find((b) => b.id === badgeDef.id);
+        {ALL_BADGE_DEFINITIONS.map((def) => {
+          const earned = earnedMap.get(def.id);
           return (
             <BadgeComponent
-              key={badgeDef.id}
-              badge={badgeDef}
-              earned={earnedIds.has(badgeDef.id)}
-              earnedDate={earnedBadge?.earnedDate}
+              key={def.id}
+              badge={def}
+              earned={!!earned}
+              earnedDate={earned?.earnedDate}
             />
           );
         })}

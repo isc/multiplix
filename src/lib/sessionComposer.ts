@@ -1,22 +1,11 @@
 import type { MultiFact, UserProfile, SessionQuestion } from '../types';
 import { isDue, shouldIntroduceNew } from './leitner';
 import { computeSimilarity } from './similarity';
+import { shuffle } from './utils';
 
 const MIN_QUESTIONS = 12;
 const MAX_QUESTIONS = 15;
 const MAX_NEW_FACTS = 2;
-
-/**
- * Returns a shuffled copy of an array (Fisher-Yates).
- */
-function shuffle<T>(arr: T[]): T[] {
-  const a = [...arr];
-  for (let i = a.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [a[i], a[j]] = [a[j], a[i]];
-  }
-  return a;
-}
 
 /**
  * Returns a random display order for a fact (a*b or b*a).

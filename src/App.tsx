@@ -1,11 +1,12 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
-import type { UserProfile, SessionQuestion, SessionResult, MultiFact, Badge, BoxLevel } from './types';
-import { BOX_INTERVALS } from './types';
+import type { UserProfile, SessionQuestion, SessionResult, MultiFact, Badge } from './types';
+import { BOX_INTERVALS, RESPONSE_TIME } from './types';
 import { composeSession } from './lib/sessionComposer';
 import { processAnswer, addDays } from './lib/leitner';
 import { checkBadges, computeMascotLevel } from './lib/badges';
-import { loadProfile, saveProfile, createNewProfile } from './lib/storage';
+import { loadProfile, saveProfile, createNewProfile, exportProfile, importProfile } from './lib/storage';
 import { getFactKey } from './lib/facts';
+import { todayISO, daysBetween } from './lib/utils';
 import type { PlacementResult } from './screens/WelcomeScreen';
 import WelcomeScreen from './screens/WelcomeScreen';
 import HomeScreen from './screens/HomeScreen';
@@ -38,6 +39,9 @@ export default function App() {
   const sessionMaxConsecutiveCorrect = useRef(0);
   const sessionResponseTimes = useRef<number[]>([]);
 
+  // Skip the initial save-to-localStorage on mount
+  const isInitialLoad = useRef(true);
+
   // Load profile from localStorage on mount
   useEffect(() => {
     const stored = loadProfile();
@@ -50,8 +54,12 @@ export default function App() {
     setLoading(false);
   }, []);
 
-  // Save profile to localStorage whenever it changes
+  // Save profile to localStorage whenever it changes (skip initial load)
   useEffect(() => {
+    if (isInitialLoad.current) {
+      isInitialLoad.current = false;
+      return;
+    }
     if (profile) {
       saveProfile(profile);
     }
@@ -60,9 +68,8 @@ export default function App() {
   // Welcome: create new profile with optional placement test results
   const handleWelcomeComplete = useCallback((name: string, placementResults: PlacementResult[]) => {
     const newProfile = createNewProfile(name);
-    const today = new Date().toISOString().slice(0, 10);
+    const today = todayISO();
 
-    // Apply placement test results to calibrate initial box levels
     if (placementResults.length > 0) {
       for (const result of placementResults) {
         const fact = newProfile.facts.find((f) => getFactKey(f.a, f.b) === result.factKey);
@@ -71,15 +78,12 @@ export default function App() {
         fact.introduced = true;
         fact.lastSeen = today;
 
-        if (result.correct && result.timeMs < 3000) {
-          // Fast and correct → box 3 (well known)
-          fact.box = 3 as BoxLevel;
-        } else if (result.correct && result.timeMs < 5000) {
-          // Correct but slower → box 2
-          fact.box = 2 as BoxLevel;
+        if (result.correct && result.timeMs < RESPONSE_TIME.FAST) {
+          fact.box = 3;
+        } else if (result.correct && result.timeMs < RESPONSE_TIME.SLOW) {
+          fact.box = 2;
         } else {
-          // Incorrect or very slow → box 1
-          fact.box = 1 as BoxLevel;
+          fact.box = 1;
         }
 
         fact.nextDue = addDays(today, BOX_INTERVALS[fact.box]);
@@ -100,18 +104,14 @@ export default function App() {
   const handleStartSession = useCallback(() => {
     if (!profile) return;
 
-    const today = new Date().toISOString().slice(0, 10);
+    const today = todayISO();
     const questions = composeSession(profile, today);
 
-    // Reset session tracking
     sessionConsecutiveCorrect.current = 0;
     sessionMaxConsecutiveCorrect.current = 0;
     sessionResponseTimes.current = [];
 
     if (questions.length === 0) {
-      // No questions due -- could happen if everything is mastered and not due
-      setSessionQuestions([]);
-      setScreen('home');
       return;
     }
 
@@ -119,12 +119,9 @@ export default function App() {
     setScreen('session');
   }, [profile]);
 
-  // Handle individual answer (update Leitner state in real-time)
+  // Handle individual answer — use functional updater to avoid stale fact on retries
   const handleAnswer = useCallback(
     (fact: MultiFact, correct: boolean, timeMs: number, answered: number | null) => {
-      if (!profile) return;
-
-      // Track session stats for badges
       sessionResponseTimes.current.push(timeMs);
       if (correct) {
         sessionConsecutiveCorrect.current++;
@@ -136,28 +133,28 @@ export default function App() {
         sessionConsecutiveCorrect.current = 0;
       }
 
-      const today = new Date().toISOString().slice(0, 10);
-      const updatedFact = processAnswer(fact, correct, timeMs, today);
-
-      // Add the answered value to the latest attempt
-      if (updatedFact.history.length > 0) {
-        updatedFact.history[updatedFact.history.length - 1].answeredWith = answered;
-      }
-
-      // Mark as introduced if it was an introduction
-      if (!updatedFact.introduced) {
-        updatedFact.introduced = true;
-      }
+      const today = todayISO();
 
       setProfile((prev) => {
         if (!prev) return prev;
+        // Use the current fact from profile state, not the stale snapshot from the question
+        const currentFact = prev.facts.find((f) => f.a === fact.a && f.b === fact.b) ?? fact;
+        const updatedFact = processAnswer(currentFact, correct, timeMs, today);
+
+        if (updatedFact.history.length > 0) {
+          updatedFact.history[updatedFact.history.length - 1].answeredWith = answered;
+        }
+        if (!updatedFact.introduced) {
+          updatedFact.introduced = true;
+        }
+
         const updatedFacts = prev.facts.map((f) =>
           f.a === fact.a && f.b === fact.b ? updatedFact : f,
         );
         return { ...prev, facts: updatedFacts };
       });
     },
-    [profile],
+    [],
   );
 
   // Session complete
@@ -165,33 +162,23 @@ export default function App() {
     (result: SessionResult) => {
       if (!profile) return;
 
-      const today = new Date().toISOString().slice(0, 10);
+      const today = todayISO();
+      const previousLastSessionDate = profile.lastSessionDate;
 
       // Update streak
       let currentStreak = profile.currentStreak;
-      let longestStreak = profile.longestStreak;
-
-      if (profile.lastSessionDate) {
-        const lastDate = new Date(profile.lastSessionDate);
-        const todayDate = new Date(today);
-        const diffDays = Math.floor(
-          (todayDate.getTime() - lastDate.getTime()) / (1000 * 60 * 60 * 24),
-        );
-
-        if (diffDays === 1) {
-          // Consecutive day
+      if (previousLastSessionDate) {
+        const diff = daysBetween(previousLastSessionDate, today);
+        if (diff === 1) {
           currentStreak += 1;
-        } else if (diffDays === 0) {
-          // Same day, don't change streak
-        } else {
-          // Streak broken
+        } else if (diff !== 0) {
           currentStreak = 1;
         }
       } else {
         currentStreak = 1;
       }
 
-      longestStreak = Math.max(longestStreak, currentStreak);
+      const longestStreak = Math.max(profile.longestStreak, currentStreak);
 
       const updatedProfile: UserProfile = {
         ...profile,
@@ -201,22 +188,18 @@ export default function App() {
         lastSessionDate: today,
       };
 
-      // Compute mascot level with the updated profile
       updatedProfile.mascotLevel = computeMascotLevel(updatedProfile);
 
-      // Check for new badges with session stats
+      // Pass previousLastSessionDate so PERSEVERANTE badge can check the gap
       const sessionStats = {
         consecutiveCorrect: sessionMaxConsecutiveCorrect.current,
         fastAnswers: sessionResponseTimes.current,
       };
-      const earned = checkBadges(updatedProfile, sessionStats);
+      const earned = checkBadges(updatedProfile, sessionStats, previousLastSessionDate);
       const previousBadgeIds = new Set(profile.badges.map((b) => b.id));
       const brandNewBadges = earned.filter((b) => !previousBadgeIds.has(b.id));
 
-      updatedProfile.badges = [
-        ...profile.badges,
-        ...brandNewBadges,
-      ];
+      updatedProfile.badges = [...profile.badges, ...brandNewBadges];
 
       setProfile(updatedProfile);
       setSessionResult(result);
@@ -226,35 +209,28 @@ export default function App() {
     [profile],
   );
 
-  // Recap done
   const handleRecapFinish = useCallback(() => {
     setSessionResult(null);
     setNewBadges([]);
     setScreen('home');
   }, []);
 
-  // Export data
   const handleExport = useCallback(() => {
     if (!profile) return;
-    const json = JSON.stringify(profile, null, 2);
+    const json = exportProfile(profile);
     const blob = new Blob([json], { type: 'application/json' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = `multiplix-${profile.name}-${new Date().toISOString().slice(0, 10)}.json`;
+    a.download = `multiplix-${profile.name}-${todayISO()}.json`;
     a.click();
     URL.revokeObjectURL(url);
   }, [profile]);
 
-  // Import data
   const handleImport = useCallback((json: string) => {
-    try {
-      const parsed = JSON.parse(json) as UserProfile;
-      if (parsed.name && parsed.facts) {
-        setProfile(parsed);
-      }
-    } catch {
-      // Invalid JSON, ignore
+    const imported = importProfile(json);
+    if (imported) {
+      setProfile(imported);
     }
   }, []);
 
