@@ -1,0 +1,102 @@
+.welcome-screen {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 32px 20px;
+  gap: 24px;
+  animation: fadeIn 0.5s ease;
+}
+
+.welcome-step {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+  animation: slideUp 0.4s ease;
+  text-align: center;
+  max-width: 340px;
+}
+
+.welcome-title {
+  font-size: 1.8rem;
+  font-weight: 800;
+  color: var(--primary);
+}
+
+.welcome-subtitle {
+  font-size: 1.1rem;
+  color: var(--text-light);
+  line-height: 1.6;
+}
+
+.welcome-input {
+  padding: 14px 20px;
+  font-size: 1.3rem;
+  font-weight: 700;
+  text-align: center;
+  border: 3px solid var(--primary);
+  border-radius: 16px;
+  background: var(--surface);
+  color: var(--text);
+  width: 240px;
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+.welcome-input:focus {
+  border-color: var(--primary-light);
+  box-shadow: 0 0 16px var(--shadow);
+}
+
+.welcome-input::placeholder {
+  color: var(--text-muted);
+  font-weight: 400;
+}
+
+.welcome-btn {
+  padding: 14px 36px;
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: white;
+  background: var(--primary);
+  border-radius: 16px;
+  transition: all 0.15s ease;
+}
+
+.welcome-btn:active {
+  transform: scale(0.95);
+}
+
+.welcome-btn:disabled {
+  background: var(--box-gray);
+  cursor: not-allowed;
+}
+
+.welcome-btn-primary {
+  background: linear-gradient(135deg, var(--primary), var(--primary-light));
+  padding: 16px 44px;
+  font-size: 1.2rem;
+  font-weight: 800;
+  border-radius: 18px;
+  box-shadow: 0 4px 16px var(--shadow);
+}
+
+.welcome-dots {
+  display: flex;
+  gap: 8px;
+}
+
+.welcome-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--border);
+  transition: all 0.3s ease;
+}
+
+.welcome-dot.active {
+  background: var(--primary);
+  transform: scale(1.2);
+}

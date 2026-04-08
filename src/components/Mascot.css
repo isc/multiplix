@@ -1,0 +1,72 @@
+.mascot {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.mascot-figure {
+  font-size: 4rem;
+  line-height: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.mascot.small .mascot-figure {
+  font-size: 2.5rem;
+}
+
+.mascot.large .mascot-figure {
+  font-size: 6rem;
+}
+
+/* Mood animations */
+.mascot-figure.idle {
+  animation: mascotIdle 3s ease-in-out infinite;
+}
+
+@keyframes mascotIdle {
+  0%, 100% { transform: translateY(0) rotate(0deg); }
+  25% { transform: translateY(-3px) rotate(-2deg); }
+  50% { transform: translateY(0) rotate(0deg); }
+  75% { transform: translateY(-3px) rotate(2deg); }
+}
+
+.mascot-figure.happy {
+  animation: mascotHappy 0.5s ease-in-out 3;
+}
+
+@keyframes mascotHappy {
+  0%, 100% { transform: translateY(0) scale(1); }
+  50% { transform: translateY(-15px) scale(1.1); }
+}
+
+.mascot-figure.sad {
+  animation: mascotSad 2s ease-in-out infinite;
+}
+
+@keyframes mascotSad {
+  0%, 100% { transform: translateY(0) rotate(0deg); }
+  50% { transform: translateY(3px) rotate(-3deg); }
+}
+
+.mascot-figure.celebrate {
+  animation: mascotCelebrate 0.6s ease-in-out infinite;
+}
+
+@keyframes mascotCelebrate {
+  0% { transform: translateY(0) rotate(0deg) scale(1); }
+  25% { transform: translateY(-20px) rotate(-10deg) scale(1.15); }
+  50% { transform: translateY(0) rotate(0deg) scale(1); }
+  75% { transform: translateY(-20px) rotate(10deg) scale(1.15); }
+  100% { transform: translateY(0) rotate(0deg) scale(1); }
+}
+
+.mascot-label {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--text-light);
+}

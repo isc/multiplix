@@ -1,0 +1,131 @@
+.session-screen {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  animation: fadeIn 0.3s ease;
+}
+
+/* Progress bar */
+.session-progress {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 16px 20px 8px;
+}
+
+.session-progress-dot {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.65rem;
+  transition: all 0.3s ease;
+}
+
+.session-progress-dot.correct {
+  background: var(--success);
+  color: white;
+  font-size: 0.7rem;
+}
+
+.session-progress-dot.incorrect {
+  background: var(--secondary);
+  color: white;
+  font-size: 0.7rem;
+}
+
+.session-progress-dot.current {
+  background: var(--primary);
+  transform: scale(1.2);
+  box-shadow: 0 0 8px var(--shadow);
+}
+
+/* Introduction phase */
+.session-intro {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  gap: 16px;
+  animation: slideUp 0.4s ease;
+}
+
+.session-intro-title {
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: var(--primary);
+}
+
+.session-intro-explanation {
+  font-size: 1.1rem;
+  color: var(--text);
+  text-align: center;
+  line-height: 1.6;
+}
+
+.session-intro-explanation strong {
+  color: var(--primary);
+  font-weight: 800;
+}
+
+.session-intro-commutativity {
+  font-size: 1rem;
+  color: var(--text-light);
+  text-align: center;
+  font-style: italic;
+}
+
+.session-intro-btn {
+  margin-top: 8px;
+  padding: 14px 36px;
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: white;
+  background: var(--primary);
+  border-radius: 16px;
+}
+
+.session-intro-btn:active {
+  transform: scale(0.95);
+}
+
+/* Question phase */
+.session-question {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  animation: slideUp 0.3s ease;
+}
+
+.session-question-text {
+  font-size: 2.8rem;
+  font-weight: 800;
+  color: var(--text);
+  padding: 24px 20px 12px;
+  letter-spacing: 2px;
+}
+
+.session-question-text .operator {
+  color: var(--primary);
+  margin: 0 4px;
+}
+
+.session-question-text .equals {
+  color: var(--text-muted);
+  margin-left: 8px;
+}
+
+.session-numpad-area {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+}

@@ -1,0 +1,102 @@
+.home-screen {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 32px 20px;
+  gap: 24px;
+  animation: fadeIn 0.4s ease;
+}
+
+.home-greeting {
+  font-size: 1.6rem;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.home-greeting span {
+  color: var(--primary);
+}
+
+.home-streak {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 20px;
+  background: var(--surface);
+  border-radius: 16px;
+  border: 2px solid var(--border);
+}
+
+.home-streak-flame {
+  font-size: 1.5rem;
+  animation: flame 1s ease-in-out infinite;
+  display: inline-block;
+}
+
+.home-streak-count {
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: var(--secondary);
+}
+
+.home-streak-label {
+  font-size: 0.9rem;
+  color: var(--text-light);
+}
+
+.home-start-btn {
+  padding: 18px 48px;
+  font-size: 1.4rem;
+  font-weight: 800;
+  color: white;
+  background: linear-gradient(135deg, var(--primary), var(--primary-light));
+  border-radius: 20px;
+  box-shadow: 0 6px 20px var(--shadow);
+  transition: all 0.2s ease;
+  animation: pulse 2s ease-in-out infinite;
+}
+
+.home-start-btn:active {
+  transform: scale(0.95);
+  box-shadow: 0 3px 10px var(--shadow);
+}
+
+.home-nav {
+  display: flex;
+  gap: 12px;
+  margin-top: 8px;
+}
+
+.home-nav-btn {
+  padding: 12px 20px;
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--primary);
+  background: var(--surface);
+  border-radius: 14px;
+  border: 2px solid var(--primary);
+  transition: all 0.2s ease;
+}
+
+.home-nav-btn:active {
+  background: var(--primary);
+  color: white;
+  transform: scale(0.95);
+}
+
+.home-parent-btn {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  width: 36px;
+  height: 36px;
+  font-size: 1.1rem;
+  color: var(--text-muted);
+  background: transparent;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}

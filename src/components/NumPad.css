@@ -1,0 +1,101 @@
+.numpad-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  padding: 16px;
+  width: 100%;
+}
+
+.numpad-display {
+  font-size: 3rem;
+  font-weight: 800;
+  color: var(--primary);
+  min-height: 60px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  letter-spacing: 4px;
+  min-width: 120px;
+  position: relative;
+}
+
+.numpad-display-cursor {
+  display: inline-block;
+  width: 3px;
+  height: 40px;
+  background: var(--primary);
+  animation: blink 1s infinite;
+  margin-left: 2px;
+  border-radius: 2px;
+}
+
+@keyframes blink {
+  0%, 50% { opacity: 1; }
+  51%, 100% { opacity: 0; }
+}
+
+.numpad-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 80px);
+  gap: 10px;
+  justify-content: center;
+}
+
+.numpad-btn {
+  width: 80px;
+  height: 64px;
+  font-size: 1.6rem;
+  font-weight: 700;
+  border-radius: 16px;
+  background: var(--surface);
+  color: var(--text);
+  border: 2px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.15s ease;
+  user-select: none;
+  -webkit-user-select: none;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.numpad-btn:active {
+  transform: scale(0.95);
+  background: var(--primary-light);
+  color: white;
+  border-color: var(--primary);
+}
+
+.numpad-btn-backspace {
+  background: var(--background);
+  color: var(--text-light);
+  font-size: 1.3rem;
+}
+
+.numpad-btn-backspace:active {
+  background: var(--secondary-light);
+  color: white;
+  border-color: var(--secondary);
+}
+
+.numpad-btn-ok {
+  background: var(--primary);
+  color: white;
+  border-color: var(--primary);
+  font-size: 1.2rem;
+  font-weight: 800;
+}
+
+.numpad-btn-ok:active {
+  background: var(--primary-dark);
+  transform: scale(0.95);
+}
+
+.numpad-btn-ok:disabled {
+  background: var(--box-gray);
+  border-color: var(--box-gray);
+  cursor: not-allowed;
+  opacity: 0.5;
+}
