@@ -17,15 +17,18 @@ export default function DotGrid({
   size = 'normal',
 }: DotGridProps) {
   const [visibleRows, setVisibleRows] = useState(animated ? 0 : a);
+  const [showResult, setShowResult] = useState(!animated);
   const [rotated, setRotated] = useState(false);
 
   // Animate rows appearing one by one
   useEffect(() => {
     if (!animated) {
       setVisibleRows(a);
+      setShowResult(true);
       return;
     }
     setVisibleRows(0);
+    setShowResult(false);
     setRotated(false);
     let row = 0;
     const interval = setInterval(() => {
@@ -33,6 +36,8 @@ export default function DotGrid({
       setVisibleRows(row);
       if (row >= a) {
         clearInterval(interval);
+        // Show result after last row's fade-in animation (400ms)
+        setTimeout(() => setShowResult(true), 500);
       }
     }, 600);
     return () => clearInterval(interval);
@@ -40,12 +45,12 @@ export default function DotGrid({
 
   // Trigger rotation after all rows appear
   useEffect(() => {
-    if (!showRotation || visibleRows < a) return;
+    if (!showRotation || !showResult) return;
     const timeout = setTimeout(() => {
       setRotated(true);
     }, 800);
     return () => clearTimeout(timeout);
-  }, [showRotation, visibleRows, a]);
+  }, [showRotation, showResult]);
 
   // Scale dots down for large grids so they don't overflow on mobile
   const maxDim = Math.max(a, b);
@@ -67,7 +72,6 @@ export default function DotGrid({
             <div
               key={rowIndex}
               className={`dot-grid-row ${!animated ? 'no-animation' : visible ? '' : 'hidden'}`}
-              style={animated && visible ? { animationDelay: `${rowIndex * 0.6}s` } : undefined}
             >
               {Array.from({ length: b }, (_, colIndex) => (
                 <div key={colIndex} className="dot" />
@@ -76,7 +80,7 @@ export default function DotGrid({
           );
         })}
       </div>
-      <div className={`dot-grid-result ${visibleRows >= a ? 'visible' : ''}`}>
+      <div className={`dot-grid-result ${showResult ? 'visible' : ''}`}>
         = <strong>{a * b}</strong>
       </div>
     </div>
