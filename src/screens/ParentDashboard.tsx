@@ -55,6 +55,11 @@ export default function ParentDashboard({
     };
   }, [profile.facts]);
 
+  const recentSessions = useMemo(
+    () => [...profile.sessionHistory].reverse().slice(0, 10),
+    [profile.sessionHistory],
+  );
+
   const boxColors = [
     'var(--box-gray)', 'var(--box-red)', 'var(--box-orange)',
     'var(--box-yellow)', 'var(--box-lightgreen)', 'var(--box-green)',
@@ -177,30 +182,27 @@ export default function ParentDashboard({
       )}
 
       {/* Session history */}
-      {(profile.sessionHistory ?? []).length > 0 && (
+      {profile.sessionHistory.length > 0 && (
         <div className="parent-section">
           <h3>Historique des s{'\u00E9'}ances</h3>
           <div className="parent-session-history">
-            {[...(profile.sessionHistory ?? [])]
-              .reverse()
-              .slice(0, 10)
-              .map((session, i) => {
-                const dateStr = new Date(session.date).toLocaleDateString('fr-FR', {
-                  weekday: 'short',
-                  day: 'numeric',
-                  month: 'long',
-                });
-                const avgSec = (session.averageTimeMs / 1000).toFixed(1);
-                return (
-                  <div key={i} className="parent-session-row">
-                    <span className="parent-session-date">{dateStr}</span>
-                    <span className="parent-session-score">
-                      {session.correctCount}/{session.questionsCount}
-                    </span>
-                    <span className="parent-session-time">{avgSec}s</span>
-                  </div>
-                );
-              })}
+            {recentSessions.map((session) => {
+              const dateStr = new Date(session.date).toLocaleDateString('fr-FR', {
+                weekday: 'short',
+                day: 'numeric',
+                month: 'long',
+              });
+              const avgSec = (session.averageTimeMs / 1000).toFixed(1);
+              return (
+                <div key={session.date} className="parent-session-row">
+                  <span className="parent-session-date">{dateStr}</span>
+                  <span className="parent-session-score">
+                    {session.correctCount}/{session.questionsCount}
+                  </span>
+                  <span className="parent-session-time">{avgSec}s</span>
+                </div>
+              );
+            })}
           </div>
         </div>
       )}

@@ -3,7 +3,7 @@ import type { UserProfile, SessionQuestion, SessionResult, MultiFact, Badge } fr
 import { BOX_INTERVALS, RESPONSE_TIME } from './types';
 import { composeSession } from './lib/sessionComposer';
 import { processAnswer, addDays } from './lib/leitner';
-import { checkBadges, computeMascotLevel, factsForTable } from './lib/badges';
+import { checkBadges, computeMascotLevel, getCompletedTables } from './lib/badges';
 import { loadProfile, saveProfile, createNewProfile, exportProfile, importProfile } from './lib/storage';
 import { getFactKey } from './lib/facts';
 import { todayISO, daysBetween } from './lib/utils';
@@ -116,19 +116,11 @@ export default function App() {
     sessionMaxConsecutiveCorrect.current = 0;
     sessionResponseTimes.current = [];
 
-    // Snapshot which tables are already fully mastered (box >= 5) before the session
-    const alreadyComplete = new Set<number>();
-    for (let t = 2; t <= 9; t++) {
-      const tf = factsForTable(profile.facts, t);
-      if (tf.length > 0 && tf.every((f) => f.box >= 5)) {
-        alreadyComplete.add(t);
-      }
-    }
-    tablesCompletedBeforeSession.current = alreadyComplete;
-
     if (questions.length === 0) {
       return;
     }
+
+    tablesCompletedBeforeSession.current = getCompletedTables(profile.facts);
 
     setSessionQuestions(questions);
     setScreen('session');
@@ -196,7 +188,7 @@ export default function App() {
       const longestStreak = Math.max(profile.longestStreak, currentStreak);
 
       // Append session result to history, capped at 50
-      const previousHistory = profile.sessionHistory ?? [];
+      const previousHistory = profile.sessionHistory;
       const sessionHistory = [...previousHistory, result].slice(-50);
 
       const updatedProfile: UserProfile = {
@@ -223,14 +215,8 @@ export default function App() {
       updatedProfile.badges = [...profile.badges, ...brandNewBadges];
 
       // Detect newly completed tables (all facts at box >= 5)
-      const completedNow: number[] = [];
-      for (let t = 2; t <= 9; t++) {
-        if (tablesCompletedBeforeSession.current.has(t)) continue;
-        const tf = factsForTable(updatedProfile.facts, t);
-        if (tf.length > 0 && tf.every((f) => f.box >= 5)) {
-          completedNow.push(t);
-        }
-      }
+      const completedNow = [...getCompletedTables(updatedProfile.facts)]
+        .filter((t) => !tablesCompletedBeforeSession.current.has(t));
 
       setProfile(updatedProfile);
       setSessionResult(result);

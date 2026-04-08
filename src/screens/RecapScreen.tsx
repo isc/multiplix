@@ -72,13 +72,11 @@ export default function RecapScreen({
     }
   }, [mascotLevel, previousMascotLevel, newBadges.length, newlyCompletedTables.length, starCount, playBadge, playLevelUp, triggerConfetti]);
   const mascotMood =
-    newlyCompletedTables.length > 0
+    newlyCompletedTables.length > 0 || starCount >= 3
       ? 'celebrate'
-      : starCount >= 3
-        ? 'celebrate'
-        : starCount >= 2
-          ? 'happy'
-          : 'idle';
+      : starCount >= 2
+        ? 'happy'
+        : 'idle';
 
   return (
     <div className="recap-screen">

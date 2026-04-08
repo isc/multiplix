@@ -14,6 +14,17 @@ export function factsForTable(facts: MultiFact[], table: number): MultiFact[] {
   return facts.filter((f) => f.a === table || f.b === table);
 }
 
+export function getCompletedTables(facts: MultiFact[]): Set<number> {
+  const completed = new Set<number>();
+  for (let t = 2; t <= 9; t++) {
+    const tf = factsForTable(facts, t);
+    if (tf.length > 0 && tf.every((f) => f.box >= 5)) {
+      completed.add(t);
+    }
+  }
+  return completed;
+}
+
 // Single source of truth for all badge metadata
 export interface BadgeDefinition {
   id: string;
