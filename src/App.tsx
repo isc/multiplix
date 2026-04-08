@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback, useRef } from 'react';
 import type { UserProfile, SessionQuestion, SessionResult, MultiFact, Badge } from './types';
 import { BOX_INTERVALS, RESPONSE_TIME } from './types';
 import { composeSession } from './lib/sessionComposer';
-import { processAnswer, addDays } from './lib/leitner';
+import { processAnswer, addDays, resetFact } from './lib/leitner';
 import { checkBadges, computeMascotLevel, getCompletedTables } from './lib/badges';
 import { loadProfile, saveProfile, createNewProfile, exportProfile, importProfile } from './lib/storage';
 import { getFactKey } from './lib/facts';
@@ -236,6 +236,28 @@ export default function App() {
     setScreen('home');
   }, []);
 
+  const handleResetFact = useCallback((a: number, b: number) => {
+    const today = todayISO();
+    setProfile((prev) => {
+      if (!prev) return prev;
+      const updatedFacts = prev.facts.map((f) =>
+        f.a === a && f.b === b ? resetFact(f, today) : f,
+      );
+      return { ...prev, facts: updatedFacts };
+    });
+  }, []);
+
+  const handleResetTable = useCallback((table: number) => {
+    const today = todayISO();
+    setProfile((prev) => {
+      if (!prev) return prev;
+      const updatedFacts = prev.facts.map((f) =>
+        (f.a === table || f.b === table) && f.introduced ? resetFact(f, today) : f,
+      );
+      return { ...prev, facts: updatedFacts };
+    });
+  }, []);
+
   const handleExport = useCallback(() => {
     if (!profile) return;
     const json = exportProfile(profile);
@@ -321,6 +343,8 @@ export default function App() {
           onBack={() => setScreen('home')}
           onExport={handleExport}
           onImport={handleImport}
+          onResetFact={handleResetFact}
+          onResetTable={handleResetTable}
         />
       )}
     </div>

@@ -232,6 +232,64 @@
   text-align: right;
 }
 
+/* Reset buttons on hard facts */
+.parent-reset-btn {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  font-size: 1rem;
+  color: var(--text-muted);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.parent-reset-btn:active {
+  background: var(--border);
+}
+
+.parent-reset-confirm-btn {
+  padding: 4px 10px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  border-radius: 8px;
+  background: var(--secondary);
+  color: white;
+  flex-shrink: 0;
+}
+
+/* Reset table grid */
+.parent-reset-tables {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.parent-reset-table-btn {
+  padding: 8px 14px;
+  font-size: 0.85rem;
+  font-weight: 700;
+  border-radius: 10px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  color: var(--text);
+  transition: all 0.15s;
+}
+
+.parent-reset-table-btn:active {
+  transform: scale(0.95);
+}
+
+.parent-reset-table-btn.confirming {
+  background: var(--secondary);
+  border-color: var(--secondary);
+  color: white;
+  font-size: 0.75rem;
+}
+
 /* Action buttons */
 .parent-actions {
   display: flex;

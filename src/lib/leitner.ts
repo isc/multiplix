@@ -88,6 +88,13 @@ export function processAnswer(
 }
 
 /**
+ * Resets a fact to box 1 with cleared history.
+ */
+export function resetFact(fact: MultiFact, today: string): MultiFact {
+  return { ...fact, box: 1 as BoxLevel, history: [], nextDue: today, lastSeen: today };
+}
+
+/**
  * Returns true if a new fact should be introduced.
  * Condition: all previously introduced facts are at box 2 or above.
  */

@@ -262,10 +262,11 @@ Accessible via un code/geste (ex : appui long sur le logo), sans mot de passe co
 - Graphe d'évolution : nombre de faits maîtrisés (boîte 4+) au fil du temps
 
 **Actions parent :**
-- Réinitialiser un fait ou une table
+- Réinitialiser un fait ou une table (avec confirmation)
 - Exporter les données (JSON)
 - Importer les données (pour changer de téléphone)
-- Ajuster les paramètres (nombre de questions par séance, seuil de vitesse)
+
+*Note : les paramètres (nombre de questions par séance, seuil de vitesse) ne sont pas exposés car leurs valeurs par défaut sont issues de la littérature scientifique (§1.1) et ne devraient pas être modifiées sans expertise.*
 
 ---
 
