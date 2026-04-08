@@ -35,18 +35,18 @@ export interface BadgeDefinition {
 
 export const ALL_BADGE_DEFINITIONS: BadgeDefinition[] = [
   { id: BADGE_IDS.PREMIER_PAS, name: 'Premier pas', description: 'Terminer la première séance', icon: '🌱' },
-  { id: BADGE_IDS.REGULIER, name: 'Régulier·e', description: '7 jours consécutifs', icon: '🔥' },
+  { id: BADGE_IDS.REGULIER, name: 'Régularité', description: '7 jours consécutifs', icon: '🔥' },
   { id: BADGE_IDS.MACHINE, name: 'Machine', description: '10 bonnes réponses de suite', icon: '⚡' },
-  { id: BADGE_IDS.EXPLORATRICE, name: 'Exploratrice', description: 'Avoir vu tous les faits', icon: '🗺️' },
+  { id: BADGE_IDS.EXPLORATION, name: 'Exploration', description: 'Avoir vu tous les faits', icon: '🗺️' },
   ...Array.from({ length: 8 }, (_, i) => ({
     id: `${BADGE_IDS.TABLE_PREFIX}${i + 2}`,
     name: `Table de ${i + 2}`,
     description: `Maîtriser la table de ${i + 2}`,
     icon: '⭐',
   })),
-  { id: BADGE_IDS.MATHEMATICIENNE, name: 'Mathématicienne', description: 'Tous les faits en boîte 5', icon: '🏆' },
+  { id: BADGE_IDS.GENIE_MATHS, name: 'Génie des maths', description: 'Tous les faits en boîte 5', icon: '🏆' },
   { id: BADGE_IDS.VELOCE, name: 'Véloce', description: '5 réponses < 2s de suite', icon: '🚀' },
-  { id: BADGE_IDS.PERSEVERANTE, name: 'Persévérante', description: 'Revenir après 3+ jours', icon: '💪' },
+  { id: BADGE_IDS.PERSEVERANCE, name: 'Persévérance', description: 'Revenir après 3+ jours', icon: '💪' },
   { id: BADGE_IDS.FLAMME_ETERNELLE, name: 'Flamme éternelle', description: '30 jours consécutifs', icon: '🌟' },
 ];
 
@@ -76,8 +76,8 @@ export function checkBadges(
   if (profile.totalSessions >= 1) earn(BADGE_IDS.PREMIER_PAS);
   if (profile.currentStreak >= 7) earn(BADGE_IDS.REGULIER);
   if (profile.currentStreak >= 30) earn(BADGE_IDS.FLAMME_ETERNELLE);
-  if (profile.facts.every((f) => f.introduced)) earn(BADGE_IDS.EXPLORATRICE);
-  if (profile.facts.every((f) => f.box === 5)) earn(BADGE_IDS.MATHEMATICIENNE);
+  if (profile.facts.every((f) => f.introduced)) earn(BADGE_IDS.EXPLORATION);
+  if (profile.facts.every((f) => f.box === 5)) earn(BADGE_IDS.GENIE_MATHS);
 
   if (sessionStats?.consecutiveCorrect && sessionStats.consecutiveCorrect >= 10) {
     earn(BADGE_IDS.MACHINE);
@@ -87,9 +87,9 @@ export function checkBadges(
     earn(BADGE_IDS.VELOCE);
   }
 
-  // Persévérante: check against the PREVIOUS lastSessionDate (before this session updated it)
+  // Persévérance: check against the PREVIOUS lastSessionDate (before this session updated it)
   if (previousLastSessionDate && daysBetween(previousLastSessionDate, now) >= 3) {
-    earn(BADGE_IDS.PERSEVERANTE);
+    earn(BADGE_IDS.PERSEVERANCE);
   }
 
   for (let n = 2; n <= 9; n++) {

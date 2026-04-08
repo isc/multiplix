@@ -19,7 +19,7 @@ function getEncouragingMessage(result: SessionResult): string {
   const ratio = result.correctCount / result.questionsCount;
 
   if (ratio >= 0.9) {
-    return 'Incroyable ! Tu es un vrai champion !';
+    return 'Incroyable ! Quel talent !';
   }
   if (ratio >= 0.7) {
     return 'Très bien ! Tu progresses super bien !';
@@ -27,7 +27,7 @@ function getEncouragingMessage(result: SessionResult): string {
   if (ratio >= 0.5) {
     return "C'est bien ! Continue comme ça !";
   }
-  return "Bravo pour tes efforts ! Chaque essai te rend plus fort !";
+  return "Bravo pour tes efforts ! Chaque essai, c'est un progrès !";
 }
 
 function getStarCount(result: SessionResult): number {

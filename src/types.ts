@@ -78,10 +78,10 @@ export const BADGE_IDS = {
   PREMIER_PAS: 'premier-pas',
   REGULIER: 'regulier',
   MACHINE: 'machine',
-  EXPLORATRICE: 'exploratrice',
+  EXPLORATION: 'exploration',
   TABLE_PREFIX: 'table-',
-  MATHEMATICIENNE: 'mathematicienne',
+  GENIE_MATHS: 'genie-maths',
   VELOCE: 'veloce',
-  PERSEVERANTE: 'perseverante',
+  PERSEVERANCE: 'perseverance',
   FLAMME_ETERNELLE: 'flamme-eternelle',
 } as const;

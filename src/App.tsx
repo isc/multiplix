@@ -203,7 +203,7 @@ export default function App() {
       setPreviousMascotLevel(profile.mascotLevel);
       updatedProfile.mascotLevel = computeMascotLevel(updatedProfile);
 
-      // Pass previousLastSessionDate so PERSEVERANTE badge can check the gap
+      // Pass previousLastSessionDate so PERSEVERANCE badge can check the gap
       const sessionStats = {
         consecutiveCorrect: sessionMaxConsecutiveCorrect.current,
         fastAnswers: sessionResponseTimes.current,
