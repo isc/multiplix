@@ -95,6 +95,11 @@
   align-items: center;
 }
 
+.home-parent-btn {
+  -webkit-touch-callout: none;
+  user-select: none;
+}
+
 .home-mute-btn,
 .home-parent-btn {
   width: 36px;

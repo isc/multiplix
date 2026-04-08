@@ -22,10 +22,11 @@ export default function HomeScreen({
   const { isMuted, toggleMute } = useSound();
   const longPressTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  const handleParentPressStart = useCallback(() => {
+  const handleParentPressStart = useCallback((e: React.TouchEvent | React.MouseEvent) => {
+    e.preventDefault(); // Prevent iOS text selection / callout on long press
     longPressTimer.current = setTimeout(() => {
       onShowParent();
-    }, 1500); // Long press: 1.5 seconds
+    }, 1500);
   }, [onShowParent]);
 
   const handleParentPressEnd = useCallback(() => {
