@@ -3,7 +3,7 @@ import type { UserProfile, SessionQuestion, SessionResult, MultiFact, Badge } fr
 import { BOX_INTERVALS, RESPONSE_TIME } from './types';
 import { composeSession } from './lib/sessionComposer';
 import { processAnswer, addDays } from './lib/leitner';
-import { checkBadges, computeMascotLevel } from './lib/badges';
+import { checkBadges, computeMascotLevel, factsForTable } from './lib/badges';
 import { loadProfile, saveProfile, createNewProfile, exportProfile, importProfile } from './lib/storage';
 import { getFactKey } from './lib/facts';
 import { todayISO, daysBetween } from './lib/utils';
@@ -32,6 +32,7 @@ export default function App() {
   const [sessionQuestions, setSessionQuestions] = useState<SessionQuestion[]>([]);
   const [sessionResult, setSessionResult] = useState<SessionResult | null>(null);
   const [newBadges, setNewBadges] = useState<Badge[]>([]);
+  const [newlyCompletedTables, setNewlyCompletedTables] = useState<number[]>([]);
   const [previousMascotLevel, setPreviousMascotLevel] = useState(1);
   const [loading, setLoading] = useState(true);
 
@@ -39,6 +40,9 @@ export default function App() {
   const sessionConsecutiveCorrect = useRef(0);
   const sessionMaxConsecutiveCorrect = useRef(0);
   const sessionResponseTimes = useRef<number[]>([]);
+
+  // Snapshot of tables already mastered before the session starts
+  const tablesCompletedBeforeSession = useRef<Set<number>>(new Set());
 
   // Skip the initial save-to-localStorage on mount
   const isInitialLoad = useRef(true);
@@ -112,6 +116,16 @@ export default function App() {
     sessionMaxConsecutiveCorrect.current = 0;
     sessionResponseTimes.current = [];
 
+    // Snapshot which tables are already fully mastered (box >= 5) before the session
+    const alreadyComplete = new Set<number>();
+    for (let t = 2; t <= 9; t++) {
+      const tf = factsForTable(profile.facts, t);
+      if (tf.length > 0 && tf.every((f) => f.box >= 5)) {
+        alreadyComplete.add(t);
+      }
+    }
+    tablesCompletedBeforeSession.current = alreadyComplete;
+
     if (questions.length === 0) {
       return;
     }
@@ -181,12 +195,17 @@ export default function App() {
 
       const longestStreak = Math.max(profile.longestStreak, currentStreak);
 
+      // Append session result to history, capped at 50
+      const previousHistory = profile.sessionHistory ?? [];
+      const sessionHistory = [...previousHistory, result].slice(-50);
+
       const updatedProfile: UserProfile = {
         ...profile,
         totalSessions: profile.totalSessions + 1,
         currentStreak,
         longestStreak,
         lastSessionDate: today,
+        sessionHistory,
       };
 
       setPreviousMascotLevel(profile.mascotLevel);
@@ -203,9 +222,20 @@ export default function App() {
 
       updatedProfile.badges = [...profile.badges, ...brandNewBadges];
 
+      // Detect newly completed tables (all facts at box >= 5)
+      const completedNow: number[] = [];
+      for (let t = 2; t <= 9; t++) {
+        if (tablesCompletedBeforeSession.current.has(t)) continue;
+        const tf = factsForTable(updatedProfile.facts, t);
+        if (tf.length > 0 && tf.every((f) => f.box >= 5)) {
+          completedNow.push(t);
+        }
+      }
+
       setProfile(updatedProfile);
       setSessionResult(result);
       setNewBadges(brandNewBadges);
+      setNewlyCompletedTables(completedNow);
       setScreen('recap');
     },
     [profile],
@@ -214,6 +244,7 @@ export default function App() {
   const handleRecapFinish = useCallback(() => {
     setSessionResult(null);
     setNewBadges([]);
+    setNewlyCompletedTables([]);
     setScreen('home');
   }, []);
 
@@ -263,6 +294,7 @@ export default function App() {
       {screen === 'session' && profile && sessionQuestions.length > 0 && (
         <SessionScreen
           questions={sessionQuestions}
+          mascotLevel={profile.mascotLevel}
           onComplete={handleSessionComplete}
           onAnswer={handleAnswer}
         />
@@ -272,6 +304,7 @@ export default function App() {
         <RecapScreen
           result={sessionResult}
           newBadges={newBadges}
+          newlyCompletedTables={newlyCompletedTables}
           mascotLevel={profile.mascotLevel}
           previousMascotLevel={previousMascotLevel}
           onFinish={handleRecapFinish}

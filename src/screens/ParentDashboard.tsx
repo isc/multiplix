@@ -176,6 +176,35 @@ export default function ParentDashboard({
         </div>
       )}
 
+      {/* Session history */}
+      {(profile.sessionHistory ?? []).length > 0 && (
+        <div className="parent-section">
+          <h3>Historique des s{'\u00E9'}ances</h3>
+          <div className="parent-session-history">
+            {[...(profile.sessionHistory ?? [])]
+              .reverse()
+              .slice(0, 10)
+              .map((session, i) => {
+                const dateStr = new Date(session.date).toLocaleDateString('fr-FR', {
+                  weekday: 'short',
+                  day: 'numeric',
+                  month: 'long',
+                });
+                const avgSec = (session.averageTimeMs / 1000).toFixed(1);
+                return (
+                  <div key={i} className="parent-session-row">
+                    <span className="parent-session-date">{dateStr}</span>
+                    <span className="parent-session-score">
+                      {session.correctCount}/{session.questionsCount}
+                    </span>
+                    <span className="parent-session-time">{avgSec}s</span>
+                  </div>
+                );
+              })}
+          </div>
+        </div>
+      )}
+
       {/* Actions */}
       <div className="parent-actions">
         <button className="parent-action-btn" onClick={onExport}>

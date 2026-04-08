@@ -1,7 +1,7 @@
 import type { MultiFact, UserProfile, SessionQuestion } from '../types';
 import { isDue, shouldIntroduceNew } from './leitner';
 import { computeSimilarity } from './similarity';
-import { shuffle } from './utils';
+import { daysBetween, shuffle } from './utils';
 
 const MIN_QUESTIONS = 12;
 const MAX_QUESTIONS = 15;
@@ -132,6 +132,13 @@ export function composeSession(profile: UserProfile, now: string): SessionQuesti
   }
 
   // New facts to introduce (max 2)
+  // 48h inter-session similarity constraint: facts introduced in the last 48h
+  // block similar candidates (strong or medium similarity) from being introduced
+  // to prevent interference during the consolidation phase.
+  const recentlyIntroduced = facts.filter(
+    (f) => f.introduced && f.lastSeen && daysBetween(f.lastSeen, today) < 2,
+  );
+
   const newFacts: MultiFact[] = [];
   if (shouldIntroduceNew(facts) && selected.length < MAX_QUESTIONS) {
     const notIntroduced = facts.filter((f) => !f.introduced);
@@ -141,6 +148,13 @@ export function composeSession(profile: UserProfile, now: string): SessionQuesti
     for (const fact of sorted) {
       if (newFacts.length >= MAX_NEW_FACTS) break;
       if (selected.length + newFacts.length >= MAX_QUESTIONS) break;
+
+      // Skip candidates similar to facts introduced within the last 48h
+      const hasSimilarRecent = recentlyIntroduced.some(
+        (recent) => computeSimilarity(recent, fact) !== 'none',
+      );
+      if (hasSimilarRecent) continue;
+
       newFacts.push(fact);
     }
   }

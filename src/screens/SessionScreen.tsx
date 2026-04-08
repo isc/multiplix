@@ -3,12 +3,14 @@ import type { SessionQuestion, SessionResult, MultiFact } from '../types';
 import NumPad from '../components/NumPad';
 import DotGrid from '../components/DotGrid';
 import FeedbackOverlay from '../components/FeedbackOverlay';
+import Mascot from '../components/Mascot';
 import { RESPONSE_TIME } from '../types';
 import { useSound } from '../hooks/useSound';
 import './SessionScreen.css';
 
 interface SessionScreenProps {
   questions: SessionQuestion[];
+  mascotLevel: number;
   onComplete: (result: SessionResult) => void;
   onAnswer: (
     fact: MultiFact,
@@ -24,6 +26,7 @@ interface QuestionResult {
 
 export default function SessionScreen({
   questions: initialQuestions,
+  mascotLevel,
   onComplete,
   onAnswer,
 }: SessionScreenProps) {
@@ -40,8 +43,10 @@ export default function SessionScreen({
     fact: { a: number; b: number };
   } | null>(null);
   const [numpadDisabled, setNumpadDisabled] = useState(false);
+  const [mascotMood, setMascotMood] = useState<'idle' | 'happy' | 'sad'>('idle');
 
   const { playCorrect, playIncorrect } = useSound();
+  const mascotMoodTimeout = useRef<ReturnType<typeof setTimeout> | null>(null);
   const questionStartTime = useRef(Date.now());
   const correctCount = useRef(0);
   const totalTimeMs = useRef(0);
@@ -50,6 +55,13 @@ export default function SessionScreen({
   const newFactsIntroduced = useRef(0);
 
   const currentQuestion = questions[currentIndex] as SessionQuestion | undefined;
+
+  // Clean up mascot mood timeout on unmount
+  useEffect(() => {
+    return () => {
+      if (mascotMoodTimeout.current) clearTimeout(mascotMoodTimeout.current);
+    };
+  }, []);
 
   // Start timing when the question changes
   useEffect(() => {
@@ -113,6 +125,11 @@ export default function SessionScreen({
 
       if (correct) playCorrect();
       else playIncorrect();
+
+      // React mascot mood
+      if (mascotMoodTimeout.current) clearTimeout(mascotMoodTimeout.current);
+      setMascotMood(correct ? 'happy' : 'sad');
+      mascotMoodTimeout.current = setTimeout(() => setMascotMood('idle'), 1500);
 
       // Notify parent (App) to update Leitner state
       onAnswer(currentQuestion.fact, correct, timeMs, value);
@@ -188,17 +205,24 @@ export default function SessionScreen({
 
   return (
     <div className="session-screen">
-      {/* Progress bar */}
-      <div className="session-progress">
-        {progressDots.map((status, i) => (
-          <div key={i} className={`session-progress-dot ${status}`}>
-            {status === 'correct'
-              ? '\u2713'
-              : status === 'incorrect'
-                ? '\u2717'
-                : ''}
+      {/* Progress bar with mascot */}
+      <div className="session-header">
+        {!showIntro && (
+          <div className="session-mascot">
+            <Mascot level={mascotLevel} mood={mascotMood} size="small" />
           </div>
-        ))}
+        )}
+        <div className="session-progress">
+          {progressDots.map((status, i) => (
+            <div key={i} className={`session-progress-dot ${status}`}>
+              {status === 'correct'
+                ? '\u2713'
+                : status === 'incorrect'
+                  ? '\u2717'
+                  : ''}
+            </div>
+          ))}
+        </div>
       </div>
 
       {/* Introduction phase */}

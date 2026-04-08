@@ -180,6 +180,43 @@
   color: var(--text-light);
 }
 
+/* Session history */
+.parent-session-history {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.parent-session-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 12px;
+  background: var(--surface);
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  font-size: 0.85rem;
+}
+
+.parent-session-date {
+  font-weight: 600;
+  color: var(--text);
+  flex: 1;
+}
+
+.parent-session-score {
+  font-weight: 700;
+  color: var(--primary);
+  margin-right: 12px;
+}
+
+.parent-session-time {
+  font-weight: 600;
+  color: var(--text-light);
+  min-width: 40px;
+  text-align: right;
+}
+
 /* Action buttons */
 .parent-actions {
   display: flex;

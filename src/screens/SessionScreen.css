@@ -5,13 +5,26 @@
   animation: fadeIn 0.3s ease;
 }
 
+/* Session header: mascot + progress bar */
+.session-header {
+  display: flex;
+  align-items: center;
+  padding: 12px 16px 4px;
+  gap: 8px;
+}
+
+.session-mascot {
+  flex-shrink: 0;
+}
+
 /* Progress bar */
 .session-progress {
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 6px;
-  padding: 16px 20px 8px;
+  flex: 1;
+  padding: 4px 4px 4px 0;
 }
 
 .session-progress-dot {

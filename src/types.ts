@@ -36,6 +36,7 @@ export interface UserProfile {
   lastSessionDate: string | null;
   badges: Badge[];
   mascotLevel: number;
+  sessionHistory: SessionResult[];
 }
 
 export type BoxLevel = 1 | 2 | 3 | 4 | 5;

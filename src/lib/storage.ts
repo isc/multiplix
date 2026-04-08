@@ -14,7 +14,7 @@ export function loadProfile(): UserProfile | null {
     if (!raw) return null;
     const parsed = JSON.parse(raw);
     if (!isValidProfile(parsed)) return null;
-    return parsed as UserProfile;
+    return migrateProfile(parsed as UserProfile);
   } catch {
     return null;
   }
@@ -42,7 +42,7 @@ export function importProfile(json: string): UserProfile | null {
   try {
     const parsed = JSON.parse(json);
     if (!isValidProfile(parsed)) return null;
-    return parsed as UserProfile;
+    return migrateProfile(parsed as UserProfile);
   } catch {
     return null;
   }
@@ -64,7 +64,19 @@ export function createNewProfile(name: string): UserProfile {
     lastSessionDate: null,
     badges: [],
     mascotLevel: 1,
+    sessionHistory: [],
   };
+}
+
+/**
+ * Migrates older profiles to the current shape.
+ * Ensures backward compatibility when new fields are added.
+ */
+function migrateProfile(profile: UserProfile): UserProfile {
+  if (!Array.isArray(profile.sessionHistory)) {
+    profile.sessionHistory = [];
+  }
+  return profile;
 }
 
 /**
