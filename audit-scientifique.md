@@ -126,7 +126,48 @@ Ce n'est pas issu des papiers cités — c'est un choix de design qui privilégi
 
 ---
 
-## 7. Piste d'évolution : interface vocale
+## 7. Feedback de fin de séance (récap)
+
+**Papiers :** Butler (1988), Hattie & Timperley (2007)
+
+**Statut : non conforme → specs mises à jour (2026-04-11), implémentation à modifier**
+
+### Problème identifié
+
+L'écran de récap affiche un score brut ("8/12 bonnes réponses") et des étoiles conditionnées au ratio de réussite (0-3 étoiles). Les messages d'encouragement varient aussi selon le score ("Incroyable !" pour > 90% vs. "Bravo pour tes efforts !" pour < 50%).
+
+Ce type de feedback est classifié comme **ego-involving** par Butler (1988). Son étude montre que les enfants de 10-11 ans qui reçoivent des commentaires individuels (task-involving) ont de meilleures performances ET une meilleure motivation intrinsèque que ceux qui reçoivent des notes. De plus, notes + commentaires = aussi mauvais que notes seules — l'enfant ne voit que la note.
+
+Hattie & Timperley (2007) distinguent 4 niveaux de feedback par efficacité décroissante : process > self-regulation > task > self. Un score "8/12" est du feedback task-level agrégé qui pousse l'enfant vers des **performance goals** plutôt que des **mastery goals**.
+
+### Ce qui est déjà bien
+
+- Les stats "faits promus" et "nouveaux faits" sont orientées progrès
+- Les badges récompensent l'effort et la maîtrise, pas la performance
+- L'évolution de la mascotte est liée à la progression globale
+
+### Changements à implémenter
+
+| Élément | Avant | Après |
+|---------|-------|-------|
+| Score brut | "8/12 bonnes réponses" | Supprimé de la vue enfant |
+| Étoiles | 0-3 basées sur le ratio | Supprimées |
+| Message | Variable selon le score | Constant et chaleureux |
+| Faits promus | Affiché | Mis en avant |
+| Progression globale | Non affiché | "Tu connais X faits sur 36" |
+| Score brut | — | Disponible dans le dashboard parent |
+
+### Impact sur les specs
+
+- §3.2 mis à jour (description du récap)
+- §3.5 ajouté (détail du récap de séance)
+- §7.1 mis à jour (tableau des écrans)
+- §7.2 : nouveau principe "Feedback orienté progrès, pas performance"
+- Références Butler (1988) et Hattie & Timperley (2007) ajoutées
+
+---
+
+## 8. Piste d'évolution : interface vocale
 
 ### Constat
 

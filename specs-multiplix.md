@@ -157,8 +157,9 @@ Les faits ×1 et ×10 sont enseignés comme des **règles** (pas de la mémorisa
                      Note : si moins de faits sont disponibles, la séance est
                      plus courte — pas de répétition de remplissage (voir §6.2)
     ↓
-[Récap]            → Score de la séance, encouragement adapté, 
-                     animation de progression, badge éventuel
+[Récap]            → Bilan orienté progrès (faits appris, faits promus,
+                     progression vers la maîtrise globale), badge éventuel,
+                     message chaleureux constant (pas conditionné au score)
     ↓
 [Fin]              → "À demain !" + mascotte
 ```
@@ -190,6 +191,29 @@ Quand l'algorithme décide d'introduire un nouveau fait :
 5. **Re-test :** Posée à nouveau 2-3 questions plus tard dans la séance
 
 **Rythme d'introduction :** Maximum 2 nouveaux faits par séance. Un nouveau fait n'est introduit que si les faits précédemment introduits sont au moins en boîte 2.
+
+### 3.5 Récap de séance
+
+**Source :** Butler (1988), Hattie & Timperley (2007)
+
+L'écran de récap ne doit jamais afficher de score brut (ex : "8/12 bonnes réponses") ni d'indicateur de performance comparative (étoiles conditionnées au ratio de réussite). Ce type de feedback ego-involving réduit la motivation intrinsèque et oriente l'enfant vers des objectifs de performance plutôt que de maîtrise.
+
+**Ce qui est affiché :**
+- **Message chaleureux constant** — identique quel que soit le résultat de la séance. L'enfant a fait sa séance, c'est l'essentiel.
+- **Faits promus** — nombre de faits qui ont monté de boîte ("3 progrès !")
+- **Nouveaux faits** — nombre de faits introduits dans la séance
+- **Progression globale** — avancement vers la maîtrise complète (ex : "Tu connais 18 faits sur 36" ou jauge de progression)
+- **Badges éventuels** — récompenses orientées effort et maîtrise
+- **Évolution de la mascotte** — si un palier est franchi
+- **Tables complétées** — avec célébration (confettis)
+
+**Ce qui n'est PAS affiché à l'enfant :**
+- Score brut (correct/total)
+- Étoiles ou notes conditionnées au ratio de réussite
+- Messages d'encouragement dont le ton varie selon le score
+- Nombre d'erreurs
+
+*Le score brut, le taux de réussite et le temps de réponse moyen sont disponibles dans le tableau de bord parent (§5.2).*
 
 ---
 
@@ -327,7 +351,7 @@ function computeNextDue(box, lastSeen) {
 | Séance — Question | Question en gros, pavé numérique, barre de progression |
 | Séance — Feedback correct | Animation joyeuse, mascotte contente |
 | Séance — Feedback incorrect | Bonne réponse affichée avec grille, ton bienveillant |
-| Récap séance | Score, étoiles gagnées, badge éventuel, bouton "À demain" |
+| Récap séance | Bilan progrès (faits promus, progression globale), badge éventuel, bouton "À demain" |
 | Progression | Grille colorée des faits |
 | Badges | Collection de badges obtenus |
 | Parent | Dashboard détaillé (accès protégé) |
@@ -340,6 +364,7 @@ function computeNextDue(box, lastSeen) {
 - **Couleurs vives** mais pas agressives, mode clair uniquement
 - **Police ronde et lisible :** type Nunito, Quicksand ou Baloo
 - **Encouragements systématiques :** Aucun message négatif. Les erreurs sont traitées comme des opportunités d'apprentissage
+- **Feedback orienté progrès, pas performance :** L'application ne montre jamais de score brut (ex : "8/12") ni de note à l'enfant. Les métriques visibles sont orientées vers la maîtrise et le progrès (faits appris, faits promus, progression globale). Ce choix s'appuie sur Butler (1988) et Hattie & Timperley (2007), qui montrent que le feedback de type "note/score" (ego-involving) réduit la motivation intrinsèque et les performances par rapport au feedback orienté processus/progrès (task-involving). Le score brut est réservé au tableau de bord parent (§5.2).
 - **Pas de publicité, pas de lien externe**
 
 ### 7.3 Sons
@@ -401,11 +426,15 @@ L'application est considérée comme ayant atteint son objectif quand :
 
 - Brendefur, J., Strother, S., Thiede, K., & Appleton, S. (2015). Developing multiplication fact fluency. *Advances in Social Sciences Research Journal, 2*(8). [doi:10.14738/assrj.28.1396](https://doi.org/10.14738/assrj.28.1396)
 
+- Butler, R. (1988). Enhancing and undermining intrinsic motivation: The effects of task-involving and ego-involving evaluation on interest and performance. *British Journal of Educational Psychology, 58*(1), 1–14. [doi:10.1111/j.2044-8279.1988.tb00874.x](https://doi.org/10.1111/j.2044-8279.1988.tb00874.x)
+
 - Cepeda, N. J., Vul, E., Rohrer, D., Wixted, J. T., & Pashler, H. (2008). Spacing effects in learning: A temporal ridgeline of optimal retention. *Psychological Science, 19*(11), 1095–1102. [doi:10.1111/j.1467-9280.2008.02209.x](https://doi.org/10.1111/j.1467-9280.2008.02209.x)
 
 - Cowan, R., Donlan, C., Shepherd, D.-L., Cole-Fletcher, R., Saxton, M., & Hurry, J. (2011). Basic calculation proficiency and mathematics achievement in elementary school children. *Journal of Educational Psychology, 103*(4), 786–803. [doi:10.1037/a0024556](https://doi.org/10.1037/a0024556)
 
 - Dotan, D., & Zviran-Ginat, S. (2022). Elementary math in elementary school: The effect of interference on learning the multiplication table. *Cognitive Research: Principles and Implications, 7*, 101. [doi:10.1186/s41235-022-00451-0](https://doi.org/10.1186/s41235-022-00451-0)
+
+- Hattie, J., & Timperley, H. (2007). The power of feedback. *Review of Educational Research, 77*(1), 81–112. [doi:10.3102/003465430298487](https://doi.org/10.3102/003465430298487)
 
 - Kang, S. H. K. (2016). Spaced repetition promotes efficient and effective learning. *Policy Insights from the Behavioral and Brain Sciences, 3*(1), 12–19. [doi:10.1177/2372732215624708](https://doi.org/10.1177/2372732215624708)
 
