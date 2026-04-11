@@ -130,7 +130,7 @@ export default function App() {
 
   // Handle individual answer — use functional updater to avoid stale fact on retries
   const handleAnswer = useCallback(
-    (fact: MultiFact, correct: boolean, timeMs: number, answered: number | null) => {
+    (fact: MultiFact, correct: boolean, timeMs: number, answered: number | null, isBonusReview: boolean) => {
       sessionResponseTimes.current.push(timeMs);
       if (correct) {
         sessionConsecutiveCorrect.current++;
@@ -141,6 +141,9 @@ export default function App() {
       } else {
         sessionConsecutiveCorrect.current = 0;
       }
+
+      // Bonus review: feedback and session stats only, no Leitner state change
+      if (isBonusReview) return;
 
       const today = todayISO();
 

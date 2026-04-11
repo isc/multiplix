@@ -61,6 +61,7 @@ export interface SessionQuestion {
   displayB: number;
   isIntroduction: boolean;
   isRetry: boolean;   // re-posée après erreur dans la même séance
+  isBonusReview: boolean; // révision bonus (pas de changement de boîte)
 }
 
 export interface SessionResult {
