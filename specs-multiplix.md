@@ -43,6 +43,8 @@ Les faits similaires (ex : 6×8=48 et 8×8=64) créent de l'interférence en mé
 - Résultat proche ou même dizaine (ex : 6×7=42 et 6×8=48) → similarité moyenne
 - Chiffre partagé dans le résultat (ex : 8×8=64 et 8×6=48, tous deux avec un 8 en opérande et un 4 dans le résultat) → similarité moyenne
 
+*Note sur la métrique :* Dotan & Zviran-Ginat utilisent une métrique différente dans leur étude : le nombre de paires de chiffres communes entre deux faits (opérandes et chiffres du résultat confondus, positions ignorées). Leur métrique est continue et ne distingue pas le rôle du chiffre (opérande vs. résultat). Notre métrique catégorielle (forte/moyenne/nulle) est plus conservatrice — elle classe comme « similarité forte » tout partage d'opérande, même quand la métrique du papier donnerait un score de 0 (ex : 8×7=56 et 8×3=24 ne partagent qu'un seul chiffre, donc 0 paires, mais partagent l'opérande 8). Ce choix est aligné avec la littérature plus large sur les erreurs de récupération en multiplication (Campbell, 1987), qui identifie le partage d'opérande comme la première source de confusion.
+
 **Règle de séance :** Dans une séance donnée, deux faits ayant une similarité forte ne sont jamais présentés dans la même série de questions. Les faits similaires sont séparés par au moins 48h.
 
 ### 1.3 Entrelacement (Interleaving)
