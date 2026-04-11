@@ -17,6 +17,7 @@ interface SessionScreenProps {
     correct: boolean,
     timeMs: number,
     answered: number | null,
+    isBonusReview: boolean,
   ) => void;
 }
 
@@ -115,13 +116,15 @@ export default function SessionScreen({
       totalTimeMs.current += timeMs;
       if (correct) correctCount.current++;
 
-      // Track distinct promoted/demoted facts
-      const factKey = `${currentQuestion.fact.a}x${currentQuestion.fact.b}`;
-      if (correct && timeMs < RESPONSE_TIME.SLOW) {
-        promotedFacts.current.add(factKey);
-      }
-      if (!correct) {
-        demotedFacts.current.add(factKey);
+      // Track distinct promoted/demoted facts (skip for bonus review)
+      if (!currentQuestion.isBonusReview) {
+        const factKey = `${currentQuestion.fact.a}x${currentQuestion.fact.b}`;
+        if (correct && timeMs < RESPONSE_TIME.SLOW) {
+          promotedFacts.current.add(factKey);
+        }
+        if (!correct) {
+          demotedFacts.current.add(factKey);
+        }
       }
 
       if (correct) playCorrect();
@@ -133,7 +136,7 @@ export default function SessionScreen({
       mascotMoodTimeout.current = setTimeout(() => setMascotMood('idle'), 1500);
 
       // Notify parent (App) to update Leitner state
-      onAnswer(currentQuestion.fact, correct, timeMs, value);
+      onAnswer(currentQuestion.fact, correct, timeMs, value, currentQuestion.isBonusReview);
 
       // If incorrect, insert a retry 2-3 questions later
       if (!correct) {

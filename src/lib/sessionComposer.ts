@@ -1,8 +1,13 @@
 import type { MultiFact, UserProfile, SessionQuestion } from '../types';
 import { isDue, shouldIntroduceNew } from './leitner';
+import { getFactKey } from './facts';
 import { computeSimilarity } from './similarity';
 import { daysBetween, shuffle } from './utils';
 
+// Target range: 12-15 questions (~5 min at ~20-30s per question with feedback).
+// MIN_QUESTIONS is a soft target, not an absolute floor: if fewer distinct facts
+// are available, the session is shorter rather than repeating facts (massed
+// practice is counterproductive — Cepeda et al. 2008). See specs §6.2.
 const MIN_QUESTIONS = 12;
 const MAX_QUESTIONS = 15;
 const MAX_NEW_FACTS = 2;
@@ -165,6 +170,7 @@ export function composeSession(profile: UserProfile, now: string): SessionQuesti
     ...randomDisplayOrder(fact),
     isIntroduction: false,
     isRetry: false,
+    isBonusReview: false,
   }));
 
   const introQuestions: SessionQuestion[] = newFacts.map((fact) => ({
@@ -172,6 +178,7 @@ export function composeSession(profile: UserProfile, now: string): SessionQuesti
     ...randomDisplayOrder(fact),
     isIntroduction: true,
     isRetry: false,
+    isBonusReview: false,
   }));
 
   // Combine: intro questions are placed at the front, then interleave the rest.
@@ -179,46 +186,28 @@ export function composeSession(profile: UserProfile, now: string): SessionQuesti
   const allReview = interleave(reviewQuestions);
   const result = [...introQuestions, ...allReview];
 
-  // If the session is still too short, pad with review copies of already-known facts.
-  // Use selected (due review facts) first, then fall back to newFacts (just introduced).
-  const paddingPool = selected.length > 0 ? shuffle(selected) : shuffle(newFacts);
-  if (result.length < MIN_QUESTIONS && paddingPool.length > 0) {
-    let idx = 0;
-    while (result.length < MIN_QUESTIONS) {
-      const fact = paddingPool[idx % paddingPool.length];
+  // If the session is still too short, pad with bonus review of other introduced
+  // facts (not already in the session). Bonus reviews give feedback but don't
+  // change the Leitner box — the spaced repetition schedule is preserved.
+  // Prioritize weakest facts (lowest box, then closest nextDue).
+  if (result.length < MIN_QUESTIONS) {
+    const sessionFactKeys = new Set(
+      result.map((q) => getFactKey(q.fact.a, q.fact.b)),
+    );
+    const extraFacts = facts
+      .filter((f) => f.introduced && !sessionFactKeys.has(getFactKey(f.a, f.b)))
+      .sort((a, b) => a.box - b.box || a.nextDue.localeCompare(b.nextDue));
+    for (const fact of extraFacts) {
+      if (result.length >= MIN_QUESTIONS) break;
       result.push({
         fact,
         ...randomDisplayOrder(fact),
         isIntroduction: false,
         isRetry: false,
+        isBonusReview: true,
       });
-      idx++;
     }
   }
 
   return result;
-}
-
-/**
- * Inserts a retry question for a failed fact 2-3 positions after currentIndex.
- * Returns the updated questions array.
- */
-export function insertRetry(
-  questions: SessionQuestion[],
-  failedFact: MultiFact,
-  currentIndex: number,
-): SessionQuestion[] {
-  const retryOffset = 2 + Math.floor(Math.random() * 2); // 2 or 3
-  const insertAt = Math.min(currentIndex + retryOffset, questions.length);
-
-  const retryQuestion: SessionQuestion = {
-    fact: failedFact,
-    ...randomDisplayOrder(failedFact),
-    isIntroduction: false,
-    isRetry: true,
-  };
-
-  const updated = [...questions];
-  updated.splice(insertAt, 0, retryQuestion);
-  return updated;
 }
