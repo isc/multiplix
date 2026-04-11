@@ -6,6 +6,7 @@ import FeedbackOverlay from '../components/FeedbackOverlay';
 import Mascot from '../components/Mascot';
 import { RESPONSE_TIME } from '../types';
 import { useSound } from '../hooks/useSound';
+import { useTTS } from '../hooks/useTTS';
 import './SessionScreen.css';
 
 interface SessionScreenProps {
@@ -46,7 +47,8 @@ export default function SessionScreen({
   const [numpadDisabled, setNumpadDisabled] = useState(false);
   const [mascotMood, setMascotMood] = useState<'idle' | 'happy' | 'sad'>('idle');
 
-  const { playCorrect, playIncorrect } = useSound();
+  const { isMuted, playCorrect, playIncorrect } = useSound();
+  const { speak, stop: stopSpeech } = useTTS(isMuted);
   const mascotMoodTimeout = useRef<ReturnType<typeof setTimeout> | null>(null);
   const questionStartTime = useRef(Date.now());
   const correctCount = useRef(0);
@@ -73,13 +75,19 @@ export default function SessionScreen({
       setIntroStep('grid');
       const key = `${currentQuestion.fact.a}x${currentQuestion.fact.b}`;
       introducedFacts.current.add(key);
+      // TTS: announce the introduction
+      const { a, b, product } = currentQuestion.fact;
+      const addition = Array.from({ length: a }).map(() => String(b)).join(' plus ');
+      speak(`Nouveau ! ${a} fois ${b}, c'est ${addition}, égale ${product}`);
     } else {
       setShowIntro(false);
+      // TTS: read the question aloud
+      speak(`Combien font ${currentQuestion.displayA} fois ${currentQuestion.displayB} ?`);
     }
 
     questionStartTime.current = Date.now();
     setNumpadDisabled(false);
-  }, [currentIndex, currentQuestion]);
+  }, [currentIndex, currentQuestion, speak]);
 
   const moveToNext = useCallback(() => {
     const nextIndex = currentIndex + 1;
@@ -107,6 +115,7 @@ export default function SessionScreen({
     (value: number) => {
       if (!currentQuestion || numpadDisabled) return;
       setNumpadDisabled(true);
+      stopSpeech();
 
       const timeMs = Date.now() - questionStartTime.current;
       const correct = value === currentQuestion.fact.product;
@@ -170,7 +179,7 @@ export default function SessionScreen({
         },
       });
     },
-    [currentQuestion, numpadDisabled, currentIndex, questions.length, onAnswer, playCorrect, playIncorrect],
+    [currentQuestion, numpadDisabled, currentIndex, questions.length, onAnswer, playCorrect, playIncorrect, stopSpeech],
   );
 
   const handleFeedbackDismiss = useCallback(() => {
@@ -184,14 +193,23 @@ export default function SessionScreen({
       if (currentQuestion && currentQuestion.fact.a === currentQuestion.fact.b) {
         setShowIntro(false);
         questionStartTime.current = Date.now();
-      } else {
+        // TTS: read the question
+        speak(`Combien font ${currentQuestion.displayA} fois ${currentQuestion.displayB} ?`);
+      } else if (currentQuestion) {
         setIntroStep('commute');
+        // TTS: announce commutativity
+        const { a, b, product } = currentQuestion.fact;
+        speak(`${b} fois ${a}, c'est pareil ! C'est aussi ${product}`);
       }
     } else {
       setShowIntro(false);
       questionStartTime.current = Date.now();
+      if (currentQuestion) {
+        // TTS: read the question after intro
+        speak(`Combien font ${currentQuestion.displayA} fois ${currentQuestion.displayB} ?`);
+      }
     }
-  }, [introStep, currentQuestion]);
+  }, [introStep, currentQuestion, speak]);
 
   if (!currentQuestion) {
     return null;
