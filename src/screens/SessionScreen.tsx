@@ -5,6 +5,8 @@ import DotGrid from '../components/DotGrid';
 import FeedbackOverlay from '../components/FeedbackOverlay';
 import Mascot from '../components/Mascot';
 import { RESPONSE_TIME } from '../types';
+import { getFactKey } from '../lib/facts';
+import { todayISO } from '../lib/utils';
 import { useSound } from '../hooks/useSound';
 import { useTTS } from '../hooks/useTTS';
 import './SessionScreen.css';
@@ -78,8 +80,7 @@ export default function SessionScreen({
     if (currentQuestion.isIntroduction) {
       setShowIntro(true);
       setIntroStep('grid');
-      const key = `${currentQuestion.fact.a}x${currentQuestion.fact.b}`;
-      introducedFacts.current.add(key);
+      introducedFacts.current.add(getFactKey(currentQuestion.fact.a, currentQuestion.fact.b));
       const { a, b, product } = currentQuestion.fact;
       const addition = Array.from({ length: a }).map(() => String(b)).join(' plus ');
       speak(`Nouveau ! ${a} fois ${b}, c'est ${addition}, égale ${product}`);
@@ -101,7 +102,7 @@ export default function SessionScreen({
         totalQuestions > 0 ? totalTimeMs.current / totalQuestions : 0;
 
       onComplete({
-        date: new Date().toISOString().slice(0, 10),
+        date: todayISO(),
         questionsCount: questions.length,
         correctCount: correctCount.current,
         averageTimeMs: Math.round(avgTime),
@@ -130,7 +131,7 @@ export default function SessionScreen({
 
       // Track distinct promoted/demoted facts (skip for bonus review)
       if (!currentQuestion.isBonusReview) {
-        const factKey = `${currentQuestion.fact.a}x${currentQuestion.fact.b}`;
+        const factKey = getFactKey(currentQuestion.fact.a, currentQuestion.fact.b);
         if (correct && timeMs < RESPONSE_TIME.SLOW) {
           promotedFacts.current.add(factKey);
         }
