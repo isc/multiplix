@@ -12,30 +12,9 @@ interface RecapScreenProps {
   newlyCompletedTables: number[];
   mascotLevel: number;
   previousMascotLevel: number;
+  knownFactsCount: number;
+  totalFacts: number;
   onFinish: () => void;
-}
-
-function getEncouragingMessage(result: SessionResult): string {
-  const ratio = result.correctCount / result.questionsCount;
-
-  if (ratio >= 0.9) {
-    return 'Incroyable ! Quel talent !';
-  }
-  if (ratio >= 0.7) {
-    return 'Très bien ! Tu progresses super bien !';
-  }
-  if (ratio >= 0.5) {
-    return "C'est bien ! Continue comme ça !";
-  }
-  return "Bravo pour tes efforts ! Chaque essai, c'est un progrès !";
-}
-
-function getStarCount(result: SessionResult): number {
-  const ratio = result.correctCount / result.questionsCount;
-  if (ratio >= 0.9) return 3;
-  if (ratio >= 0.7) return 2;
-  if (ratio >= 0.4) return 1;
-  return 0;
 }
 
 export default function RecapScreen({
@@ -44,19 +23,19 @@ export default function RecapScreen({
   newlyCompletedTables,
   mascotLevel,
   previousMascotLevel,
+  knownFactsCount,
+  totalFacts,
   onFinish,
 }: RecapScreenProps) {
-  const starCount = getStarCount(result);
-  const message = getEncouragingMessage(result);
   const { playBadge, playLevelUp } = useSound();
   const { triggerConfetti } = useConfetti();
   const hasPlayedRef = useRef(false);
 
+  const leveledUp = mascotLevel > previousMascotLevel;
+
   useEffect(() => {
     if (hasPlayedRef.current) return;
     hasPlayedRef.current = true;
-
-    const leveledUp = mascotLevel > previousMascotLevel;
 
     if (newlyCompletedTables.length > 0) {
       playLevelUp();
@@ -67,14 +46,13 @@ export default function RecapScreen({
     } else if (newBadges.length > 0) {
       playBadge();
       triggerConfetti();
-    } else if (starCount >= 3) {
-      triggerConfetti();
     }
-  }, [mascotLevel, previousMascotLevel, newBadges.length, newlyCompletedTables.length, starCount, playBadge, playLevelUp, triggerConfetti]);
+  }, [mascotLevel, previousMascotLevel, newBadges.length, newlyCompletedTables.length, leveledUp, playBadge, playLevelUp, triggerConfetti]);
+
   const mascotMood =
-    newlyCompletedTables.length > 0 || starCount >= 3
+    newlyCompletedTables.length > 0 || leveledUp
       ? 'celebrate'
-      : starCount >= 2
+      : newBadges.length > 0
         ? 'happy'
         : 'idle';
 
@@ -100,29 +78,7 @@ export default function RecapScreen({
 
       <div className="recap-title">Séance terminée !</div>
 
-      <div className="recap-score">
-        <div className="recap-score-number">
-          {result.correctCount}/{result.questionsCount}
-        </div>
-        <div className="recap-score-label">bonnes réponses</div>
-      </div>
-
-      <div className="recap-stars">
-        {Array.from({ length: 3 }, (_, i) => (
-          <span
-            key={i}
-            className="recap-star"
-            style={{
-              animationDelay: `${i * 0.2}s`,
-              opacity: i < starCount ? 1 : 0.2,
-            }}
-          >
-            {i < starCount ? '\u2B50' : '\u2606'}
-          </span>
-        ))}
-      </div>
-
-      <div className="recap-message">{message}</div>
+      <div className="recap-message">Bravo, tu as bien travaillé !</div>
 
       <div className="recap-stats">
         {result.newFactsIntroduced > 0 && (
@@ -137,6 +93,18 @@ export default function RecapScreen({
             <div>progrès</div>
           </div>
         )}
+      </div>
+
+      <div className="recap-progress">
+        <div className="recap-progress-label">
+          Tu connais {knownFactsCount} fait{knownFactsCount > 1 ? 's' : ''} sur {totalFacts}
+        </div>
+        <div className="recap-progress-bar">
+          <div
+            className="recap-progress-fill"
+            style={{ width: `${(knownFactsCount / totalFacts) * 100}%` }}
+          />
+        </div>
       </div>
 
       {newBadges.length > 0 && (

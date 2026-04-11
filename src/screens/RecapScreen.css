@@ -15,44 +15,6 @@
   color: var(--text);
 }
 
-.recap-score {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 8px;
-  background: var(--surface);
-  padding: 24px 32px;
-  border-radius: 20px;
-  border: 2px solid var(--border);
-}
-
-.recap-score-number {
-  font-size: 3rem;
-  font-weight: 800;
-  color: var(--primary);
-}
-
-.recap-score-label {
-  font-size: 1rem;
-  color: var(--text-light);
-}
-
-.recap-stars {
-  display: flex;
-  gap: 8px;
-  font-size: 2rem;
-}
-
-.recap-star {
-  animation: starPop 0.5s ease backwards;
-}
-
-@keyframes starPop {
-  0% { transform: scale(0) rotate(-180deg); }
-  60% { transform: scale(1.3) rotate(10deg); }
-  100% { transform: scale(1) rotate(0deg); }
-}
-
 .recap-message {
   font-size: 1.1rem;
   font-weight: 600;
@@ -106,6 +68,37 @@
   font-size: 1.2rem;
   font-weight: 800;
   color: var(--text);
+}
+
+/* Progress bar */
+.recap-progress {
+  width: 100%;
+  max-width: 280px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+.recap-progress-label {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--text-light);
+}
+
+.recap-progress-bar {
+  width: 100%;
+  height: 14px;
+  background: var(--border);
+  border-radius: 7px;
+  overflow: hidden;
+}
+
+.recap-progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--success), var(--success-light, #66bb6a));
+  border-radius: 7px;
+  transition: width 1s ease;
 }
 
 /* Table complete celebration */

@@ -324,6 +324,8 @@ export default function App() {
           newlyCompletedTables={newlyCompletedTables}
           mascotLevel={profile.mascotLevel}
           previousMascotLevel={previousMascotLevel}
+          knownFactsCount={profile.facts.filter((f) => f.box >= 3).length}
+          totalFacts={profile.facts.length}
           onFinish={handleRecapFinish}
         />
       )}
