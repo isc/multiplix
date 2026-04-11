@@ -1,7 +1,8 @@
-import { useRef, useCallback } from 'react';
+import { useRef, useCallback, useEffect } from 'react';
 import type { UserProfile } from '../types';
 import Mascot from '../components/Mascot';
 import { useSound } from '../hooks/useSound';
+import { useTTS } from '../hooks/useTTS';
 import './HomeScreen.css';
 
 interface HomeScreenProps {
@@ -24,7 +25,19 @@ export default function HomeScreen({
   onShowParent,
 }: HomeScreenProps) {
   const { isMuted, toggleMute } = useSound();
+  const { speak } = useTTS(isMuted);
   const longPressTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  useEffect(() => {
+    const parts: string[] = [`Salut ${profile.name} !`];
+    if (profile.currentStreak > 1) {
+      parts.push(`${profile.currentStreak} jours de suite !`);
+    }
+    if (!hasSessionAvailable) {
+      parts.push("C'est fait pour aujourd'hui !");
+    }
+    speak(parts.join(' '));
+  }, [profile.name, profile.currentStreak, hasSessionAvailable, speak]);
 
   const handleParentPressStart = useCallback((e: React.TouchEvent | React.MouseEvent) => {
     e.preventDefault(); // Prevent iOS text selection / callout on long press
