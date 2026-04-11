@@ -47,7 +47,7 @@ export default function RecapScreen({
       playBadge();
       triggerConfetti();
     }
-  }, [mascotLevel, previousMascotLevel, newBadges.length, newlyCompletedTables.length, leveledUp, playBadge, playLevelUp, triggerConfetti]);
+  }, [mascotLevel, previousMascotLevel, newBadges.length, newlyCompletedTables.length, playBadge, playLevelUp, triggerConfetti]);
 
   const mascotMood =
     newlyCompletedTables.length > 0 || leveledUp
