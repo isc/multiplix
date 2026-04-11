@@ -3,6 +3,7 @@ import type { SessionResult, Badge as BadgeType } from '../types';
 import Mascot from '../components/Mascot';
 import Badge from '../components/Badge';
 import { useSound } from '../hooks/useSound';
+import { useTTS } from '../hooks/useTTS';
 import { useConfetti } from '../hooks/useConfetti';
 import './RecapScreen.css';
 
@@ -27,7 +28,8 @@ export default function RecapScreen({
   totalFacts,
   onFinish,
 }: RecapScreenProps) {
-  const { playBadge, playLevelUp } = useSound();
+  const { isMuted, playBadge, playLevelUp } = useSound();
+  const { speak } = useTTS(isMuted);
   const { triggerConfetti } = useConfetti();
   const hasPlayedRef = useRef(false);
 
@@ -47,7 +49,30 @@ export default function RecapScreen({
       playBadge();
       triggerConfetti();
     }
-  }, [mascotLevel, previousMascotLevel, newBadges.length, newlyCompletedTables.length, playBadge, playLevelUp, triggerConfetti]);
+
+    // Build a recap sentence for TTS
+    const parts: string[] = [];
+
+    if (newlyCompletedTables.length === 1) {
+      parts.push(`Tu as maîtrisé la table de ${newlyCompletedTables[0]} !`);
+    } else if (newlyCompletedTables.length > 1) {
+      parts.push(`Tu as maîtrisé les tables de ${newlyCompletedTables.join(' et ')} !`);
+    }
+
+    parts.push('Séance terminée ! Bravo, tu as bien travaillé !');
+
+    if (result.factsPromoted > 0) {
+      parts.push(`Tu as fait progresser ${result.factsPromoted} fait${result.factsPromoted > 1 ? 's' : ''}.`);
+    }
+
+    parts.push(`Tu connais ${knownFactsCount} fait${knownFactsCount > 1 ? 's' : ''} sur ${totalFacts}.`);
+
+    for (const badge of newBadges) {
+      parts.push(`Nouveau badge : ${badge.name} !`);
+    }
+
+    speak(parts.join(' '));
+  }, [leveledUp, newBadges, newlyCompletedTables, result.factsPromoted, knownFactsCount, totalFacts, playBadge, playLevelUp, triggerConfetti, speak]);
 
   const mascotMood =
     newlyCompletedTables.length > 0 || leveledUp

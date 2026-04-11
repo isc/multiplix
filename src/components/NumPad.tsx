@@ -8,13 +8,15 @@ interface NumPadProps {
 
 export default function NumPad({ onSubmit, disabled = false }: NumPadProps) {
   const [input, setInput] = useState('');
+  const [prevDisabled, setPrevDisabled] = useState(disabled);
 
-  // Reset input when disabled changes (new question)
-  useEffect(() => {
+  // Reset input when re-enabled (new question) — render-time state adjustment
+  if (disabled !== prevDisabled) {
+    setPrevDisabled(disabled);
     if (!disabled) {
       setInput('');
     }
-  }, [disabled]);
+  }
 
   const handleDigit = useCallback(
     (digit: number) => {

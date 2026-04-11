@@ -5,7 +5,10 @@ import DotGrid from '../components/DotGrid';
 import FeedbackOverlay from '../components/FeedbackOverlay';
 import Mascot from '../components/Mascot';
 import { RESPONSE_TIME } from '../types';
+import { getFactKey } from '../lib/facts';
+import { todayISO } from '../lib/utils';
 import { useSound } from '../hooks/useSound';
+import { useTTS } from '../hooks/useTTS';
 import './SessionScreen.css';
 
 interface SessionScreenProps {
@@ -46,9 +49,15 @@ export default function SessionScreen({
   const [numpadDisabled, setNumpadDisabled] = useState(false);
   const [mascotMood, setMascotMood] = useState<'idle' | 'happy' | 'sad'>('idle');
 
-  const { playCorrect, playIncorrect } = useSound();
+  const { isMuted, playCorrect, playIncorrect } = useSound();
+  const { speak, stop: stopSpeech } = useTTS(isMuted);
+
+  const speakQuestion = useCallback(
+    (q: SessionQuestion) => speak(`Combien font ${q.displayA} fois ${q.displayB} ?`),
+    [speak],
+  );
   const mascotMoodTimeout = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const questionStartTime = useRef(Date.now());
+  const questionStartTime = useRef(0);
   const correctCount = useRef(0);
   const totalTimeMs = useRef(0);
   const promotedFacts = useRef(new Set<string>());
@@ -57,6 +66,19 @@ export default function SessionScreen({
 
   const currentQuestion = questions[currentIndex] as SessionQuestion | undefined;
 
+  // Adjust UI state when the question changes (render-time)
+  const [prevIndex, setPrevIndex] = useState(0);
+  if (currentIndex !== prevIndex && currentQuestion) {
+    setPrevIndex(currentIndex);
+    if (currentQuestion.isIntroduction) {
+      setShowIntro(true);
+      setIntroStep('grid');
+    } else {
+      setShowIntro(false);
+    }
+    setNumpadDisabled(false);
+  }
+
   // Clean up mascot mood timeout on unmount
   useEffect(() => {
     return () => {
@@ -64,22 +86,21 @@ export default function SessionScreen({
     };
   }, []);
 
-  // Start timing when the question changes
+  // Side effects when the question changes (TTS, timer, tracking)
   useEffect(() => {
     if (!currentQuestion) return;
 
     if (currentQuestion.isIntroduction) {
-      setShowIntro(true);
-      setIntroStep('grid');
-      const key = `${currentQuestion.fact.a}x${currentQuestion.fact.b}`;
-      introducedFacts.current.add(key);
+      introducedFacts.current.add(getFactKey(currentQuestion.fact.a, currentQuestion.fact.b));
+      const { a, b, product } = currentQuestion.fact;
+      const addition = Array.from({ length: a }).map(() => String(b)).join(' plus ');
+      speak(`Nouveau ! ${a} fois ${b}, c'est ${addition}, égale ${product}`);
     } else {
-      setShowIntro(false);
+      speakQuestion(currentQuestion);
     }
 
     questionStartTime.current = Date.now();
-    setNumpadDisabled(false);
-  }, [currentIndex, currentQuestion]);
+  }, [currentIndex, currentQuestion, speak, speakQuestion]);
 
   const moveToNext = useCallback(() => {
     const nextIndex = currentIndex + 1;
@@ -90,7 +111,7 @@ export default function SessionScreen({
         totalQuestions > 0 ? totalTimeMs.current / totalQuestions : 0;
 
       onComplete({
-        date: new Date().toISOString().slice(0, 10),
+        date: todayISO(),
         questionsCount: questions.length,
         correctCount: correctCount.current,
         averageTimeMs: Math.round(avgTime),
@@ -107,6 +128,7 @@ export default function SessionScreen({
     (value: number) => {
       if (!currentQuestion || numpadDisabled) return;
       setNumpadDisabled(true);
+      stopSpeech();
 
       const timeMs = Date.now() - questionStartTime.current;
       const correct = value === currentQuestion.fact.product;
@@ -118,7 +140,7 @@ export default function SessionScreen({
 
       // Track distinct promoted/demoted facts (skip for bonus review)
       if (!currentQuestion.isBonusReview) {
-        const factKey = `${currentQuestion.fact.a}x${currentQuestion.fact.b}`;
+        const factKey = getFactKey(currentQuestion.fact.a, currentQuestion.fact.b);
         if (correct && timeMs < RESPONSE_TIME.SLOW) {
           promotedFacts.current.add(factKey);
         }
@@ -170,7 +192,7 @@ export default function SessionScreen({
         },
       });
     },
-    [currentQuestion, numpadDisabled, currentIndex, questions.length, onAnswer, playCorrect, playIncorrect],
+    [currentQuestion, numpadDisabled, currentIndex, questions.length, onAnswer, playCorrect, playIncorrect, stopSpeech],
   );
 
   const handleFeedbackDismiss = useCallback(() => {
@@ -184,14 +206,20 @@ export default function SessionScreen({
       if (currentQuestion && currentQuestion.fact.a === currentQuestion.fact.b) {
         setShowIntro(false);
         questionStartTime.current = Date.now();
-      } else {
+        speakQuestion(currentQuestion);
+      } else if (currentQuestion) {
         setIntroStep('commute');
+        const { a, b, product } = currentQuestion.fact;
+        speak(`${b} fois ${a}, c'est pareil ! C'est aussi ${product}`);
       }
     } else {
       setShowIntro(false);
       questionStartTime.current = Date.now();
+      if (currentQuestion) {
+        speakQuestion(currentQuestion);
+      }
     }
-  }, [introStep, currentQuestion]);
+  }, [introStep, currentQuestion, speak, speakQuestion]);
 
   if (!currentQuestion) {
     return null;

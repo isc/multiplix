@@ -1,8 +1,10 @@
-import { useState, useRef, useCallback, useMemo } from 'react';
+import { useState, useRef, useCallback, useEffect } from 'react';
 import Mascot from '../components/Mascot';
 import NumPad from '../components/NumPad';
 import { shuffle } from '../lib/utils';
 import { getFactKey } from '../lib/facts';
+import { useSound } from '../hooks/useSound';
+import { useTTS } from '../hooks/useTTS';
 import './WelcomeScreen.css';
 
 export interface PlacementResult {
@@ -26,13 +28,27 @@ export default function WelcomeScreen({ onComplete }: WelcomeScreenProps) {
   const [step, setStep] = useState(0);
   const [name, setName] = useState('');
 
+  const { isMuted } = useSound();
+  const { speak, stop: stopSpeech } = useTTS(isMuted);
+
   // Placement test state
   const [testFacts] = useState(() => shuffle(PLACEMENT_FACTS));
   const [testIndex, setTestIndex] = useState(0);
   const [testResults, setTestResults] = useState<PlacementResult[]>([]);
   const [numpadDisabled, setNumpadDisabled] = useState(false);
   const [feedback, setFeedback] = useState<'correct' | 'incorrect' | null>(null);
-  const questionStartTime = useRef(Date.now());
+  const questionStartTime = useRef(0);
+
+  // TTS for the welcome steps
+  useEffect(() => {
+    if (step === 0) {
+      speak("Bonjour ! Je suis un petit oeuf magique. Aide-moi à grandir en apprenant les tables de multiplication !");
+    } else if (step === 1) {
+      speak("Comment tu t'appelles ?");
+    } else if (step === 2) {
+      speak(`Salut ${name} ! Je vais te poser quelques questions pour voir ce que tu connais déjà. Pas de stress !`);
+    }
+  }, [step, name, speak]);
 
   const handleNext = () => {
     if (step === 0) {
@@ -54,6 +70,7 @@ export default function WelcomeScreen({ onComplete }: WelcomeScreenProps) {
     (value: number) => {
       if (numpadDisabled) return;
       setNumpadDisabled(true);
+      stopSpeech();
 
       const fact = testFacts[testIndex];
       const [a, b] = fact;
@@ -85,7 +102,7 @@ export default function WelcomeScreen({ onComplete }: WelcomeScreenProps) {
         }
       }, correct ? 600 : 1200);
     },
-    [numpadDisabled, testFacts, testIndex, testResults, name, onComplete],
+    [numpadDisabled, testFacts, testIndex, testResults, name, onComplete, stopSpeech],
   );
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
@@ -95,10 +112,16 @@ export default function WelcomeScreen({ onComplete }: WelcomeScreenProps) {
   };
 
   // Pre-compute display orders once per test (stable across re-renders)
-  const displayOrders = useMemo(
+  const [displayOrders] = useState(
     () => testFacts.map(([a, b]) => (Math.random() > 0.5 ? [a, b] : [b, a])),
-    [testFacts],
   );
+
+  // TTS for placement test questions
+  useEffect(() => {
+    if (step !== 3) return;
+    const [displayA, displayB] = displayOrders[testIndex];
+    speak(`Combien font ${displayA} fois ${displayB} ?`);
+  }, [step, testIndex, displayOrders, speak]);
 
   // Placement test screen
   if (step === 3) {

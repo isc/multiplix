@@ -29,14 +29,13 @@ type Screen =
   | 'parent';
 
 export default function App() {
-  const [screen, setScreen] = useState<Screen>('welcome');
-  const [profile, setProfile] = useState<UserProfile | null>(null);
+  const [screen, setScreen] = useState<Screen>(() => loadProfile() ? 'home' : 'welcome');
+  const [profile, setProfile] = useState<UserProfile | null>(() => loadProfile());
   const [sessionQuestions, setSessionQuestions] = useState<SessionQuestion[]>([]);
   const [sessionResult, setSessionResult] = useState<SessionResult | null>(null);
   const [newBadges, setNewBadges] = useState<Badge[]>([]);
   const [newlyCompletedTables, setNewlyCompletedTables] = useState<number[]>([]);
   const [previousMascotLevel, setPreviousMascotLevel] = useState(1);
-  const [loading, setLoading] = useState(true);
 
   // Track session stats for badge checking
   const sessionConsecutiveCorrect = useRef(0);
@@ -48,18 +47,6 @@ export default function App() {
 
   // Skip the initial save-to-localStorage on mount
   const isInitialLoad = useRef(true);
-
-  // Load profile from localStorage on mount
-  useEffect(() => {
-    const stored = loadProfile();
-    if (stored) {
-      setProfile(stored);
-      setScreen('home');
-    } else {
-      setScreen('welcome');
-    }
-    setLoading(false);
-  }, []);
 
   // Save profile to localStorage whenever it changes (skip initial load)
   useEffect(() => {
@@ -281,14 +268,6 @@ export default function App() {
       setProfile(imported);
     }
   }, []);
-
-  if (loading) {
-    return (
-      <div className="app">
-        <div className="app-loading">Chargement...</div>
-      </div>
-    );
-  }
 
   return (
     <div className="app">
