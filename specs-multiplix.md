@@ -149,9 +149,11 @@ Les faits ×1 et ×10 sont enseignés comme des **règles** (pas de la mémorisa
                      affichage visuel (grille de points), explication, 
                      puis première question immédiate
     ↓
-[Pratique]         → 12-15 questions (mix de révisions dues + faits récents)
+[Pratique]         → Jusqu'à 12-15 questions (mix de révisions dues + faits récents)
                      Entrelacement automatique, pas de chrono visible
                      Feedback immédiat après chaque réponse
+                     Note : si moins de faits sont disponibles, la séance est
+                     plus courte — pas de répétition de remplissage (voir §6.2)
     ↓
 [Récap]            → Score de la séance, encouragement adapté, 
                      animation de progression, badge éventuel
@@ -290,6 +292,7 @@ Accessible via un code/geste (ex : appui long sur le logo), sans mot de passe co
 - **Équilibre :** Si > 15 faits sont éligibles, on priorise les boîtes basses
 - **Réintroduction après erreur :** Un fait raté est re-posé 2-3 questions plus tard dans la même séance (et revient en boîte 1 pour les séances suivantes)
 - **Variation d'ordre :** Un même fait est parfois posé comme a×b, parfois comme b×a
+- **Pas de répétition de remplissage :** Le nombre 12-15 est un objectif, pas un minimum absolu. Il dérive de la durée cible de 5 minutes (~20-30 s par question avec feedback). Si le nombre de faits distincts disponibles est inférieur à 12, la séance est plus courte plutôt que de répéter les mêmes faits en boucle. La littérature (Cepeda et al. 2008, Rea & Modigliani 1985) montre que c'est la régularité des sessions et les intervalles de révision qui comptent, pas le nombre de questions par session. La répétition massive (massed practice) dans une même séance est contre-productive.
 
 ### 6.3 Calcul de nextDue
 

@@ -3,6 +3,10 @@ import { isDue, shouldIntroduceNew } from './leitner';
 import { computeSimilarity } from './similarity';
 import { daysBetween, shuffle } from './utils';
 
+// Target range: 12-15 questions (~5 min at ~20-30s per question with feedback).
+// MIN_QUESTIONS is a soft target, not an absolute floor: if fewer distinct facts
+// are available, the session is shorter rather than repeating facts (massed
+// practice is counterproductive — Cepeda et al. 2008). See specs §6.2.
 const MIN_QUESTIONS = 12;
 const MAX_QUESTIONS = 15;
 const MAX_NEW_FACTS = 2;
