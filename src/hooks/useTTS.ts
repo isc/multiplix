@@ -2,11 +2,6 @@ import { useCallback, useRef, useEffect } from 'react';
 
 const HAS_SPEECH = typeof speechSynthesis !== 'undefined';
 
-/**
- * Select the best available French voice.
- * Prefers a voice whose lang starts with "fr". Returns undefined if none found
- * (speechSynthesis will fall back to the system default).
- */
 function pickFrenchVoice(): SpeechSynthesisVoice | undefined {
   if (!HAS_SPEECH) return undefined;
   const voices = speechSynthesis.getVoices();
@@ -18,8 +13,9 @@ function pickFrenchVoice(): SpeechSynthesisVoice | undefined {
 
 export function useTTS(isMuted: boolean) {
   const voiceRef = useRef<SpeechSynthesisVoice | undefined>(undefined);
+  const mutedRef = useRef(isMuted);
+  mutedRef.current = isMuted;
 
-  // Voices may load asynchronously — listen for the event
   useEffect(() => {
     if (!HAS_SPEECH) return;
     const update = () => {
@@ -30,29 +26,24 @@ export function useTTS(isMuted: boolean) {
     return () => speechSynthesis.removeEventListener('voiceschanged', update);
   }, []);
 
-  const speak = useCallback(
-    (text: string) => {
-      if (isMuted || !HAS_SPEECH) return;
-
-      // Cancel any ongoing speech before starting a new one
-      speechSynthesis.cancel();
-
-      const utterance = new SpeechSynthesisUtterance(text);
-      utterance.lang = 'fr-FR';
-      utterance.rate = 0.9; // Slightly slower for children
-      if (voiceRef.current) {
-        utterance.voice = voiceRef.current;
-      }
-      speechSynthesis.speak(utterance);
-    },
-    [isMuted],
-  );
+  // Stable identity: reads isMuted from ref, not closure
+  const speak = useCallback((text: string) => {
+    if (mutedRef.current || !HAS_SPEECH) return;
+    speechSynthesis.cancel();
+    const utterance = new SpeechSynthesisUtterance(text);
+    utterance.lang = 'fr-FR';
+    utterance.rate = 0.9;
+    if (voiceRef.current) {
+      utterance.voice = voiceRef.current;
+    }
+    speechSynthesis.speak(utterance);
+  }, []);
 
   const stop = useCallback(() => {
     if (HAS_SPEECH) speechSynthesis.cancel();
   }, []);
 
-  // Stop speech when muted or on unmount
+  // Cancel in-flight speech when muted; clean up on unmount
   useEffect(() => {
     if (!HAS_SPEECH) return;
     if (isMuted) speechSynthesis.cancel();

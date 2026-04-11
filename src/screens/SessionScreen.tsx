@@ -49,6 +49,11 @@ export default function SessionScreen({
 
   const { isMuted, playCorrect, playIncorrect } = useSound();
   const { speak, stop: stopSpeech } = useTTS(isMuted);
+
+  const speakQuestion = useCallback(
+    (q: SessionQuestion) => speak(`Combien font ${q.displayA} fois ${q.displayB} ?`),
+    [speak],
+  );
   const mascotMoodTimeout = useRef<ReturnType<typeof setTimeout> | null>(null);
   const questionStartTime = useRef(Date.now());
   const correctCount = useRef(0);
@@ -75,19 +80,17 @@ export default function SessionScreen({
       setIntroStep('grid');
       const key = `${currentQuestion.fact.a}x${currentQuestion.fact.b}`;
       introducedFacts.current.add(key);
-      // TTS: announce the introduction
       const { a, b, product } = currentQuestion.fact;
       const addition = Array.from({ length: a }).map(() => String(b)).join(' plus ');
       speak(`Nouveau ! ${a} fois ${b}, c'est ${addition}, égale ${product}`);
     } else {
       setShowIntro(false);
-      // TTS: read the question aloud
-      speak(`Combien font ${currentQuestion.displayA} fois ${currentQuestion.displayB} ?`);
+      speakQuestion(currentQuestion);
     }
 
     questionStartTime.current = Date.now();
     setNumpadDisabled(false);
-  }, [currentIndex, currentQuestion, speak]);
+  }, [currentIndex, currentQuestion, speak, speakQuestion]);
 
   const moveToNext = useCallback(() => {
     const nextIndex = currentIndex + 1;
@@ -193,11 +196,9 @@ export default function SessionScreen({
       if (currentQuestion && currentQuestion.fact.a === currentQuestion.fact.b) {
         setShowIntro(false);
         questionStartTime.current = Date.now();
-        // TTS: read the question
-        speak(`Combien font ${currentQuestion.displayA} fois ${currentQuestion.displayB} ?`);
+        speakQuestion(currentQuestion);
       } else if (currentQuestion) {
         setIntroStep('commute');
-        // TTS: announce commutativity
         const { a, b, product } = currentQuestion.fact;
         speak(`${b} fois ${a}, c'est pareil ! C'est aussi ${product}`);
       }
@@ -205,11 +206,10 @@ export default function SessionScreen({
       setShowIntro(false);
       questionStartTime.current = Date.now();
       if (currentQuestion) {
-        // TTS: read the question after intro
-        speak(`Combien font ${currentQuestion.displayA} fois ${currentQuestion.displayB} ?`);
+        speakQuestion(currentQuestion);
       }
     }
-  }, [introStep, currentQuestion, speak]);
+  }, [introStep, currentQuestion, speak, speakQuestion]);
 
   if (!currentQuestion) {
     return null;
