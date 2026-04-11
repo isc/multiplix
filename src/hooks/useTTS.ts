@@ -14,7 +14,9 @@ function pickFrenchVoice(): SpeechSynthesisVoice | undefined {
 export function useTTS(isMuted: boolean) {
   const voiceRef = useRef<SpeechSynthesisVoice | undefined>(undefined);
   const mutedRef = useRef(isMuted);
-  mutedRef.current = isMuted;
+  useEffect(() => {
+    mutedRef.current = isMuted;
+  }, [isMuted]);
 
   useEffect(() => {
     if (!HAS_SPEECH) return;

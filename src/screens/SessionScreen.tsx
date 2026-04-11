@@ -57,7 +57,7 @@ export default function SessionScreen({
     [speak],
   );
   const mascotMoodTimeout = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const questionStartTime = useRef(Date.now());
+  const questionStartTime = useRef(0);
   const correctCount = useRef(0);
   const totalTimeMs = useRef(0);
   const promotedFacts = useRef(new Set<string>());
@@ -66,6 +66,19 @@ export default function SessionScreen({
 
   const currentQuestion = questions[currentIndex] as SessionQuestion | undefined;
 
+  // Adjust UI state when the question changes (render-time)
+  const [prevIndex, setPrevIndex] = useState(0);
+  if (currentIndex !== prevIndex && currentQuestion) {
+    setPrevIndex(currentIndex);
+    if (currentQuestion.isIntroduction) {
+      setShowIntro(true);
+      setIntroStep('grid');
+    } else {
+      setShowIntro(false);
+    }
+    setNumpadDisabled(false);
+  }
+
   // Clean up mascot mood timeout on unmount
   useEffect(() => {
     return () => {
@@ -73,24 +86,20 @@ export default function SessionScreen({
     };
   }, []);
 
-  // Start timing when the question changes
+  // Side effects when the question changes (TTS, timer, tracking)
   useEffect(() => {
     if (!currentQuestion) return;
 
     if (currentQuestion.isIntroduction) {
-      setShowIntro(true);
-      setIntroStep('grid');
       introducedFacts.current.add(getFactKey(currentQuestion.fact.a, currentQuestion.fact.b));
       const { a, b, product } = currentQuestion.fact;
       const addition = Array.from({ length: a }).map(() => String(b)).join(' plus ');
       speak(`Nouveau ! ${a} fois ${b}, c'est ${addition}, égale ${product}`);
     } else {
-      setShowIntro(false);
       speakQuestion(currentQuestion);
     }
 
     questionStartTime.current = Date.now();
-    setNumpadDisabled(false);
   }, [currentIndex, currentQuestion, speak, speakQuestion]);
 
   const moveToNext = useCallback(() => {

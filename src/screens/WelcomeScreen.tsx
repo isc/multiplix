@@ -1,4 +1,4 @@
-import { useState, useRef, useCallback, useMemo } from 'react';
+import { useState, useRef, useCallback } from 'react';
 import Mascot from '../components/Mascot';
 import NumPad from '../components/NumPad';
 import { shuffle } from '../lib/utils';
@@ -32,7 +32,7 @@ export default function WelcomeScreen({ onComplete }: WelcomeScreenProps) {
   const [testResults, setTestResults] = useState<PlacementResult[]>([]);
   const [numpadDisabled, setNumpadDisabled] = useState(false);
   const [feedback, setFeedback] = useState<'correct' | 'incorrect' | null>(null);
-  const questionStartTime = useRef(Date.now());
+  const questionStartTime = useRef(0);
 
   const handleNext = () => {
     if (step === 0) {
@@ -95,9 +95,8 @@ export default function WelcomeScreen({ onComplete }: WelcomeScreenProps) {
   };
 
   // Pre-compute display orders once per test (stable across re-renders)
-  const displayOrders = useMemo(
+  const [displayOrders] = useState(
     () => testFacts.map(([a, b]) => (Math.random() > 0.5 ? [a, b] : [b, a])),
-    [testFacts],
   );
 
   // Placement test screen
