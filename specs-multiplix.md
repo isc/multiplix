@@ -293,6 +293,7 @@ Accessible via un code/geste (ex : appui long sur le logo), sans mot de passe co
 - **Réintroduction après erreur :** Un fait raté est re-posé 2-3 questions plus tard dans la même séance (et revient en boîte 1 pour les séances suivantes)
 - **Variation d'ordre :** Un même fait est parfois posé comme a×b, parfois comme b×a
 - **Pas de répétition de remplissage :** Le nombre 12-15 est un objectif, pas un minimum absolu. Il dérive de la durée cible de 5 minutes (~20-30 s par question avec feedback). Si le nombre de faits distincts disponibles est inférieur à 12, la séance est plus courte plutôt que de répéter les mêmes faits en boucle. La littérature (Cepeda et al. 2008, Rea & Modigliani 1985) montre que c'est la régularité des sessions et les intervalles de révision qui comptent, pas le nombre de questions par session. La répétition massive (massed practice) dans une même séance est contre-productive.
+- **Révision bonus :** Quand aucun fait n'est dû et qu'aucun nouveau fait ne peut être introduit (contrainte de similarité 48h), la séance est complétée avec des révisions bonus piochées parmi tous les faits introduits, en priorisant les boîtes les plus basses puis les dates de révision les plus proches. Les révisions bonus donnent un feedback normal (son, mascotte, score) mais **ne modifient pas l'état Leitner** (boîte, nextDue, lastSeen, historique). Cela garantit une séance chaque jour sans perturber le calendrier de répétition espacée.
 
 ### 6.3 Calcul de nextDue
 
