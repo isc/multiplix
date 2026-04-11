@@ -172,10 +172,12 @@ Les faits ×1 et ×10 sont enseignés comme des **règles** (pas de la mémorisa
 2. L'enfant tape sa réponse sur un pavé numérique intégré (gros boutons tactiles)
 3. Validation automatique à 2 chiffres, ou bouton "OK" pour les résultats < 10
 4. **Feedback immédiat :**
-   - **Correct + rapide (< 3s) :** Animation joyeuse, son positif, +1 étoile dorée
-   - **Correct + lent (3-5s) :** "Bravo !", mais pas de montée de boîte
-   - **Correct + très lent (> 5s) :** "Bien ! Essaie d'aller un peu plus vite la prochaine fois"
+   - **Correct + rapide (< 3s) :** Animation joyeuse, son positif, +1 étoile dorée, montée de boîte
+   - **Correct + normal (3-5s) :** "Bravo !", montée de boîte
+   - **Correct + lent (> 5s) :** "Bien ! Essaie d'aller un peu plus vite la prochaine fois", pas de montée de boîte
    - **Incorrect :** Pas de son négatif, la bonne réponse s'affiche avec la grille de points, puis re-pose la question 2-3 questions plus tard dans la même séance
+
+   *Note sur les seuils :* ces seuils tiennent compte du surcoût moteur du pavé numérique (~1-1,5s) par rapport à une réponse orale. Dans la littérature, le rappel automatique est typiquement mesuré sous 1-2s à l'oral. Nos 5s correspondent à environ 3-4s de réflexion + 1-1,5s de manipulation tactile. Si l'application évolue vers une interface vocale (voir audit), les seuils devront être abaissés pour s'aligner avec les mesures de la recherche.
 
 ### 3.4 Introduction d'un nouveau fait
 
