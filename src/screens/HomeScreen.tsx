@@ -6,7 +6,7 @@ import './HomeScreen.css';
 
 interface HomeScreenProps {
   profile: UserProfile;
-  sessionDoneToday: boolean;
+  hasSessionAvailable: boolean;
   onStart: () => void;
   onShowProgress: () => void;
   onShowBadges: () => void;
@@ -16,7 +16,7 @@ interface HomeScreenProps {
 
 export default function HomeScreen({
   profile,
-  sessionDoneToday,
+  hasSessionAvailable,
   onStart,
   onShowProgress,
   onShowBadges,
@@ -93,12 +93,12 @@ export default function HomeScreen({
         </div>
       )}
 
-      {sessionDoneToday ? (
-        <div className="home-done-msg">Bravo, c'est fait pour aujourd'hui !</div>
-      ) : (
+      {hasSessionAvailable ? (
         <button className="home-start-btn" onClick={onStart}>
           C'est parti !
         </button>
+      ) : (
+        <div className="home-done-msg">Bravo, c'est fait pour aujourd'hui !</div>
       )}
 
       <div className="home-nav">
