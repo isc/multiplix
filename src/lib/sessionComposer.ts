@@ -179,20 +179,25 @@ export function composeSession(profile: UserProfile, now: string): SessionQuesti
   const allReview = interleave(reviewQuestions);
   const result = [...introQuestions, ...allReview];
 
-  // If the session is still too short, pad with review copies of already-known facts.
-  // Use selected (due review facts) first, then fall back to newFacts (just introduced).
-  const paddingPool = selected.length > 0 ? shuffle(selected) : shuffle(newFacts);
-  if (result.length < MIN_QUESTIONS && paddingPool.length > 0) {
-    let idx = 0;
-    while (result.length < MIN_QUESTIONS) {
-      const fact = paddingPool[idx % paddingPool.length];
+  // If the session is still too short, pad with other introduced facts not already
+  // in the session. This avoids repeating the same 1-2 facts to fill 12 questions.
+  if (result.length < MIN_QUESTIONS) {
+    const sessionFactKeys = new Set(
+      result.map((q) => `${q.fact.a}x${q.fact.b}`),
+    );
+    const extraFacts = shuffle(
+      facts.filter(
+        (f) => f.introduced && !sessionFactKeys.has(`${f.a}x${f.b}`),
+      ),
+    );
+    for (const fact of extraFacts) {
+      if (result.length >= MIN_QUESTIONS) break;
       result.push({
         fact,
         ...randomDisplayOrder(fact),
         isIntroduction: false,
         isRetry: false,
       });
-      idx++;
     }
   }
 
