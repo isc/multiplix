@@ -1,5 +1,6 @@
 import type { MultiFact, UserProfile, SessionQuestion } from '../types';
 import { isDue, shouldIntroduceNew } from './leitner';
+import { getFactKey } from './facts';
 import { computeSimilarity } from './similarity';
 import { daysBetween, shuffle } from './utils';
 
@@ -191,10 +192,10 @@ export function composeSession(profile: UserProfile, now: string): SessionQuesti
   // Prioritize weakest facts (lowest box, then closest nextDue).
   if (result.length < MIN_QUESTIONS) {
     const sessionFactKeys = new Set(
-      result.map((q) => `${q.fact.a}x${q.fact.b}`),
+      result.map((q) => getFactKey(q.fact.a, q.fact.b)),
     );
     const extraFacts = facts
-      .filter((f) => f.introduced && !sessionFactKeys.has(`${f.a}x${f.b}`))
+      .filter((f) => f.introduced && !sessionFactKeys.has(getFactKey(f.a, f.b)))
       .sort((a, b) => a.box - b.box || a.nextDue.localeCompare(b.nextDue));
     for (const fact of extraFacts) {
       if (result.length >= MIN_QUESTIONS) break;
@@ -209,29 +210,4 @@ export function composeSession(profile: UserProfile, now: string): SessionQuesti
   }
 
   return result;
-}
-
-/**
- * Inserts a retry question for a failed fact 2-3 positions after currentIndex.
- * Returns the updated questions array.
- */
-export function insertRetry(
-  questions: SessionQuestion[],
-  failedFact: MultiFact,
-  currentIndex: number,
-): SessionQuestion[] {
-  const retryOffset = 2 + Math.floor(Math.random() * 2); // 2 or 3
-  const insertAt = Math.min(currentIndex + retryOffset, questions.length);
-
-  const retryQuestion: SessionQuestion = {
-    fact: failedFact,
-    ...randomDisplayOrder(failedFact),
-    isIntroduction: false,
-    isRetry: true,
-    isBonusReview: false,
-  };
-
-  const updated = [...questions];
-  updated.splice(insertAt, 0, retryQuestion);
-  return updated;
 }

@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback, useRef } from 'react';
+import { useState, useEffect, useCallback, useRef, useMemo } from 'react';
 import type { UserProfile, SessionQuestion, SessionResult, MultiFact, Badge } from './types';
 import { BOX_INTERVALS, RESPONSE_TIME } from './types';
 import { composeSession } from './lib/sessionComposer';
@@ -107,26 +107,28 @@ export default function App() {
     setScreen('home');
   }, []);
 
+  // Pre-compute the next session so we can check availability without re-running
+  // composeSession on every render, and reuse it when the user clicks "start".
+  const pendingSession = useMemo(() => {
+    if (!profile) return [];
+    const today = todayISO();
+    if (profile.lastSessionDate === today) return [];
+    return composeSession(profile, today);
+  }, [profile]);
+
   // Start session
   const handleStartSession = useCallback(() => {
-    if (!profile) return;
-
-    const today = todayISO();
-    const questions = composeSession(profile, today);
+    if (!profile || pendingSession.length === 0) return;
 
     sessionConsecutiveCorrect.current = 0;
     sessionMaxConsecutiveCorrect.current = 0;
     sessionResponseTimes.current = [];
 
-    if (questions.length === 0) {
-      return;
-    }
-
     tablesCompletedBeforeSession.current = getCompletedTables(profile.facts);
 
-    setSessionQuestions(questions);
+    setSessionQuestions(pendingSession);
     setScreen('session');
-  }, [profile]);
+  }, [profile, pendingSession]);
 
   // Handle individual answer — use functional updater to avoid stale fact on retries
   const handleAnswer = useCallback(
@@ -297,10 +299,7 @@ export default function App() {
       {screen === 'home' && profile && (
         <HomeScreen
           profile={profile}
-          hasSessionAvailable={
-            profile.lastSessionDate !== todayISO() &&
-            composeSession(profile, todayISO()).length > 0
-          }
+          hasSessionAvailable={pendingSession.length > 0}
           onStart={handleStartSession}
           onShowProgress={() => setScreen('progress')}
           onShowBadges={() => setScreen('badges')}
