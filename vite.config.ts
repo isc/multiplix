@@ -1,4 +1,4 @@
-import { defineConfig } from 'vite'
+import { defineConfig } from 'vitest/config'
 import react from '@vitejs/plugin-react'
 import { VitePWA } from 'vite-plugin-pwa'
 
@@ -29,4 +29,11 @@ export default defineConfig({
       },
     }),
   ],
+  test: {
+    environment: 'jsdom',
+    globals: false,
+    setupFiles: ['./src/__tests__/setup.ts'],
+    // The long e2e scenario runs ~25 sessions × ~15 questions; give it room.
+    testTimeout: 120_000,
+  },
 })
