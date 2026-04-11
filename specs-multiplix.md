@@ -32,7 +32,7 @@ Chaque fait multiplicatif possède un état de maîtrise individuel. L'intervall
 
 ### 1.2 Regroupement par faible similarité (Low-Interference Training)
 
-**Source :** Ben-David & Roll (2022), *Cognitive Research: Principles and Implications*
+**Source :** Dotan & Zviran-Ginat (2022), *Cognitive Research: Principles and Implications*
 
 Les faits similaires (ex : 6×8=48 et 8×8=64) créent de l'interférence en mémoire lorsqu'ils sont présentés dans la même séance. L'application regroupe les faits de sorte qu'une séance ne contienne que des faits dissemblables entre eux.
 
@@ -390,6 +390,26 @@ L'application est considérée comme ayant atteint son objectif quand :
 - Intégration Strava-like : partage de la streak avec un parent
 - Mode multi-enfant (plusieurs profils sur le même appareil)
 - Lien division : une fois un fait maîtrisé en multiplication, introduction du fait de division associé
+
+---
+
+## 12. Références
+
+- Brendefur, J., Strother, S., Thiede, K., & Appleton, S. (2015). Developing multiplication fact fluency. *Advances in Social Sciences Research Journal, 2*(8). [doi:10.14738/assrj.28.1396](https://doi.org/10.14738/assrj.28.1396)
+
+- Cepeda, N. J., Vul, E., Rohrer, D., Wixted, J. T., & Pashler, H. (2008). Spacing effects in learning: A temporal ridgeline of optimal retention. *Psychological Science, 19*(11), 1095–1102. [doi:10.1111/j.1467-9280.2008.02209.x](https://doi.org/10.1111/j.1467-9280.2008.02209.x)
+
+- Cowan, R., Donlan, C., Shepherd, D.-L., Cole-Fletcher, R., Saxton, M., & Hurry, J. (2011). Basic calculation proficiency and mathematics achievement in elementary school children. *Journal of Educational Psychology, 103*(4), 786–803. [doi:10.1037/a0024556](https://doi.org/10.1037/a0024556)
+
+- Dotan, D., & Zviran-Ginat, S. (2022). Elementary math in elementary school: The effect of interference on learning the multiplication table. *Cognitive Research: Principles and Implications, 7*, 101. [doi:10.1186/s41235-022-00451-0](https://doi.org/10.1186/s41235-022-00451-0)
+
+- Kang, S. H. K. (2016). Spaced repetition promotes efficient and effective learning. *Policy Insights from the Behavioral and Brain Sciences, 3*(1), 12–19. [doi:10.1177/2372732215624708](https://doi.org/10.1177/2372732215624708)
+
+- Rea, C. P., & Modigliani, V. (1985). The effect of expanded versus massed practice on the retention of multiplication facts and spelling lists. *Human Learning, 4*, 11–18.
+
+- Rohrer, D., Dedrick, R. F., & Burgess, K. (2014). The benefit of interleaved mathematics practice is not limited to superficially similar kinds of problems. *Psychonomic Bulletin & Review, 21*(5), 1323–1330. [doi:10.3758/s13423-014-0588-3](https://doi.org/10.3758/s13423-014-0588-3)
+
+- Rohrer, D., & Taylor, K. (2007). The shuffling of mathematics problems improves learning. *Instructional Science, 35*, 481–498. [doi:10.1007/s11251-007-9015-8](https://doi.org/10.1007/s11251-007-9015-8)
 
 ---
 
