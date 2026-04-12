@@ -30,6 +30,12 @@ jobs:
       - run: npm ci
       - run: npm run build
 
+      # Install Chromium for Playwright (used by the user-guide generator).
+      - run: npx playwright install --with-deps chromium
+
+      # Generate the HTML user guide with screenshots into dist/guide/.
+      - run: npm run user-guide
+
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3
         with:
