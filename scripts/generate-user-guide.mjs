@@ -345,7 +345,8 @@ async function captureSessionScreens(page) {
   await answerWith(page, wrong);
   await page.waitForSelector('.feedback-overlay.incorrect', { timeout: 3000 });
   await shot(page, '09-session-feedback-incorrect');
-  await page.click('.feedback-overlay');
+  // Incorrect overlay only dismisses via the explicit OK button (no auto-dismiss).
+  await page.click('.feedback-ok-btn');
   await page.waitForSelector('.feedback-overlay', { state: 'detached', timeout: 3000 });
 }
 
