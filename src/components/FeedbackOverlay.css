@@ -96,3 +96,22 @@
 .feedback-dotgrid {
   margin-top: 8px;
 }
+
+.feedback-ok-btn {
+  margin-top: 20px;
+  background: var(--primary);
+  color: white;
+  border: none;
+  border-radius: 12px;
+  padding: 12px 40px;
+  font-size: 1.1rem;
+  font-weight: 700;
+  cursor: pointer;
+  min-width: 120px;
+  min-height: 48px;
+  transition: transform 0.1s ease, background 0.2s ease;
+}
+
+.feedback-ok-btn:active {
+  transform: scale(0.96);
+}

@@ -46,8 +46,8 @@ export default function FeedbackOverlay({
   );
 
   useEffect(() => {
-    const delay = correct ? 1800 : 3000;
-    const timer = setTimeout(onDismiss, delay);
+    if (!correct) return;
+    const timer = setTimeout(onDismiss, 1800);
     return () => clearTimeout(timer);
   }, [correct, onDismiss]);
 
@@ -73,7 +73,7 @@ export default function FeedbackOverlay({
   }
 
   return (
-    <div className="feedback-overlay incorrect" onClick={onDismiss}>
+    <div className="feedback-overlay incorrect">
       <div className="feedback-card">
         <div className="feedback-emoji">{'\uD83E\uDD14'}</div>
         <div className="feedback-message incorrect">{message}</div>
@@ -83,6 +83,9 @@ export default function FeedbackOverlay({
         <div className="feedback-dotgrid">
           <DotGrid a={fact.a} b={fact.b} animated={false} size="small" />
         </div>
+        <button type="button" className="feedback-ok-btn" onClick={onDismiss}>
+          OK
+        </button>
       </div>
     </div>
   );
