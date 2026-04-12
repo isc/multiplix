@@ -57,6 +57,12 @@ export default function DotGrid({
   const dotSize = maxDim >= 8 ? 12 : maxDim >= 6 ? 14 : 16;
   const dotGap = maxDim >= 8 ? 4 : 6;
 
+  // When the grid rotates 90°, its visual height becomes its original width.
+  // CSS transforms don't reflow layout, so we add vertical margin to avoid
+  // overlap with the label above and the result below.
+  const rotationMargin =
+    rotated && b > a ? ((b - a) * (dotSize + dotGap)) / 2 : 0;
+
   return (
     <div
       className={`dot-grid-wrapper ${size}`}
@@ -65,7 +71,10 @@ export default function DotGrid({
       <div className="dot-grid-label">
         <span>{a}</span> {'\u00D7'} <span>{b}</span>
       </div>
-      <div className={`dot-grid ${rotated ? 'rotating' : ''}`}>
+      <div
+        className={`dot-grid ${rotated ? 'rotating' : ''}`}
+        style={rotationMargin ? { margin: `${rotationMargin}px 0` } : undefined}
+      >
         {Array.from({ length: a }, (_, rowIndex) => {
           const visible = rowIndex < visibleRows;
           return (

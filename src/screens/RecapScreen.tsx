@@ -49,30 +49,14 @@ export default function RecapScreen({
       playBadge();
       triggerConfetti();
     }
+  }, [leveledUp, newBadges, newlyCompletedTables, playBadge, playLevelUp, triggerConfetti]);
 
-    // Build a recap sentence for TTS
-    const parts: string[] = [];
-
-    if (newlyCompletedTables.length === 1) {
-      parts.push(`Tu as maîtrisé la table de ${newlyCompletedTables[0]} !`);
-    } else if (newlyCompletedTables.length > 1) {
-      parts.push(`Tu as maîtrisé les tables de ${newlyCompletedTables.join(' et ')} !`);
-    }
-
-    parts.push('Séance terminée ! Bravo, tu as bien travaillé !');
-
-    if (result.factsPromoted > 0) {
-      parts.push(`Tu as fait progresser ${result.factsPromoted} fait${result.factsPromoted > 1 ? 's' : ''}.`);
-    }
-
-    parts.push(`Tu connais ${knownFactsCount} fait${knownFactsCount > 1 ? 's' : ''} sur ${totalFacts}.`);
-
-    for (const badge of newBadges) {
-      parts.push(`Nouveau badge : ${badge.name} !`);
-    }
-
-    speak(parts.join(' '));
-  }, [leveledUp, newBadges, newlyCompletedTables, result.factsPromoted, knownFactsCount, totalFacts, playBadge, playLevelUp, triggerConfetti, speak]);
+  // Speak on every mount (including StrictMode's simulated remount in dev).
+  // The useTTS cleanup on unmount would otherwise silence the audio if speak
+  // were gated behind hasPlayedRef.
+  useEffect(() => {
+    speak('recap-done');
+  }, [speak]);
 
   const mascotMood =
     newlyCompletedTables.length > 0 || leveledUp

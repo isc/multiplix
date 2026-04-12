@@ -53,7 +53,7 @@ export default function SessionScreen({
   const { speak, stop: stopSpeech } = useTTS(isMuted);
 
   const speakQuestion = useCallback(
-    (q: SessionQuestion) => speak(`Combien font ${q.displayA} fois ${q.displayB} ?`),
+    (q: SessionQuestion) => speak(`q-${q.displayA}-${q.displayB}`),
     [speak],
   );
   const mascotMoodTimeout = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -67,7 +67,7 @@ export default function SessionScreen({
   const currentQuestion = questions[currentIndex] as SessionQuestion | undefined;
 
   // Adjust UI state when the question changes (render-time)
-  const [prevIndex, setPrevIndex] = useState(0);
+  const [prevIndex, setPrevIndex] = useState(-1);
   if (currentIndex !== prevIndex && currentQuestion) {
     setPrevIndex(currentIndex);
     if (currentQuestion.isIntroduction) {
@@ -92,9 +92,8 @@ export default function SessionScreen({
 
     if (currentQuestion.isIntroduction) {
       introducedFacts.current.add(getFactKey(currentQuestion.fact.a, currentQuestion.fact.b));
-      const { a, b, product } = currentQuestion.fact;
-      const addition = Array.from({ length: a }).map(() => String(b)).join(' plus ');
-      speak(`Nouveau ! ${a} fois ${b}, c'est ${addition}, égale ${product}`);
+      const { a, b } = currentQuestion.fact;
+      speak(`intro-${a}-${b}`);
     } else {
       speakQuestion(currentQuestion);
     }
@@ -209,8 +208,8 @@ export default function SessionScreen({
         speakQuestion(currentQuestion);
       } else if (currentQuestion) {
         setIntroStep('commute');
-        const { a, b, product } = currentQuestion.fact;
-        speak(`${b} fois ${a}, c'est pareil ! C'est aussi ${product}`);
+        const { a, b } = currentQuestion.fact;
+        speak(`comm-${a}-${b}`);
       }
     } else {
       setShowIntro(false);

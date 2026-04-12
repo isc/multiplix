@@ -42,13 +42,11 @@ export default function WelcomeScreen({ onComplete }: WelcomeScreenProps) {
   // TTS for the welcome steps
   useEffect(() => {
     if (step === 0) {
-      speak("Bonjour ! Je suis un petit oeuf magique. Aide-moi à grandir en apprenant les tables de multiplication !");
+      speak('welcome-hello');
     } else if (step === 1) {
-      speak("Comment tu t'appelles ?");
-    } else if (step === 2) {
-      speak(`Salut ${name} ! Je vais te poser quelques questions pour voir ce que tu connais déjà. Pas de stress !`);
+      speak('welcome-name');
     }
-  }, [step, name, speak]);
+  }, [step, speak]);
 
   const handleNext = () => {
     if (step === 0) {
@@ -120,7 +118,7 @@ export default function WelcomeScreen({ onComplete }: WelcomeScreenProps) {
   useEffect(() => {
     if (step !== 3) return;
     const [displayA, displayB] = displayOrders[testIndex];
-    speak(`Combien font ${displayA} fois ${displayB} ?`);
+    speak(`q-${displayA}-${displayB}`);
   }, [step, testIndex, displayOrders, speak]);
 
   // Placement test screen
