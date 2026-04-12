@@ -45,6 +45,8 @@ export default function WelcomeScreen({ onComplete }: WelcomeScreenProps) {
       speak('welcome-hello');
     } else if (step === 1) {
       speak('welcome-name');
+    } else if (step === 2) {
+      speak('welcome-test');
     }
   }, [step, speak]);
 

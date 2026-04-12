@@ -1,12 +1,11 @@
 #!/usr/bin/env node
 
 /**
- * Generates pre-recorded TTS audio files via the Inworld TTS API.
+ * Generates pre-recorded TTS audio files via the Mistral Voxtral TTS API.
  *
  * Usage:
- *   source /path/to/weberg/.env && node scripts/generate-tts.mjs
+ *   MISTRAL_API_KEY=... node scripts/generate-tts.mjs
  *
- * Requires INWORLD_API_KEY in the environment.
  * Output: public/audio/tts/*.mp3
  *
  * Skips files that already exist (delete a file to regenerate it).
@@ -20,25 +19,30 @@ import { fileURLToPath } from 'node:url';
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const OUTPUT_DIR = join(__dirname, '..', 'public', 'audio', 'tts');
 
-const INWORLD_API_URL = 'https://api.inworld.ai/tts/v1/voice';
-const VOICE_ID = 'Hélène';
-const MODEL_ID = 'inworld-tts-1';
+const MISTRAL_TTS_URL = 'https://api.mistral.ai/v1/audio/speech';
+const MODEL = 'voxtral-mini-tts-2603';
+// Marie - Curious (fr_fr, female)
+const VOICE_ID = 'e0580ce5-e63c-4cbe-88c8-a983b80c5f1f';
 
-const API_KEY = process.env.INWORLD_API_KEY;
+const API_KEY = process.env.MISTRAL_API_KEY;
 if (!API_KEY) {
-  console.error('INWORLD_API_KEY environment variable not set');
-  console.error('Usage: source /path/to/weberg/.env && node scripts/generate-tts.mjs');
+  console.error('MISTRAL_API_KEY environment variable not set');
   process.exit(1);
 }
 
 async function generateAudio(text, outputPath) {
-  const response = await fetch(INWORLD_API_URL, {
+  const response = await fetch(MISTRAL_TTS_URL, {
     method: 'POST',
     headers: {
-      'Authorization': API_KEY,
+      'Authorization': `Bearer ${API_KEY}`,
       'Content-Type': 'application/json',
     },
-    body: JSON.stringify({ text, voiceId: VOICE_ID, modelId: MODEL_ID }),
+    body: JSON.stringify({
+      model: MODEL,
+      input: text,
+      voice_id: VOICE_ID,
+      response_format: 'mp3',
+    }),
   });
 
   if (!response.ok) {
@@ -48,12 +52,12 @@ async function generateAudio(text, outputPath) {
   }
 
   const data = await response.json();
-  if (!data.audioContent) {
-    console.error('No audio content in response');
+  if (!data.audio_data) {
+    console.error('No audio_data in response');
     return false;
   }
 
-  await writeFile(outputPath, Buffer.from(data.audioContent, 'base64'));
+  await writeFile(outputPath, Buffer.from(data.audio_data, 'base64'));
   return true;
 }
 
@@ -98,6 +102,10 @@ function buildEntries() {
     text: "Comment tu t'appelles ?",
   });
   entries.push({
+    key: 'welcome-test',
+    text: "Je vais te poser quelques questions pour voir ce que tu connais déjà. Pas de stress, il n'y a pas de piège !",
+  });
+  entries.push({
     key: 'recap-done',
     text: "Séance terminée ! Bravo, tu as bien travaillé !",
   });
@@ -136,7 +144,7 @@ async function main() {
     }
 
     // Rate-limit API calls
-    await new Promise((r) => setTimeout(r, 300));
+    await new Promise((r) => setTimeout(r, 200));
   }
 
   console.log(`\nDone! ${success} generated, ${skipped} skipped, ${failed} failed.`);
