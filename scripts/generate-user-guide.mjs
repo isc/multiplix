@@ -17,7 +17,7 @@
  */
 
 import { spawn } from 'node:child_process';
-import { mkdir, writeFile, cp, rm } from 'node:fs/promises';
+import { mkdir, writeFile, rm } from 'node:fs/promises';
 import { existsSync } from 'node:fs';
 import { join, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -34,6 +34,10 @@ const BASE_URL = `http://localhost:${PORT}/multiplix/`;
 // Mobile-ish portrait viewport so screenshots match how kids use the PWA.
 const VIEWPORT = { width: 420, height: 900 };
 const DEVICE_SCALE = 2;
+
+// Anchor date for seed data — single source of truth for every capture.
+const SEED_TODAY = '2026-04-12';
+const SEED_YESTERDAY = '2026-04-11';
 
 // --- Utilities --------------------------------------------------------------
 
@@ -85,8 +89,8 @@ function seededBox(a, b) {
 }
 
 function buildSampleProfile({ sessionAvailable = true } = {}) {
-  const today = '2026-04-12';
-  const yesterday = '2026-04-11';
+  const today = SEED_TODAY;
+  const yesterday = SEED_YESTERDAY;
   const facts = [];
   for (let a = 2; a <= 9; a++) {
     for (let b = a; b <= 9; b++) {
@@ -174,7 +178,7 @@ const DISABLE_ANIMATIONS_CSS = `
 `;
 
 async function gotoHome(page) {
-  await page.goto(BASE_URL, { waitUntil: 'networkidle' });
+  await page.goto(BASE_URL, { waitUntil: 'load' });
   await page.addStyleTag({ content: DISABLE_ANIMATIONS_CSS });
 }
 
@@ -183,6 +187,27 @@ async function shot(page, name, locator) {
   const target = locator ?? page;
   await target.screenshot({ path, animations: 'disabled' });
   log(`✓ ${name}.png`);
+}
+
+async function readQuestion(page) {
+  await page.waitForSelector('.session-question-text');
+  const txt = await page.locator('.session-question-text').innerText();
+  const nums = (txt.match(/\d+/g) ?? []).map(Number);
+  return { a: nums[0], b: nums[1] };
+}
+
+// The numpad auto-submits at 2 digits; single-digit answers need Enter.
+async function answerWith(page, value) {
+  const s = String(value);
+  for (const ch of s) await page.keyboard.press(ch);
+  if (s.length === 1) await page.keyboard.press('Enter');
+}
+
+async function clickAllIntroSteps(page) {
+  while (await page.locator('.session-intro-btn').count()) {
+    await page.click('.session-intro-btn');
+    await sleep(250);
+  }
 }
 
 // --- Capture sequences ------------------------------------------------------
@@ -216,27 +241,17 @@ async function captureHome(page) {
   await shot(page, '05-home');
 }
 
-async function captureProgress(page) {
-  await page.click('.home-nav-btn:has-text("Progrès")');
-  await page.waitForSelector('.progress-screen');
-  await shot(page, '10-progress');
-  await page.click('.progress-back-btn');
-  await page.waitForSelector('.home-screen');
-}
+const NAV_SCREENS = [
+  { navText: 'Progrès', screenSel: '.progress-screen', backSel: '.progress-back-btn', shot: '10-progress' },
+  { navText: 'Badges',  screenSel: '.badges-screen',   backSel: '.badges-back-btn',   shot: '11-badges'   },
+  { navText: 'Règles',  screenSel: '.rules-screen',    backSel: '.rules-back-btn',    shot: '12-rules'    },
+];
 
-async function captureBadges(page) {
-  await page.click('.home-nav-btn:has-text("Badges")');
-  await page.waitForSelector('.badges-screen');
-  await shot(page, '11-badges');
-  await page.click('.badges-back-btn');
-  await page.waitForSelector('.home-screen');
-}
-
-async function captureRules(page) {
-  await page.click('.home-nav-btn:has-text("Règles")');
-  await page.waitForSelector('.rules-screen');
-  await shot(page, '12-rules');
-  await page.click('.rules-back-btn');
+async function captureNavScreen(page, { navText, screenSel, backSel, shot: shotName }) {
+  await page.click(`.home-nav-btn:has-text("${navText}")`);
+  await page.waitForSelector(screenSel);
+  await shot(page, shotName);
+  await page.click(backSel);
   await page.waitForSelector('.home-screen');
 }
 
@@ -247,7 +262,9 @@ async function captureParentDashboard(page) {
   if (!box) throw new Error('parent gear button not found');
   await page.mouse.move(box.x + box.width / 2, box.y + box.height / 2);
   await page.mouse.down();
-  await sleep(1700);
+  // 2s with buffer over the app's 1.5s threshold — slow CI schedulers can
+  // stretch timers, so a tight 1.7s margin occasionally under-shoots.
+  await sleep(2000);
   await page.mouse.up();
   await page.waitForSelector('.parent-dashboard');
   await shot(page, '13-parent-dashboard');
@@ -256,9 +273,6 @@ async function captureParentDashboard(page) {
 }
 
 async function captureSessionScreens(page) {
-  // Build a profile where the composer WILL introduce new facts:
-  //   - all introduced facts must be at box ≥ 2 (see `shouldIntroduceNew`)
-  //   - some facts must remain unintroduced
   // Build a profile optimized for triggering an *introduction* question:
   //   - all introduced facts at box ≥ 2 (so `shouldIntroduceNew` allows intros)
   //   - few introduced facts are due today (to leave room for the intro; the
@@ -268,7 +282,6 @@ async function captureSessionScreens(page) {
   const profile = buildSampleProfile();
   const longAgo = '2026-04-05';
   const future = '2026-04-20';
-  const today = '2026-04-12';
   let dueCount = 0;
   for (const f of profile.facts) {
     if (!f.introduced) continue;
@@ -276,7 +289,7 @@ async function captureSessionScreens(page) {
     f.lastSeen = longAgo;
     // Keep only ~8 facts due today; the rest due in the future.
     if (dueCount < 8) {
-      f.nextDue = today;
+      f.nextDue = SEED_TODAY;
       dueCount++;
     } else {
       f.nextDue = future;
@@ -303,23 +316,6 @@ async function captureSessionScreens(page) {
   await page.click('.home-start-btn');
   await page.waitForSelector('.session-screen');
 
-  // Helper: extract the current question's operands from the DOM.
-  async function readQuestion() {
-    await page.waitForSelector('.session-question-text');
-    const txt = await page.locator('.session-question-text').innerText();
-    const nums = (txt.match(/\d+/g) ?? []).map(Number);
-    return { a: nums[0], b: nums[1] };
-  }
-
-  // Helper: type an answer on the numpad. NumPad auto-submits at 2 digits;
-  // single-digit answers need Enter.
-  async function answerWith(value) {
-    const s = String(value);
-    for (const ch of s) await page.keyboard.press(ch);
-    if (s.length === 1) await page.keyboard.press('Enter');
-  }
-
-  // 1. Capture the introduction screen (intros are placed at the front).
   if (await page.locator('.session-intro').count()) {
     // The DotGrid has a JS-driven row-by-row reveal — wait for the result
     // ("= N") to become visible before taking the screenshot.
@@ -327,35 +323,26 @@ async function captureSessionScreens(page) {
       log('WARN: DotGrid result did not appear in time');
     });
     await shot(page, '06-session-intro');
-    // Click through all intro steps (grid → commutativity → question).
-    while (await page.locator('.session-intro-btn').count()) {
-      await page.click('.session-intro-btn');
-      await sleep(250);
-    }
+    await clickAllIntroSteps(page);
   } else {
     log('WARN: no intro step found — 06-session-intro will be missing');
   }
 
-  // 2. Capture a normal question.
-  const q1 = await readQuestion();
+  const q1 = await readQuestion(page);
   await shot(page, '07-session-question');
 
-  // 3. Answer correctly → capture the "correct" feedback overlay.
-  await answerWith(q1.a * q1.b);
+  await answerWith(page, q1.a * q1.b);
   await page.waitForSelector('.feedback-overlay.correct', { timeout: 3000 });
   await shot(page, '08-session-feedback-correct');
   await page.click('.feedback-overlay');
   await page.waitForSelector('.feedback-overlay', { state: 'detached', timeout: 3000 });
 
-  // 4. Walk forward skipping any intros that might follow, then answer the
-  //    next question *incorrectly* to capture the "incorrect" overlay.
-  while (await page.locator('.session-intro-btn').count()) {
-    await page.click('.session-intro-btn');
-    await sleep(250);
-  }
-  const q2 = await readQuestion();
-  const wrong = q2.a * q2.b === 1 ? 2 : 1; // obviously wrong
-  await answerWith(wrong);
+  // Walk past any intros that might follow, then answer incorrectly to
+  // capture the "incorrect" overlay.
+  await clickAllIntroSteps(page);
+  const q2 = await readQuestion(page);
+  const wrong = q2.a * q2.b === 1 ? 2 : 1;
+  await answerWith(page, wrong);
   await page.waitForSelector('.feedback-overlay.incorrect', { timeout: 3000 });
   await shot(page, '09-session-feedback-incorrect');
   await page.click('.feedback-overlay');
@@ -371,10 +358,10 @@ async function captureRecap(page) {
   for (const f of profile.facts) {
     f.introduced = true;
     f.box = Math.max(2, f.box);
-    f.nextDue = '2026-04-12';
-    f.lastSeen = '2026-04-11';
+    f.nextDue = SEED_TODAY;
+    f.lastSeen = SEED_YESTERDAY;
     if (!f.history.length) {
-      f.history = [{ date: '2026-04-11', correct: true, responseTimeMs: 2500, answeredWith: f.product }];
+      f.history = [{ date: SEED_YESTERDAY, correct: true, responseTimeMs: 2500, answeredWith: f.product }];
     }
   }
   await seedProfile(page, profile);
@@ -388,10 +375,7 @@ async function captureRecap(page) {
     if (await page.locator('.recap-screen').count()) break;
 
     if (await page.locator('.session-intro').count()) {
-      while (await page.locator('.session-intro-btn').count()) {
-        await page.click('.session-intro-btn');
-        await sleep(250);
-      }
+      await clickAllIntroSteps(page);
       continue;
     }
 
@@ -402,14 +386,9 @@ async function captureRecap(page) {
     }
 
     if (await page.locator('.session-question-text').count()) {
-      const txt = await page.locator('.session-question-text').innerText();
-      const nums = (txt.match(/\d+/g) ?? []).map(Number);
-      if (nums.length >= 2) {
-        const [a, b] = nums;
-        const correct = a * b;
-        const s = String(correct);
-        for (const ch of s) await page.keyboard.press(ch);
-        if (s.length === 1) await page.keyboard.press('Enter');
+      const { a, b } = await readQuestion(page);
+      if (Number.isFinite(a) && Number.isFinite(b)) {
+        await answerWith(page, a * b);
         await sleep(100);
       }
     }
@@ -708,9 +687,7 @@ async function main() {
 
     await captureWelcomeScreens(page);
     await captureHome(page);
-    await captureProgress(page);
-    await captureBadges(page);
-    await captureRules(page);
+    for (const spec of NAV_SCREENS) await captureNavScreen(page, spec);
     await captureParentDashboard(page);
     await captureSessionScreens(page);
     await captureRecap(page);
