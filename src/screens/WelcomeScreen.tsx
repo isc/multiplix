@@ -129,11 +129,19 @@ export default function WelcomeScreen({ onComplete }: WelcomeScreenProps) {
     const [a, b] = fact;
     const [displayA, displayB] = displayOrders[testIndex];
 
+    const progressDots = Array.from({ length: testFacts.length }, (_, i) => {
+      if (i < testIndex) return 'done';
+      if (i === testIndex) return 'current';
+      return 'pending';
+    });
+
     return (
       <div className="welcome-screen">
         <div className="welcome-step" key="test">
           <div className="welcome-test-progress">
-            {testIndex + 1} / {testFacts.length}
+            {progressDots.map((status, i) => (
+              <div key={i} className={`welcome-test-progress-dot ${status}`} />
+            ))}
           </div>
           <div className="welcome-test-question">
             {displayA}
