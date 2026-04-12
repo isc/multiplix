@@ -43,3 +43,10 @@ class FakeAudioContext {
   FakeAudioContext as unknown as typeof AudioContext;
 (globalThis as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext =
   FakeAudioContext as unknown as typeof AudioContext;
+
+// jsdom doesn't implement HTMLMediaElement.play/pause — stub them so useTTS can
+// call `audio.play().catch(...)` without throwing.
+HTMLMediaElement.prototype.play = function () {
+  return Promise.resolve();
+};
+HTMLMediaElement.prototype.pause = function () {};
