@@ -26,6 +26,10 @@ export default defineConfig({
       },
       workbox: {
         globPatterns: ['**/*.{js,css,html,svg,woff2}'],
+        // The SW's navigateFallback serves `index.html` (the SPA shell) for
+        // all navigations. Exclude `/guide/` so the standalone HTML guide is
+        // served from its own index instead of the app shell.
+        navigateFallbackDenylist: [/\/guide(\/|$)/],
       },
     }),
   ],
