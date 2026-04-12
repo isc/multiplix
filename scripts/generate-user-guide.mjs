@@ -609,8 +609,8 @@ function buildHtml({ generatedAt }) {
   }
   section p { color: var(--text-muted); margin: 0 0 20px; }
   .shots {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    display: flex;
+    flex-wrap: wrap;
     gap: 20px;
   }
   figure.shot {
@@ -619,10 +619,15 @@ function buildHtml({ generatedAt }) {
     border-radius: 12px;
     padding: 12px;
     text-align: center;
+    flex: 0 1 280px;
+    max-width: 320px;
   }
   figure.shot img {
+    display: block;
     width: 100%;
+    max-width: 280px;
     height: auto;
+    margin: 0 auto;
     border-radius: 8px;
     box-shadow: 0 4px 12px rgba(0,0,0,0.08);
     background: white;
