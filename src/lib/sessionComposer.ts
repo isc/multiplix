@@ -13,6 +13,24 @@ const MAX_QUESTIONS = 15;
 const MAX_NEW_FACTS = 2;
 
 /**
+ * Stage d'introduction d'un fait, suivant la séquence canonique
+ * Van de Walle / Wichita Public Schools (2014) :
+ * Doubles (×2) → Fives (×5) → Nines (×9) → Squares (n×n) → Derived (le reste).
+ *
+ * Les ×0 et ×1 sont absents du jeu (table 2..9 uniquement).
+ * Chaque stage repose sur des anchor facts qui débloquent les suivants
+ * (×5 + ×2 → ×7 ; ×10 − ×2 plus tard ; carrés comme appui pour ×6/×7/×8).
+ */
+function factStage(fact: MultiFact): number {
+  const { a, b } = fact;
+  if (a === 2 || b === 2) return 1; // Doubles
+  if (a === 5 || b === 5) return 2; // Fives
+  if (a === 9 || b === 9) return 3; // Nines
+  if (a === b) return 4;            // Squares
+  return 5;                          // Derived (3×4, 3×6, 3×7, 3×8, 4×6, 4×7, 4×8, 6×7, 6×8, 7×8)
+}
+
+/**
  * Returns a random display order for a fact (a*b or b*a).
  * For squares (a === b), returns the original order.
  */
@@ -147,8 +165,12 @@ export function composeSession(profile: UserProfile, now: string): SessionQuesti
   const newFacts: MultiFact[] = [];
   if (shouldIntroduceNew(facts) && selected.length < MAX_QUESTIONS) {
     const notIntroduced = facts.filter((f) => !f.introduced);
-    // Sort by "simplicity": smallest product first (e.g., 2x2=4 before 9x9=81)
-    const sorted = [...notIntroduced].sort((a, b) => a.product - b.product);
+    // Ordre canonique Van de Walle / Wichita (2014) :
+    // Doubles → Fives → Nines → Squares → Derived. À stage égal,
+    // produit croissant (les plus petits anchor facts d'abord).
+    const sorted = [...notIntroduced].sort(
+      (a, b) => factStage(a) - factStage(b) || a.product - b.product,
+    );
 
     for (const fact of sorted) {
       if (newFacts.length >= MAX_NEW_FACTS) break;

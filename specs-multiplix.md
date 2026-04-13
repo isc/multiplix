@@ -187,8 +187,52 @@ Quand l'algorithme décide d'introduire un nouveau fait :
 1. **Affichage visuel :** Grille de points (array) animée — ex : 3 rangées de 7 points qui apparaissent une par une
 2. **Lien avec l'addition :** "3 × 7, c'est 7 + 7 + 7 = 21"
 3. **Commutativité :** La grille pivote de 90° → "7 × 3, c'est pareil ! C'est aussi 21"
-4. **Première question :** Posée immédiatement après l'introduction
-5. **Re-test :** Posée à nouveau 2-3 questions plus tard dans la séance
+4. **Stratégie de dérivation :** Lorsqu'une astuce existe pour le fait (cf. §3.4bis), on montre la dérivation : « × 9, c'est × 10 moins une fois » avec les étapes du calcul.
+5. **Première question :** Posée immédiatement après l'introduction
+6. **Re-test :** Posée à nouveau 2-3 questions plus tard dans la séance
+
+### 3.4bis Stratégies de dérivation
+
+**Sources :**
+- Brendefur, J., Strother, S., Thiede, K., Lane, C., & Surges-Prokop, M. J. (2015). *A Professional Development Program to Improve Math Skills Among Preschool Children in Head Start.* Boise State ScholarWorks. <https://scholarworks.boisestate.edu/cifs_facpubs/150/>
+- Wichita Public Schools (2014). *Multiplication Fact Strategies* (Van de Walle / DMT framework). <https://teachers.stjohns.k12.fl.us/ford-t/files/2021/09/Multiplication-Fact-Strategies.pdf>
+- DMT Institute. *Drills vs. Strategies: Building Flexible Thinking with Multiplication Facts.* <https://mathsuccess.dmtinstitute.com/p/drills-vs-strategies-building-flexible>
+
+La mémorisation par cœur pure est moins robuste que la **pratique stratégique**, où l'enfant dérive le résultat à partir de faits plus simples (anchor facts). Avec la répétition, la dérivation s'automatise et la trace mnésique se consolide — et si l'enfant oublie, il conserve un filet de secours.
+
+Les stratégies sont affichées :
+- **à l'introduction** (étape 4 ci-dessus) — pour installer l'idée qu'on peut dériver,
+- **en cas d'erreur, uniquement pour les faits en boîte ≤ 2** — au-delà, on vise le rappel direct, la grille suffit comme rappel conceptuel.
+
+#### Séquence canonique d'introduction (Van de Walle / Wichita 2014)
+
+Les nouveaux faits sont introduits dans cet ordre (anchor facts d'abord, dérivés ensuite) :
+
+1. **Doubles** (×2) — addition répétée, fondation pour ×3 et ×4
+2. **Fives** (×5) — skip counting, fondation pour ×6 et ×7
+3. **Nines** (×9) — astuce ×10 − n, anchor visuel fort
+4. **Squares** (n × n) — anchors mémorables, appui pour les voisins (×6, ×7, ×8)
+5. **Derived** — le reste (3×4, 3×6, 3×7, 3×8, 4×6, 4×7, 4×8, 6×7, 6×8, 7×8)
+
+Implémenté dans `factStage()` (`src/lib/sessionComposer.ts`).
+
+#### Stratégies utilisées (par ordre de priorité quand plusieurs s'appliquent)
+
+| Pivot | Astuce | Exemple |
+|-------|--------|---------|
+| × 9 | near-ten : × 10 moins une fois | 7 × 9 = 7 × 10 − 7 = 63 |
+| × 5 | skip-count : compter par 5 | 4 × 5 = 5 + 5 + 5 + 5 = 5, 10, 15, 20 = 20 |
+| × 3 | double-add : × 2 plus une fois | 7 × 3 = 7 × 2 + 7 = 21 |
+| × 4 | double-double : doubler le double | 6 × 4 = (6 × 2) × 2 = 24 |
+| × 6 | five-plus-one : × 5 plus une fois | 7 × 6 = 7 × 5 + 7 = 42 |
+| × 7 | five-plus-two : × 5 plus × 2 | 8 × 7 = 8 × 5 + 8 × 2 = 56 |
+| × 8 | double-double-double : doubler trois fois (8 = 2³) | 7 × 8 = 7 × 2 × 2 × 2 = 14 × 2 × 2 = 28 × 2 = 56 |
+
+**Notes sur les choix :**
+- ×5 utilise le skip counting plutôt que « moitié de × 10 », conformément à la séquence canonique : compter par 5 est l'anchor naturel et intuitif (les multiples de 5 se terminent par 0 ou 5).
+- ×8 utilise le doublement triple plutôt que « × 10 − × 2 », car il s'appuie directement sur l'anchor des doubles (déjà maîtrisé en stage 1) et exploite la structure 8 = 2³.
+
+Faits de base sans stratégie (grille + addition répétée suffisent) : table de 2, 3 × 3.
 
 **Rythme d'introduction :** Maximum 2 nouveaux faits par séance. Un nouveau fait n'est introduit que si les faits précédemment introduits sont au moins en boîte 2.
 

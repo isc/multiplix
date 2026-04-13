@@ -1,11 +1,13 @@
 import { useState, useRef, useCallback, useEffect } from 'react';
-import type { SessionQuestion, SessionResult, MultiFact } from '../types';
+import type { SessionQuestion, SessionResult, MultiFact, BoxLevel } from '../types';
 import NumPad from '../components/NumPad';
 import DotGrid from '../components/DotGrid';
 import FeedbackOverlay from '../components/FeedbackOverlay';
 import Mascot from '../components/Mascot';
+import StrategyHint from '../components/StrategyHint';
 import { RESPONSE_TIME } from '../types';
 import { getFactKey } from '../lib/facts';
+import { getStrategy } from '../lib/strategies';
 import { todayISO } from '../lib/utils';
 import { useSound } from '../hooks/useSound';
 import { useTTS } from '../hooks/useTTS';
@@ -38,13 +40,14 @@ export default function SessionScreen({
   const [currentIndex, setCurrentIndex] = useState(0);
   const [results, setResults] = useState<QuestionResult[]>([]);
   const [showIntro, setShowIntro] = useState(false);
-  const [introStep, setIntroStep] = useState<'grid' | 'commute'>('grid');
+  const [introStep, setIntroStep] = useState<'grid' | 'commute' | 'strategy'>('grid');
   const [feedback, setFeedback] = useState<{
     correct: boolean;
     fast: boolean;
     slow: boolean;
     correctAnswer: number;
     fact: { a: number; b: number };
+    factBox: BoxLevel;
   } | null>(null);
   const [numpadDisabled, setNumpadDisabled] = useState(false);
   const [mascotMood, setMascotMood] = useState<'idle' | 'happy' | 'sad'>('idle');
@@ -189,6 +192,7 @@ export default function SessionScreen({
           a: currentQuestion.displayA,
           b: currentQuestion.displayB,
         },
+        factBox: currentQuestion.fact.box,
       });
     },
     [currentQuestion, numpadDisabled, currentIndex, questions.length, onAnswer, playCorrect, playIncorrect, stopSpeech],
@@ -200,29 +204,47 @@ export default function SessionScreen({
   }, [moveToNext]);
 
   const handleIntroNext = useCallback(() => {
-    if (introStep === 'grid') {
-      // Skip commutativity step for square numbers (a === b) — it's nonsensical
-      if (currentQuestion && currentQuestion.fact.a === currentQuestion.fact.b) {
+    if (!currentQuestion) return;
+    const { a, b } = currentQuestion.fact;
+    const isSquare = a === b;
+    const hasStrategy = getStrategy(a, b) !== null;
+
+    const goToStrategyOrFinish = () => {
+      if (hasStrategy) {
+        setIntroStep('strategy');
+      } else {
         setShowIntro(false);
         questionStartTime.current = Date.now();
         speakQuestion(currentQuestion);
-      } else if (currentQuestion) {
+      }
+    };
+
+    if (introStep === 'grid') {
+      // Skip commutativity step for square numbers (a === b) — it's nonsensical
+      if (isSquare) {
+        goToStrategyOrFinish();
+      } else {
         setIntroStep('commute');
-        const { a, b } = currentQuestion.fact;
         speak(`comm-${a}-${b}`);
       }
+    } else if (introStep === 'commute') {
+      goToStrategyOrFinish();
     } else {
+      // 'strategy' step → start the question
       setShowIntro(false);
       questionStartTime.current = Date.now();
-      if (currentQuestion) {
-        speakQuestion(currentQuestion);
-      }
+      speakQuestion(currentQuestion);
     }
   }, [introStep, currentQuestion, speak, speakQuestion]);
 
   if (!currentQuestion) {
     return null;
   }
+
+  const introStrategy =
+    introStep === 'strategy'
+      ? getStrategy(currentQuestion.fact.a, currentQuestion.fact.b)
+      : null;
 
   // Progress dots: show at most 15 dots to keep it manageable
   const maxDots = Math.min(questions.length, 15);
@@ -287,7 +309,7 @@ export default function SessionScreen({
                 Suivant
               </button>
             </>
-          ) : (
+          ) : introStep === 'commute' ? (
             <>
               <DotGrid
                 a={currentQuestion.fact.a}
@@ -302,6 +324,19 @@ export default function SessionScreen({
                 <br />
                 C'est aussi{' '}
                 <strong>{currentQuestion.fact.product}</strong>
+              </div>
+              <button
+                className="session-intro-btn"
+                onClick={handleIntroNext}
+              >
+                Suivant
+              </button>
+            </>
+          ) : (
+            <>
+              {introStrategy && <StrategyHint strategy={introStrategy} variant="intro" />}
+              <div className="session-intro-explanation">
+                Une petite astuce pour s'en souvenir !
               </div>
               <button
                 className="session-intro-btn"
@@ -337,6 +372,7 @@ export default function SessionScreen({
           slow={feedback.slow}
           correctAnswer={feedback.correctAnswer}
           fact={feedback.fact}
+          factBox={feedback.factBox}
           onDismiss={handleFeedbackDismiss}
         />
       )}

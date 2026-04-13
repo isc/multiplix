@@ -65,19 +65,51 @@ Les révisions bonus (ajoutées en fin de séance quand peu de faits sont dispon
 
 ## 4. Compréhension conceptuelle avant mémorisation
 
-**Papiers :** Cowan et al. (2011), Brendefur et al. (2015)
+**Sources :**
+- Cowan, R., Donlan, C., Shepherd, D.-L., Cole-Fletcher, R., Saxton, M., & Hurry, J. (2011). *Basic calculation proficiency and mathematics achievement in elementary school children.* Journal of Educational Psychology.
+- Brendefur, J., Strother, S., Thiede, K., Lane, C., & Surges-Prokop, M. J. (2015). *A Professional Development Program to Improve Math Skills Among Preschool Children in Head Start.* Boise State ScholarWorks. <https://scholarworks.boisestate.edu/cifs_facpubs/150/>
+- Wichita Public Schools (2014). *Multiplication Fact Strategies* (séquence Van de Walle / DMT). <https://teachers.stjohns.k12.fl.us/ford-t/files/2021/09/Multiplication-Fact-Strategies.pdf>
+- DMT Institute. *Drills vs. Strategies: Building Flexible Thinking with Multiplication Facts.* <https://mathsuccess.dmtinstitute.com/p/drills-vs-strategies-building-flexible>
 
-**Statut : conforme dans l'esprit, simplifié**
+**Statut : conforme (2026-04-13, révisé après vérification des sources canoniques)**
+
+### Conformité
 
 L'introduction de chaque nouveau fait inclut :
 - Grille de points (array) animée rangée par rangée
-- Explication par addition répétée ("3 x 7, c'est 7 + 7 + 7 = 21")
+- Explication par addition répétée ("3 × 7, c'est 7 + 7 + 7 = 21")
 - Démonstration de la commutativité par rotation de la grille (sauf pour les carrés)
-- En cas d'erreur, la grille de points est montrée avec la bonne réponse (rappel conceptuel)
+- **Stratégie de dérivation** adaptée au fait (cf. tableau ci-dessous)
+- En cas d'erreur, la grille de points est montrée avec la bonne réponse ; la stratégie est également rappelée **tant que le fait est en boîte Leitner ≤ 2** (phase d'apprentissage). Au-delà, on vise le rappel direct et on retire l'échafaudage — conforme à la séquence « comprendre → pratiquer → automatiser » décrite par Brendefur.
 
-Brendefur et al. préconisent une approche strategy-based plus riche (décomposition, doubling, etc.), pas uniquement une visualisation. Notre introduction est plus simple — compromis raisonnable pour une app autonome sans accompagnement adulte.
+### Séquence canonique d'introduction
 
-Pas de changement prévu.
+L'ordre d'introduction des nouveaux faits suit la séquence Van de Walle / Wichita (2014) : Doubles → Fives → Nines → Squares → Derived. Cette séquence privilégie les **anchor facts** (faits mémorables et faciles à apprendre) qui servent ensuite de base aux dérivations. Implémenté dans `factStage()` (`src/lib/sessionComposer.ts`).
+
+### Stratégies par fait
+
+| Pivot | Astuce | Source canonique |
+|-------|--------|-------------------|
+| × 9 | near-ten : n × 10 − n | Wichita 2014, p. 8 |
+| × 5 | skip-count : compter par 5 | Wichita 2014, p. 4 |
+| × 3 | double-add : n × 2 + n | Van de Walle (derived from doubles) |
+| × 4 | double-double : (n × 2) × 2 | Wichita 2014, p. 6 |
+| × 6 | five-plus-one : n × 5 + n | Wichita 2014, p. 10 |
+| × 7 | five-plus-two : n × 5 + n × 2 | Wichita 2014, p. 12 |
+| × 8 | double-double-double : ((n × 2) × 2) × 2 | Wichita 2014, p. 11 |
+
+Faits de base exclus (table de 2 et 3 × 3) : grille + addition répétée suffisent.
+
+### Corrections appliquées le 2026-04-13
+
+Vérification croisée avec la séquence canonique : 4 divergences identifiées et corrigées.
+
+1. **×5 : « moitié de × 10 » → skip counting.** L'astuce de la moitié de ×10 nécessite la division, opération que l'enfant maîtrise mal en début de CE2. Le skip counting (5, 10, 15, 20…) est l'anchor naturel et figure dans toute la littérature canonique.
+2. **×8 : « × 10 − × 2 » → double-double-double.** Le doublement triple (8 = 2³) s'appuie directement sur l'anchor des doubles, déjà maîtrisé en stage 1. C'est la stratégie systématiquement enseignée par Van de Walle / Wichita.
+3. **Squares ajoutés comme stage d'introduction.** Les carrés (4×4, 6×6, 7×7, 8×8, 9×9) sont des anchor facts mémorables et servent d'appui pour les voisins (6×7 ≈ 6×6 + 6, etc.). Désormais introduits avant les "derived" facts.
+4. **Ordre canonique d'introduction.** Avant : tri par produit croissant. Après : Doubles → Fives → Nines → Squares → Derived (puis produit croissant à stage égal).
+
+Voir `specs-multiplix.md` §3.4bis pour le détail des stratégies et leur priorité.
 
 ---
 

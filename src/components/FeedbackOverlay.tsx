@@ -1,5 +1,8 @@
 import { useEffect, useState } from 'react';
 import DotGrid from './DotGrid';
+import StrategyHint from './StrategyHint';
+import { getStrategy } from '../lib/strategies';
+import type { BoxLevel } from '../types';
 import './FeedbackOverlay.css';
 
 interface FeedbackOverlayProps {
@@ -8,6 +11,8 @@ interface FeedbackOverlayProps {
   slow: boolean;   // > 5s
   correctAnswer: number;
   fact: { a: number; b: number };
+  /** Niveau Leitner actuel du fait (pour ne montrer la stratégie qu'en phase d'apprentissage). */
+  factBox: BoxLevel;
   onDismiss: () => void;
 }
 
@@ -38,6 +43,7 @@ export default function FeedbackOverlay({
   slow,
   correctAnswer,
   fact,
+  factBox,
   onDismiss,
 }: FeedbackOverlayProps) {
   // Pick message once on mount (stable across re-renders)
@@ -72,6 +78,8 @@ export default function FeedbackOverlay({
     );
   }
 
+  const strategy = factBox <= 2 ? getStrategy(fact.a, fact.b) : null;
+
   return (
     <div className="feedback-overlay incorrect">
       <div className="feedback-card">
@@ -80,6 +88,7 @@ export default function FeedbackOverlay({
         <div className="feedback-answer">
           {fact.a} {'\u00D7'} {fact.b} = {correctAnswer}
         </div>
+        {strategy && <StrategyHint strategy={strategy} variant="feedback" />}
         <div className="feedback-dotgrid">
           <DotGrid a={fact.a} b={fact.b} animated={false} size="small" />
         </div>

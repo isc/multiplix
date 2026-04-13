@@ -46,7 +46,10 @@ class FakeAudioContext {
 
 // jsdom doesn't implement HTMLMediaElement.play/pause — stub them so useTTS can
 // call `audio.play().catch(...)` without throwing.
-HTMLMediaElement.prototype.play = function () {
-  return Promise.resolve();
-};
-HTMLMediaElement.prototype.pause = function () {};
+// (Guarded so tests that opt into `node` environment don't crash.)
+if (typeof HTMLMediaElement !== 'undefined') {
+  HTMLMediaElement.prototype.play = function () {
+    return Promise.resolve();
+  };
+  HTMLMediaElement.prototype.pause = function () {};
+}

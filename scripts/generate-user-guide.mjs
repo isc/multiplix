@@ -279,19 +279,38 @@ async function captureSessionScreens(page) {
   //     composer stops introducing once `selected.length >= MAX_QUESTIONS`)
   //   - some facts remain unintroduced
   //   - `lastSeen` > 48h ago to bypass the anti-interference similarity check
+  //   - facts WITHOUT a strategy (×2 table, 3×3) are pre-introduced so the
+  //     chosen intro is guaranteed to have a strategy step (cf. specs §3.4bis)
+  //   - the 8 due facts are pinned at box 2 so the incorrect-feedback overlay
+  //     shows the strategy hint (only displayed for box ≤ 2)
   const profile = buildSampleProfile();
   const longAgo = '2026-04-05';
   const future = '2026-04-20';
+  const hasNoStrategy = (f) =>
+    f.a === 2 || f.b === 2 || (f.a === 3 && f.b === 3);
+  for (const f of profile.facts) {
+    if (hasNoStrategy(f) && !f.introduced) {
+      f.introduced = true;
+      f.box = 2;
+      f.lastSeen = longAgo;
+      f.nextDue = future;
+      f.history = [
+        { date: longAgo, correct: true, responseTimeMs: 2500, answeredWith: f.product },
+      ];
+    }
+  }
   let dueCount = 0;
   for (const f of profile.facts) {
     if (!f.introduced) continue;
-    if (f.box < 2) f.box = 2;
     f.lastSeen = longAgo;
-    // Keep only ~8 facts due today; the rest due in the future.
+    // Keep only ~8 facts due today, pinned at box 2 to surface the strategy hint
+    // on the incorrect-feedback overlay; the rest due in the future.
     if (dueCount < 8) {
+      f.box = 2;
       f.nextDue = SEED_TODAY;
       dueCount++;
     } else {
+      if (f.box < 2) f.box = 2;
       f.nextDue = future;
     }
   }
@@ -300,7 +319,7 @@ async function captureSessionScreens(page) {
   if (notIntroducedCount < 3) {
     for (const f of profile.facts) {
       if (notIntroducedCount >= 4) break;
-      if (f.a + f.b >= 14) {
+      if (f.a + f.b >= 14 && !hasNoStrategy(f)) {
         f.introduced = false;
         f.box = 1;
         f.history = [];
@@ -323,6 +342,21 @@ async function captureSessionScreens(page) {
       log('WARN: DotGrid result did not appear in time');
     });
     await shot(page, '06-session-intro');
+
+    // Walk to the strategy step (grid → commute → strategy ; squares skip commute).
+    // The chosen fact is guaranteed to have a strategy (×2 and 3×3 are pre-introduced).
+    await page.click('.session-intro-btn');
+    await sleep(250);
+    if (!(await page.locator('.strategy-hint').count())) {
+      // Currently on commute step — click again to reach strategy.
+      await page.click('.session-intro-btn');
+      await sleep(250);
+    }
+    if (await page.locator('.strategy-hint').count()) {
+      await shot(page, '06b-session-intro-strategy');
+    } else {
+      log('WARN: strategy step not reached — 06b-session-intro-strategy missing');
+    }
     await clickAllIntroSteps(page);
   } else {
     log('WARN: no intro step found — 06-session-intro will be missing');
@@ -435,17 +469,21 @@ const SECTIONS = [
     id: 'session',
     title: 'La séance',
     description: `Une séance contient 12 à 15 questions. Quand un fait
-      nouveau apparaît, il est d'abord introduit avec une grille de points
-      montrant la multiplication comme une addition répétée, puis la propriété
-      de commutativité (3×5 = 5×3). Ensuite viennent les questions. Une bonne
-      réponse rapide donne une étoile dorée, une erreur affiche la bonne réponse
-      avec la grille de points et le fait est re-posé un peu plus loin dans la
+      nouveau apparaît, il est introduit en trois temps : une grille de points
+      qui montre la multiplication comme une addition répétée, la propriété de
+      commutativité (3×5 = 5×3, sauf pour les carrés), et une astuce de
+      dérivation adaptée au fait (par exemple « × 9 = × 10 moins une fois »).
+      Ensuite viennent les questions. Une bonne réponse rapide donne une étoile
+      dorée. En cas d'erreur, la bonne réponse est affichée avec la grille de
+      points et — tant que le fait est en début d'apprentissage — l'astuce de
+      dérivation est rappelée. Le fait est re-posé un peu plus loin dans la
       séance.`,
     shots: [
-      { file: '06-session-intro', caption: 'Introduction d\'un nouveau fait avec une grille de points.' },
+      { file: '06-session-intro', caption: 'Introduction d\'un nouveau fait — étape 1 : grille de points et addition répétée.' },
+      { file: '06b-session-intro-strategy', caption: 'Introduction — étape 3 : astuce de dérivation pour mémoriser le fait.' },
       { file: '07-session-question', caption: 'Question standard et pavé numérique.' },
       { file: '08-session-feedback-correct', caption: 'Bonne réponse rapide — étoile dorée.' },
-      { file: '09-session-feedback-incorrect', caption: 'Réponse incorrecte — la grille de points revient.' },
+      { file: '09-session-feedback-incorrect', caption: 'Réponse incorrecte — grille de points et rappel de l\'astuce.' },
     ],
   },
   {
