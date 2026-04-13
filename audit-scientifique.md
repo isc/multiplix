@@ -204,24 +204,24 @@ Le mode d'entrée (pavé numérique) ajoute un surcoût moteur qui éloigne les 
 
 ### Deux axes
 
-**Speech-to-text (l'enfant répond à voix haute)** :
-- Aligne les temps de réponse avec ceux de la recherche
-- Vocabulaire restreint (nombres de 1 à 81 en français) favorable à la reconnaissance
-- Risques : qualité de reconnaissance sur voix d'enfant, bruit ambiant, mode offline (la SpeechRecognition API de Chrome passe par le cloud)
+**Text-to-speech (l'app pose la question à l'oral)** — **fait** (2026-04-13) :
+- Audios pré-générés via Mistral Voxtral TTS (voix française), stockés dans `public/audio/tts/` et servis offline par la PWA — pas de `SpeechSynthesis` runtime pour garantir une voix stable et enfantine.
+- Couvre : énoncé de la question (`q-A-B`), introduction d'un nouveau fait (`intro-A-B`), commutativité (`comm-A-B`), astuce de dérivation (`strategy-A-B`), phrases statiques du parcours de bienvenue et du récap.
+- Canal auditif supplémentaire utile pour les lecteurs hésitants et pour l'automatisation orale.
+- Cf. specs §3.6 et `scripts/generate-tts.mjs`.
 
-**Text-to-speech (l'app pose la question à l'oral)** :
-- "Combien font 6 fois 7 ?" en plus de l'affichage visuel
-- Canal auditif supplémentaire, utile pour les lecteurs hésitants
-- SpeechSynthesis API : bien supportée, fonctionne offline
-- Faible risque technique
+**Speech-to-text (l'enfant répond à voix haute)** — à explorer :
+- Alignerait les temps de réponse avec ceux de la recherche (rappel automatique < 1-2s à l'oral).
+- Vocabulaire restreint (nombres de 1 à 81 en français) favorable à la reconnaissance.
+- Risques : qualité de reconnaissance sur voix d'enfant, bruit ambiant, mode offline (la SpeechRecognition API de Chrome passe par le cloud).
 
-### Plan suggéré
+### Plan restant
 
-1. **Court terme** : ajouter le TTS pour la lecture des questions (faible risque, gain pédagogique)
-2. **Moyen terme** : prototyper la reconnaissance vocale comme option alternative au pavé numérique, avec seuils de temps adaptés au mode d'entrée
-3. Le pavé numérique reste le mode par défaut et le fallback
+1. ~~**Court terme** : ajouter le TTS pour la lecture des questions~~ → fait.
+2. **Moyen terme** : prototyper la reconnaissance vocale comme option alternative au pavé numérique, avec seuils de temps adaptés au mode d'entrée (cf. tableau §5 « Vocal (futur) »).
+3. Le pavé numérique reste le mode par défaut et le fallback.
 
-### Contraintes techniques identifiées
+### Contraintes techniques identifiées (STT)
 
 - **Offline** : SpeechRecognition (Chrome) nécessite une connexion. Safari fait du on-device mais l'API est moins fiable. Problématique pour notre PWA offline-first.
 - **Voix d'enfant** : les modèles de reconnaissance sont entraînés sur des voix adultes. Risque de faux négatifs frustrants.

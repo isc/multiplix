@@ -170,6 +170,7 @@ Les faits ×1 et ×10 sont enseignés comme des **règles** (pas de la mémorisa
 
 1. Affichage de la question : "6 × 7 = ?"
    - Les opérandes peuvent être présentés dans les deux ordres (6×7 ou 7×6) même si le fait est stocké une seule fois
+   - La question est aussi énoncée à voix haute ("six fois sept") — canal auditif supplémentaire pour les lecteurs hésitants (cf. §3.6)
 2. L'enfant tape sa réponse sur un pavé numérique intégré (gros boutons tactiles)
 3. Validation automatique à 2 chiffres, ou bouton "OK" pour les résultats < 10
 4. **Feedback immédiat :**
@@ -191,6 +192,8 @@ Quand l'algorithme décide d'introduire un nouveau fait :
 5. **Première question :** Posée immédiatement après l'introduction
 6. **Re-test :** Posée à nouveau 2-3 questions plus tard dans la séance
 
+Chaque étape est accompagnée d'un audio pré-enregistré (`intro-A-B`, `comm-A-B`, `strategy-A-B`) — cf. §3.6.
+
 ### 3.4bis Stratégies de dérivation
 
 **Sources :**
@@ -203,6 +206,8 @@ La mémorisation par cœur pure est moins robuste que la **pratique stratégique
 Les stratégies sont affichées :
 - **à l'introduction** (étape 4 ci-dessus) — pour installer l'idée qu'on peut dériver,
 - **en cas d'erreur, uniquement pour les faits en boîte ≤ 2** — au-delà, on vise le rappel direct, la grille suffit comme rappel conceptuel.
+
+L'astuce est également énoncée à voix haute aux deux moments (`strategy-A-B`, cf. §3.6).
 
 #### Séquence canonique d'introduction (Van de Walle / Wichita 2014)
 
@@ -258,6 +263,24 @@ L'écran de récap ne doit jamais afficher de score brut (ex : "8/12 bonnes rép
 - Nombre d'erreurs
 
 *Le score brut, le taux de réussite et le temps de réponse moyen sont disponibles dans le tableau de bord parent (§5.2).*
+
+### 3.6 Audio (text-to-speech)
+
+L'application lit à voix haute les étapes-clés d'une séance — canal auditif supplémentaire, utile aux lecteurs hésitants et aux enfants qui automatisent mieux à l'oral.
+
+**Fichiers pré-générés** (voix française *Marie – Curious*, Mistral Voxtral TTS) stockés dans `public/audio/tts/` :
+
+| Clé | Contenu | Nombre |
+|-----|---------|--------|
+| `q-A-B` | « A fois B » — énoncé de la question | 64 |
+| `intro-A-B` | « Nouveau ! A fois B, c'est B + B + … = P » | 36 |
+| `comm-A-B` | « B fois A, c'est pareil ! C'est aussi P » | 28 |
+| `strategy-A-B` | Astuce de dérivation parlée (cf. §3.4bis) | 27 |
+| `welcome-*`, `recap-done` | Phrases statiques du parcours de bienvenue et du récap | 4 |
+
+Génération : `MISTRAL_API_KEY=… node scripts/generate-tts.mjs` (idempotent — skip les fichiers déjà présents). Les mêmes fichiers sont servis offline via le precache de la PWA.
+
+Coupure son : bouton mute global qui persiste l'état dans `localStorage`.
 
 ---
 
