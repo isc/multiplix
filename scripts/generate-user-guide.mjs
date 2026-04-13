@@ -509,7 +509,7 @@ const SECTIONS = [
 ];
 
 function buildHtml({ generatedAt }) {
-  const sectionHtml = SECTIONS.map((s) => {
+  const sectionHtml = SECTIONS.map((s, idx) => {
     const shots = s.shots
       .map(
         (sh) => `
@@ -519,11 +519,16 @@ function buildHtml({ generatedAt }) {
           </figure>`,
       )
       .join('\n');
+    const shotsClass = `shots shots-${s.shots.length}`;
+    // Alternate the text/shots column order on desktop for visual rhythm.
+    const reversed = idx % 2 === 1 ? ' section-reversed' : '';
     return `
-      <section id="${s.id}">
-        <h2>${s.title}</h2>
-        <p>${s.description.trim().replace(/\s+/g, ' ')}</p>
-        <div class="shots">
+      <section id="${s.id}" class="section${reversed}">
+        <div class="section-text">
+          <h2>${s.title}</h2>
+          <p>${s.description.trim().replace(/\s+/g, ' ')}</p>
+        </div>
+        <div class="${shotsClass}">
           ${shots}
         </div>
       </section>`;
@@ -564,7 +569,7 @@ function buildHtml({ generatedAt }) {
   header h1 { margin: 0 0 8px; font-size: 2.2rem; }
   header p { margin: 0; opacity: 0.92; }
   header a { color: #FFEB8A; }
-  main { max-width: 1100px; margin: 0 auto; padding: 24px; }
+  main { max-width: 1200px; margin: 0 auto; padding: 24px; }
   nav.toc {
     background: var(--surface);
     border: 1px solid var(--border);
@@ -576,36 +581,45 @@ function buildHtml({ generatedAt }) {
   nav.toc li { margin: 4px 0; }
   nav.toc a { color: var(--primary); text-decoration: none; }
   nav.toc a:hover { text-decoration: underline; }
-  section {
+  section.section {
     background: var(--surface);
     border: 1px solid var(--border);
     border-radius: 16px;
-    padding: 24px;
+    padding: 32px;
     margin-bottom: 24px;
+    display: grid;
+    grid-template-columns: minmax(0, 5fr) minmax(0, 6fr);
+    gap: 40px;
+    align-items: start;
   }
-  section h2 {
-    margin: 0 0 8px;
+  section.section-reversed .section-text { order: 2; }
+  section.section-reversed .shots { order: 1; }
+  .section-text { max-width: 55ch; }
+  .section-text h2 {
+    margin: 0 0 12px;
     color: var(--primary);
+    font-size: 1.6rem;
   }
-  section p { color: var(--text-muted); margin: 0 0 20px; }
+  .section-text p { color: var(--text-muted); margin: 0; }
   .shots {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 20px;
+    display: grid;
+    gap: 16px;
+    justify-items: center;
   }
+  .shots-1 { grid-template-columns: minmax(0, 320px); justify-content: center; }
+  .shots-2, .shots-3, .shots-4 { grid-template-columns: 1fr 1fr; }
   figure.shot {
     margin: 0;
     background: #F0F1FB;
     border-radius: 12px;
     padding: 12px;
     text-align: center;
-    flex: 0 1 280px;
+    width: 100%;
     max-width: 320px;
   }
   figure.shot img {
     display: block;
     width: 100%;
-    max-width: 280px;
     height: auto;
     margin: 0 auto;
     border-radius: 8px;
@@ -624,11 +638,18 @@ function buildHtml({ generatedAt }) {
     font-size: 0.85rem;
   }
   footer code { background: var(--surface); padding: 2px 6px; border-radius: 4px; }
+  @media (max-width: 800px) {
+    section.section { grid-template-columns: 1fr; gap: 24px; padding: 24px; }
+    section.section-reversed .section-text { order: 0; }
+    section.section-reversed .shots { order: 1; }
+    .shots-1 { justify-self: center; }
+  }
   @media (max-width: 640px) {
     nav.toc ul { columns: 1; }
     header { padding: 32px 16px; }
     main { padding: 16px; }
-    section { padding: 16px; }
+    section.section { padding: 16px; }
+    .shots-2, .shots-3, .shots-4 { grid-template-columns: 1fr; }
   }
 </style>
 </head>
