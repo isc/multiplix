@@ -61,6 +61,41 @@ async function generateAudio(text, outputPath) {
   return true;
 }
 
+// Speech text for each strategy, keyed by canonical pair (a <= b).
+// KEEP IN SYNC with src/lib/strategies.ts (pivots and StrategyKind).
+function strategyText(a, b) {
+  const lo = Math.min(a, b);
+  const hi = Math.max(a, b);
+  if (lo === 2) return null;
+  if (lo === hi && lo === 3) return null;
+  const PIVOT_PRIORITY = [9, 5, 3, 4, 6, 7, 8];
+  for (const pivot of PIVOT_PRIORITY) {
+    if (lo === pivot || hi === pivot) {
+      const n = pivot === lo ? hi : lo;
+      const p = pivot * n;
+      switch (pivot) {
+        case 9:
+          return `${n} fois 9, c'est ${n} fois 10 moins ${n}. ${n * 10} moins ${n}, égale ${p}.`;
+        case 5: {
+          const seq = Array.from({ length: n }, (_, i) => (i + 1) * 5).join(', ');
+          return `${n} fois 5, c'est compter par 5. ${seq}. Égale ${p}.`;
+        }
+        case 3:
+          return `${n} fois 3, c'est ${n} fois 2 plus ${n}. ${n * 2} plus ${n}, égale ${p}.`;
+        case 4:
+          return `${n} fois 4, c'est le double du double. ${n} fois 2 égale ${n * 2}, et ${n * 2} fois 2 égale ${p}.`;
+        case 6:
+          return `${n} fois 6, c'est ${n} fois 5 plus ${n}. ${n * 5} plus ${n}, égale ${p}.`;
+        case 7:
+          return `${n} fois 7, c'est ${n} fois 5 plus ${n} fois 2. ${n * 5} plus ${n * 2}, égale ${p}.`;
+        case 8:
+          return `${n} fois 8, c'est doubler trois fois. ${n} fois 2 égale ${n * 2}, fois 2 égale ${n * 4}, fois 2 égale ${p}.`;
+      }
+    }
+  }
+  return null;
+}
+
 function buildEntries() {
   const entries = [];
 
@@ -89,6 +124,14 @@ function buildEntries() {
         key: `comm-${a}-${b}`,
         text: `${b} fois ${a}, c'est pareil ! C'est aussi ${a * b}`,
       });
+    }
+  }
+
+  // Strategies: spoken hint when the strategy step is shown (intro or feedback ≤ box 2)
+  for (let a = 2; a <= 9; a++) {
+    for (let b = a; b <= 9; b++) {
+      const text = strategyText(a, b);
+      if (text) entries.push({ key: `strategy-${a}-${b}`, text });
     }
   }
 

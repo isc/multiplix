@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import DotGrid from './DotGrid';
 import StrategyHint from './StrategyHint';
 import { getStrategy } from '../lib/strategies';
+import { pickRandom } from '../lib/utils';
 import type { BoxLevel } from '../types';
 import './FeedbackOverlay.css';
 
@@ -32,10 +33,6 @@ const INCORRECT_MESSAGES = [
   'Pas tout à fait, regarde :',
   "T'inquiète, on va y arriver !",
 ];
-
-function pickRandom<T>(arr: T[]): T {
-  return arr[Math.floor(Math.random() * arr.length)];
-}
 
 export default function FeedbackOverlay({
   correct,

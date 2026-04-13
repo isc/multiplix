@@ -273,16 +273,9 @@ async function captureParentDashboard(page) {
 }
 
 async function captureSessionScreens(page) {
-  // Build a profile optimized for triggering an *introduction* question:
-  //   - all introduced facts at box ≥ 2 (so `shouldIntroduceNew` allows intros)
-  //   - few introduced facts are due today (to leave room for the intro; the
-  //     composer stops introducing once `selected.length >= MAX_QUESTIONS`)
-  //   - some facts remain unintroduced
-  //   - `lastSeen` > 48h ago to bypass the anti-interference similarity check
-  //   - facts WITHOUT a strategy (×2 table, 3×3) are pre-introduced so the
-  //     chosen intro is guaranteed to have a strategy step (cf. specs §3.4bis)
-  //   - the 8 due facts are pinned at box 2 so the incorrect-feedback overlay
-  //     shows the strategy hint (only displayed for box ≤ 2)
+  // Pre-introduce ×2 and 3×3 (no strategy → would skip the strategy step) and
+  // pin the 8 due facts at box 2 (strategy hint only shows for box ≤ 2).
+  // Source of truth for the no-strategy rule: src/lib/strategies.ts.
   const profile = buildSampleProfile();
   const longAgo = '2026-04-05';
   const future = '2026-04-20';
@@ -303,8 +296,6 @@ async function captureSessionScreens(page) {
   for (const f of profile.facts) {
     if (!f.introduced) continue;
     f.lastSeen = longAgo;
-    // Keep only ~8 facts due today, pinned at box 2 to surface the strategy hint
-    // on the incorrect-feedback overlay; the rest due in the future.
     if (dueCount < 8) {
       f.box = 2;
       f.nextDue = SEED_TODAY;
@@ -314,7 +305,6 @@ async function captureSessionScreens(page) {
       f.nextDue = future;
     }
   }
-  // Ensure at least a few facts remain unintroduced.
   let notIntroducedCount = profile.facts.filter((f) => !f.introduced).length;
   if (notIntroducedCount < 3) {
     for (const f of profile.facts) {
@@ -344,13 +334,14 @@ async function captureSessionScreens(page) {
     await shot(page, '06-session-intro');
 
     // Walk to the strategy step (grid → commute → strategy ; squares skip commute).
-    // The chosen fact is guaranteed to have a strategy (×2 and 3×3 are pre-introduced).
     await page.click('.session-intro-btn');
-    await sleep(250);
-    if (!(await page.locator('.strategy-hint').count())) {
-      // Currently on commute step — click again to reach strategy.
+    const reachedStrategy = await page
+      .waitForSelector('.strategy-hint', { timeout: 1000 })
+      .then(() => true)
+      .catch(() => false);
+    if (!reachedStrategy) {
       await page.click('.session-intro-btn');
-      await sleep(250);
+      await page.waitForSelector('.strategy-hint', { timeout: 2000 }).catch(() => {});
     }
     if (await page.locator('.strategy-hint').count()) {
       await shot(page, '06b-session-intro-strategy');

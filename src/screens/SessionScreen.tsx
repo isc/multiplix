@@ -7,7 +7,7 @@ import Mascot from '../components/Mascot';
 import StrategyHint from '../components/StrategyHint';
 import { RESPONSE_TIME } from '../types';
 import { getFactKey } from '../lib/facts';
-import { getStrategy } from '../lib/strategies';
+import { getStrategy, hasStrategy } from '../lib/strategies';
 import { todayISO } from '../lib/utils';
 import { useSound } from '../hooks/useSound';
 import { useTTS } from '../hooks/useTTS';
@@ -30,6 +30,8 @@ interface QuestionResult {
   correct: boolean;
 }
 
+type IntroStep = 'grid' | 'commute' | 'strategy';
+
 export default function SessionScreen({
   questions: initialQuestions,
   mascotLevel,
@@ -40,7 +42,7 @@ export default function SessionScreen({
   const [currentIndex, setCurrentIndex] = useState(0);
   const [results, setResults] = useState<QuestionResult[]>([]);
   const [showIntro, setShowIntro] = useState(false);
-  const [introStep, setIntroStep] = useState<'grid' | 'commute' | 'strategy'>('grid');
+  const [introStep, setIntroStep] = useState<IntroStep>('grid');
   const [feedback, setFeedback] = useState<{
     correct: boolean;
     fast: boolean;
@@ -194,8 +196,18 @@ export default function SessionScreen({
         },
         factBox: currentQuestion.fact.box,
       });
+
+      // Speak the strategy hint when it's shown on the incorrect overlay
+      // (gated by box ≤ 2 in FeedbackOverlay — kept in sync here).
+      if (
+        !correct &&
+        currentQuestion.fact.box <= 2 &&
+        hasStrategy(currentQuestion.fact.a, currentQuestion.fact.b)
+      ) {
+        speak(`strategy-${currentQuestion.fact.a}-${currentQuestion.fact.b}`);
+      }
     },
-    [currentQuestion, numpadDisabled, currentIndex, questions.length, onAnswer, playCorrect, playIncorrect, stopSpeech],
+    [currentQuestion, numpadDisabled, currentIndex, questions.length, onAnswer, playCorrect, playIncorrect, stopSpeech, speak],
   );
 
   const handleFeedbackDismiss = useCallback(() => {
@@ -207,11 +219,11 @@ export default function SessionScreen({
     if (!currentQuestion) return;
     const { a, b } = currentQuestion.fact;
     const isSquare = a === b;
-    const hasStrategy = getStrategy(a, b) !== null;
 
     const goToStrategyOrFinish = () => {
-      if (hasStrategy) {
+      if (hasStrategy(a, b)) {
         setIntroStep('strategy');
+        speak(`strategy-${a}-${b}`);
       } else {
         setShowIntro(false);
         questionStartTime.current = Date.now();

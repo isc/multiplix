@@ -1,19 +1,4 @@
-// === Stratégies de dérivation pour les faits de multiplication ===
-//
-// Inspiré de Brendefur et al. (2015) et de la séquence canonique Van de Walle /
-// Wichita Public Schools (2014) : la pratique stratégique (doubling, skip
-// counting, near-ten…) construit une automaticité plus robuste que la
-// mémorisation par cœur. L'échafaudage s'efface avec la répétition, mais
-// reste disponible comme filet de secours en cas d'oubli.
-//
-// Choix de stratégie par fait :
-//   ×9 : near-ten      n × 10 − n           (anchor : ×10)
-//   ×5 : skip-count    5 + 5 + ... (n fois) (anchor : compter par 5)
-//   ×3 : double-add    n × 2 + n            (s'appuie sur les doubles)
-//   ×4 : double-double (n × 2) × 2          (doubler le double)
-//   ×8 : double³       n × 2 × 2 × 2        (doubler trois fois ; 8 = 2³)
-//   ×6 : five-plus-one n × 5 + n            (anchor : ×5 + 1 fois)
-//   ×7 : five-plus-two n × 5 + n × 2        (distributivité 5 + 2)
+// Stratégies de dérivation par fait — voir specs §3.4bis et audit §4.
 
 export type StrategyKind =
   | 'near-ten'           // ×9 : n×10 − n
@@ -38,8 +23,7 @@ interface StrategyTemplate {
   lines: (other: number, product: number) => string[];
 }
 
-// Ordre = priorité pédagogique : 9 (astuce visuelle la plus forte) d'abord, puis
-// 5 (moitié de ×10), puis les décompositions additives par ordre de simplicité.
+// Ordre = priorité pédagogique quand plusieurs pivots s'appliquent.
 const STRATEGIES: ReadonlyArray<readonly [pivot: number, StrategyTemplate]> = [
   [9, {
     kind: 'near-ten',
@@ -112,4 +96,8 @@ export function getStrategy(a: number, b: number): Strategy | null {
     }
   }
   return null;
+}
+
+export function hasStrategy(a: number, b: number): boolean {
+  return getStrategy(a, b) !== null;
 }

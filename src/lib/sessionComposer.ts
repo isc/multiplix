@@ -12,22 +12,14 @@ const MIN_QUESTIONS = 12;
 const MAX_QUESTIONS = 15;
 const MAX_NEW_FACTS = 2;
 
-/**
- * Stage d'introduction d'un fait, suivant la séquence canonique
- * Van de Walle / Wichita Public Schools (2014) :
- * Doubles (×2) → Fives (×5) → Nines (×9) → Squares (n×n) → Derived (le reste).
- *
- * Les ×0 et ×1 sont absents du jeu (table 2..9 uniquement).
- * Chaque stage repose sur des anchor facts qui débloquent les suivants
- * (×5 + ×2 → ×7 ; ×10 − ×2 plus tard ; carrés comme appui pour ×6/×7/×8).
- */
+// Séquence canonique d'introduction (Van de Walle / Wichita 2014) — voir specs §3.4bis.
 function factStage(fact: MultiFact): number {
   const { a, b } = fact;
   if (a === 2 || b === 2) return 1; // Doubles
   if (a === 5 || b === 5) return 2; // Fives
   if (a === 9 || b === 9) return 3; // Nines
   if (a === b) return 4;            // Squares
-  return 5;                          // Derived (3×4, 3×6, 3×7, 3×8, 4×6, 4×7, 4×8, 6×7, 6×8, 7×8)
+  return 5;                          // Derived
 }
 
 /**
@@ -165,9 +157,6 @@ export function composeSession(profile: UserProfile, now: string): SessionQuesti
   const newFacts: MultiFact[] = [];
   if (shouldIntroduceNew(facts) && selected.length < MAX_QUESTIONS) {
     const notIntroduced = facts.filter((f) => !f.introduced);
-    // Ordre canonique Van de Walle / Wichita (2014) :
-    // Doubles → Fives → Nines → Squares → Derived. À stage égal,
-    // produit croissant (les plus petits anchor facts d'abord).
     const sorted = [...notIntroduced].sort(
       (a, b) => factStage(a) - factStage(b) || a.product - b.product,
     );
