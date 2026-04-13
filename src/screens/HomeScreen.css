@@ -123,3 +123,8 @@
   align-items: center;
   justify-content: center;
 }
+
+.home-mute-btn.home-mode-active {
+  background: var(--primary-light);
+  color: white;
+}

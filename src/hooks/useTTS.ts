@@ -1,16 +1,18 @@
-import { useCallback, useRef, useEffect } from 'react';
+import { useCallback, useRef, useEffect, useState } from 'react';
 
 const BASE = import.meta.env.BASE_URL;
 
 export function useTTS(isMuted: boolean) {
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const mutedRef = useRef(isMuted);
+  const [isSpeaking, setIsSpeaking] = useState(false);
 
   useEffect(() => {
     mutedRef.current = isMuted;
     if (isMuted && audioRef.current) {
-      audioRef.current.pause();
-      audioRef.current.currentTime = 0;
+      const audio = audioRef.current;
+      audio.pause();
+      audio.currentTime = 0;
       audioRef.current = null;
     }
   }, [isMuted]);
@@ -25,7 +27,18 @@ export function useTTS(isMuted: boolean) {
     }
     const audio = new Audio(`${BASE}audio/tts/${key}.mp3`);
     audioRef.current = audio;
-    audio.play().catch(() => {});
+    setIsSpeaking(true);
+    const clearIfCurrent = () => {
+      if (audioRef.current === audio) {
+        setIsSpeaking(false);
+      }
+    };
+    audio.addEventListener('ended', clearIfCurrent);
+    audio.addEventListener('error', clearIfCurrent);
+    audio.addEventListener('pause', clearIfCurrent);
+    audio.play().catch(() => {
+      clearIfCurrent();
+    });
   }, []);
 
   const stop = useCallback(() => {
@@ -34,6 +47,7 @@ export function useTTS(isMuted: boolean) {
       audioRef.current.currentTime = 0;
       audioRef.current = null;
     }
+    setIsSpeaking(false);
   }, []);
 
   useEffect(() => {
@@ -45,5 +59,5 @@ export function useTTS(isMuted: boolean) {
     };
   }, []);
 
-  return { speak, stop };
+  return { speak, stop, isSpeaking };
 }

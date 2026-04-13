@@ -210,22 +210,25 @@ Le mode d'entrée (pavé numérique) ajoute un surcoût moteur qui éloigne les 
 - Canal auditif supplémentaire utile pour les lecteurs hésitants et pour l'automatisation orale.
 - Cf. specs §3.6 et `scripts/generate-tts.mjs`.
 
-**Speech-to-text (l'enfant répond à voix haute)** — à explorer :
-- Alignerait les temps de réponse avec ceux de la recherche (rappel automatique < 1-2s à l'oral).
-- Vocabulaire restreint (nombres de 1 à 81 en français) favorable à la reconnaissance.
-- Risques : qualité de reconnaissance sur voix d'enfant, bruit ambiant, mode offline (la SpeechRecognition API de Chrome passe par le cloud).
+**Speech-to-text (l'enfant répond à voix haute)** — **prototype disponible (2026-04-13)** :
+- Mode optionnel activable via un bouton micro sur l'accueil (persisté en `localStorage`, clé `multiplix-input-mode`).
+- Wrap de la Web Speech API (`useSpeechRecognition`, fr-FR, `maxAlternatives=5`, auto-restart sur `no-speech`/`aborted`).
+- Parseur `parseFrenchNumber` : gère chiffres bruts, formes canoniques (0-100), séquences de chiffres épelés, et parcourt les alternatives renvoyées par l'API.
+- Attente de fin de TTS avant écoute (exposition de `isSpeaking` dans `useTTS`) pour éviter l'écho de la question.
+- Fallback clavier après 3 échecs de parsing consécutifs, et lien explicite « Utiliser le clavier ».
+- Seuils UI adaptés : FAST=2000 ms, SLOW=3000 ms en mode vocal (feedback d'affichage uniquement). La promotion Leitner reste sur 5000 ms pour le premier prototype — à réviser après observation terrain.
 
-### Plan restant
+### Limites de ce prototype
 
-1. ~~**Court terme** : ajouter le TTS pour la lecture des questions~~ → fait.
-2. **Moyen terme** : prototyper la reconnaissance vocale comme option alternative au pavé numérique, avec seuils de temps adaptés au mode d'entrée (cf. tableau §5 « Vocal (futur) »).
-3. Le pavé numérique reste le mode par défaut et le fallback.
-
-### Contraintes techniques identifiées (STT)
-
-- **Offline** : SpeechRecognition (Chrome) nécessite une connexion. Safari fait du on-device mais l'API est moins fiable. Problématique pour notre PWA offline-first.
-- **Voix d'enfant** : les modèles de reconnaissance sont entraînés sur des voix adultes. Risque de faux négatifs frustrants.
+- **Offline** : `SpeechRecognition` (Chrome) nécessite une connexion. Un message l'indique à l'enfant en cas d'erreur `network`.
+- **Voix d'enfant** : les modèles de reconnaissance sont entraînés sur des voix adultes. Risque de faux négatifs frustrants ; mitigé par le parcours des alternatives et le fallback clavier.
 - **Bruit de fond** : environnement domestique non contrôlé.
+- **Safari** : support partiel de l'API (`webkitSpeechRecognition`). Le bouton micro n'apparaît que si l'API est détectée (`isSpeechRecognitionSupported`).
+
+### Prochaines étapes
+
+1. Observer l'usage réel sur voix d'enfant et décider si les seuils Leitner doivent aussi passer à 3000 ms en mode vocal.
+2. Si besoin offline-first strict : évaluer un moteur local (Whisper.cpp WASM, Vosk français compact) ; attention au coût en taille de bundle.
 
 ---
 

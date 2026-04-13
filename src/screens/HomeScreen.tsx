@@ -2,7 +2,11 @@ import { useRef, useCallback } from 'react';
 import type { UserProfile } from '../types';
 import Mascot from '../components/Mascot';
 import { useSound } from '../hooks/useSound';
+import { useInputMode } from '../hooks/useInputMode';
+import { isSpeechRecognitionSupported } from '../hooks/useSpeechRecognition';
 import './HomeScreen.css';
+
+const STT_SUPPORTED = isSpeechRecognitionSupported();
 
 interface HomeScreenProps {
   profile: UserProfile;
@@ -24,6 +28,7 @@ export default function HomeScreen({
   onShowParent,
 }: HomeScreenProps) {
   const { isMuted, toggleMute } = useSound();
+  const { inputMode, toggleInputMode } = useInputMode();
   const longPressTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const handleParentPressStart = useCallback((e: React.TouchEvent | React.MouseEvent) => {
@@ -58,6 +63,25 @@ export default function HomeScreen({
         >
           {isMuted ? '\uD83D\uDD07' : '\uD83D\uDD0A'}
         </button>
+        {STT_SUPPORTED && (
+          <button
+            className={`home-mute-btn${inputMode === 'voice' ? ' home-mode-active' : ''}`}
+            onClick={toggleInputMode}
+            aria-label={
+              inputMode === 'voice'
+                ? 'Passer en mode clavier'
+                : 'Passer en mode vocal'
+            }
+            aria-pressed={inputMode === 'voice'}
+            title={
+              inputMode === 'voice'
+                ? 'Mode vocal actif \u2014 toucher pour revenir au clavier'
+                : 'Mode clavier \u2014 toucher pour r\u00E9pondre \u00E0 la voix'
+            }
+          >
+            {inputMode === 'voice' ? '\uD83C\uDFA4' : '\u2328\uFE0F'}
+          </button>
+        )}
         <button
           className="home-parent-btn"
           onMouseDown={handleParentPressStart}

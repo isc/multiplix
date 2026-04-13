@@ -1,6 +1,7 @@
 import { useState, useRef, useCallback, useEffect } from 'react';
 import type { SessionQuestion, SessionResult, MultiFact, BoxLevel } from '../types';
 import NumPad from '../components/NumPad';
+import VoiceInput from '../components/VoiceInput';
 import DotGrid from '../components/DotGrid';
 import FeedbackOverlay from '../components/FeedbackOverlay';
 import Mascot from '../components/Mascot';
@@ -11,7 +12,13 @@ import { getStrategy, hasStrategy } from '../lib/strategies';
 import { todayISO } from '../lib/utils';
 import { useSound } from '../hooks/useSound';
 import { useTTS } from '../hooks/useTTS';
+import { useInputMode } from '../hooks/useInputMode';
 import './SessionScreen.css';
+
+// Voice mode: lower UI-feedback thresholds since oral recall is faster than typing.
+// Leitner promotion still uses RESPONSE_TIME.SLOW (5000 ms) — see audit §5.
+const VOICE_FEEDBACK_FAST = 2000;
+const VOICE_FEEDBACK_SLOW = 3000;
 
 interface SessionScreenProps {
   questions: SessionQuestion[];
@@ -55,7 +62,8 @@ export default function SessionScreen({
   const [mascotMood, setMascotMood] = useState<'idle' | 'happy' | 'sad'>('idle');
 
   const { isMuted, playCorrect, playIncorrect } = useSound();
-  const { speak, stop: stopSpeech } = useTTS(isMuted);
+  const { speak, stop: stopSpeech, isSpeaking } = useTTS(isMuted);
+  const { inputMode } = useInputMode();
 
   const speakQuestion = useCallback(
     (q: SessionQuestion) => speak(`q-${q.displayA}-${q.displayB}`),
@@ -136,8 +144,10 @@ export default function SessionScreen({
 
       const timeMs = Date.now() - questionStartTime.current;
       const correct = value === currentQuestion.fact.product;
-      const fast = correct && timeMs < RESPONSE_TIME.FAST;
-      const slow = correct && timeMs >= RESPONSE_TIME.SLOW;
+      const fastThreshold = inputMode === 'voice' ? VOICE_FEEDBACK_FAST : RESPONSE_TIME.FAST;
+      const slowThreshold = inputMode === 'voice' ? VOICE_FEEDBACK_SLOW : RESPONSE_TIME.SLOW;
+      const fast = correct && timeMs < fastThreshold;
+      const slow = correct && timeMs >= slowThreshold;
 
       totalTimeMs.current += timeMs;
       if (correct) correctCount.current++;
@@ -207,7 +217,7 @@ export default function SessionScreen({
         speak(`strategy-${currentQuestion.fact.a}-${currentQuestion.fact.b}`);
       }
     },
-    [currentQuestion, numpadDisabled, currentIndex, questions.length, onAnswer, playCorrect, playIncorrect, stopSpeech, speak],
+    [currentQuestion, numpadDisabled, currentIndex, questions.length, onAnswer, playCorrect, playIncorrect, stopSpeech, speak, inputMode],
   );
 
   const handleFeedbackDismiss = useCallback(() => {
@@ -371,7 +381,16 @@ export default function SessionScreen({
             <span className="equals">=</span>
           </div>
           <div className="session-numpad-area">
-            <NumPad onSubmit={handleAnswer} disabled={numpadDisabled} />
+            {inputMode === 'voice' ? (
+              <VoiceInput
+                onSubmit={handleAnswer}
+                disabled={numpadDisabled}
+                isSpeaking={isSpeaking}
+                questionToken={`${currentQuestion.displayA}-${currentQuestion.displayB}-${currentIndex}`}
+              />
+            ) : (
+              <NumPad onSubmit={handleAnswer} disabled={numpadDisabled} />
+            )}
           </div>
         </div>
       )}
