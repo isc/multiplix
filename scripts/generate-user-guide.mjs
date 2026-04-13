@@ -538,7 +538,7 @@ const SECTIONS = [
 ];
 
 function buildHtml({ generatedAt }) {
-  const sectionHtml = SECTIONS.map((s, idx) => {
+  const sectionHtml = SECTIONS.map((s) => {
     const shots = s.shots
       .map(
         (sh) => `
@@ -549,10 +549,8 @@ function buildHtml({ generatedAt }) {
       )
       .join('\n');
     const shotsClass = `shots shots-${s.shots.length}`;
-    // Alternate the text/shots column order on desktop for visual rhythm.
-    const reversed = idx % 2 === 1 ? ' section-reversed' : '';
     return `
-      <section id="${s.id}" class="section${reversed}">
+      <section id="${s.id}" class="section">
         <div class="section-text">
           <h2>${s.title}</h2>
           <p>${s.description.trim().replace(/\s+/g, ' ')}</p>
@@ -621,8 +619,6 @@ function buildHtml({ generatedAt }) {
     gap: 40px;
     align-items: start;
   }
-  section.section-reversed .section-text { order: 2; }
-  section.section-reversed .shots { order: 1; }
   .section-text { max-width: 55ch; }
   .section-text h2 {
     margin: 0 0 12px;
@@ -669,8 +665,6 @@ function buildHtml({ generatedAt }) {
   footer code { background: var(--surface); padding: 2px 6px; border-radius: 4px; }
   @media (max-width: 800px) {
     section.section { grid-template-columns: 1fr; gap: 24px; padding: 24px; }
-    section.section-reversed .section-text { order: 0; }
-    section.section-reversed .shots { order: 1; }
     .shots-1 { justify-self: center; }
   }
   @media (max-width: 640px) {
