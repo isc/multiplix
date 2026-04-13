@@ -632,11 +632,11 @@ function buildHtml({ generatedAt }) {
   .section-text p { color: var(--text-muted); margin: 0; }
   .shots {
     display: grid;
+    grid-template-columns: 1fr 1fr;
     gap: 16px;
     justify-items: center;
   }
   .shots-1 { grid-template-columns: minmax(0, 320px); justify-content: center; }
-  .shots-2, .shots-3, .shots-4 { grid-template-columns: 1fr 1fr; }
   figure.shot {
     margin: 0;
     background: #F0F1FB;
@@ -678,7 +678,7 @@ function buildHtml({ generatedAt }) {
     header { padding: 32px 16px; }
     main { padding: 16px; }
     section.section { padding: 16px; }
-    .shots-2, .shots-3, .shots-4 { grid-template-columns: 1fr; }
+    .shots { grid-template-columns: 1fr; }
   }
 </style>
 </head>
