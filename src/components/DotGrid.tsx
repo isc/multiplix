@@ -69,7 +69,8 @@ export default function DotGrid({
       style={{ '--dot-size': `${dotSize}px`, '--dot-gap': `${dotGap}px` } as React.CSSProperties}
     >
       <div className="dot-grid-label">
-        <span>{a}</span> {'\u00D7'} <span>{b}</span>
+        <span>{rotated ? b : a}</span> {'\u00D7'}{' '}
+        <span>{rotated ? a : b}</span>
       </div>
       <div
         className={`dot-grid ${rotated ? 'rotating' : ''}`}
