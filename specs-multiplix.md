@@ -226,7 +226,7 @@ Implémenté dans `factStage()` (`src/lib/sessionComposer.ts`).
 | Pivot | Astuce | Exemple |
 |-------|--------|---------|
 | × 9 | near-ten : × 10 moins une fois | 7 × 9 = 7 × 10 − 7 = 63 |
-| × 5 | skip-count : compter par 5 | 4 × 5 = 5 + 5 + 5 + 5 = 5, 10, 15, 20 = 20 |
+| × 5 | skip-count : compter par 5 | 4 × 5 = 5 + 5 + 5 + 5 = 20 (on compte : 5 → 10 → 15 → 20) |
 | × 3 | double-add : × 2 plus une fois | 7 × 3 = 7 × 2 + 7 = 21 |
 | × 4 | double-double : doubler le double | 6 × 4 = (6 × 2) × 2 = 24 |
 | × 6 | five-plus-one : × 5 plus une fois | 7 × 6 = 7 × 5 + 7 = 42 |

@@ -34,9 +34,9 @@ const STRATEGIES: ReadonlyArray<readonly [pivot: number, StrategyTemplate]> = [
     kind: 'skip-count',
     title: '× 5, c’est compter par 5.',
     lines: (n, p) => {
-      const sequence = Array.from({ length: n }, (_, i) => (i + 1) * 5).join(', ');
+      const sequence = Array.from({ length: n }, (_, i) => (i + 1) * 5).join(' → ');
       const sum = Array.from({ length: n }, () => '5').join(' + ');
-      return [`${n} × 5 = ${sum}`, `= ${sequence}`, `= ${p}`];
+      return [`${n} × 5 = ${sum}`, `On compte : ${sequence}`, `= ${p}`];
     },
   }],
   [3, {
