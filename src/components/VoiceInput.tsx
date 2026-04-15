@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import NumPad from './NumPad';
-import { parseFrenchNumber } from '../lib/parseFrenchNumber';
+import { parseFrenchAnswer, parseFrenchNumber } from '../lib/parseFrenchNumber';
 import { useSpeechRecognition } from '../hooks/useSpeechRecognition';
 import './VoiceInput.css';
 
@@ -23,31 +23,13 @@ const MAX_PARSE_FAILS_BEFORE_KEYPAD = 3;
 // doesn't count as a wrong answer or push the user to the keypad fallback.
 const POST_TTS_GRACE_MS = 2000;
 
-// Try whole-string parse, and if that fails, try the trailing 1-3 tokens
-// (handles filler words like "euh 30" or mis-heard prefixes like "prendre 30").
-function parseWithTrailingFallback(text: string): number | null {
-  const direct = parseFrenchNumber(text);
-  if (direct !== null && direct >= 0 && direct <= 100) return direct;
-  const tokens = text.trim().split(/\s+/).filter(Boolean);
-  for (let k = 1; k <= Math.min(3, tokens.length); k++) {
-    const tail = tokens.slice(-k).join(' ');
-    const n = parseFrenchNumber(tail);
-    if (n !== null && n >= 0 && n <= 100) return n;
-  }
-  return null;
-}
-
 function pickBestNumber(primary: string, alternatives: string[]): number | null {
   const candidates = [primary, ...alternatives];
   for (const c of candidates) {
-    const n = parseWithTrailingFallback(c);
+    const n = parseFrenchAnswer(c);
     if (n !== null) return n;
   }
   return null;
-}
-
-function transcriptMatchesExpected(text: string, expected: number): boolean {
-  return parseWithTrailingFallback(text) === expected;
 }
 
 // Only display something if the transcript parses as a valid number answer.
@@ -68,7 +50,6 @@ export default function VoiceInput({
   expectedValue,
 }: VoiceInputProps) {
   const [interim, setInterim] = useState('');
-  const [lastHeard, setLastHeard] = useState('');
   const [showKeypad, setShowKeypad] = useState(false);
   const [, setParseFails] = useState(0);
   const [prevQuestionToken, setPrevQuestionToken] = useState(questionToken);
@@ -86,12 +67,11 @@ export default function VoiceInput({
     if (!isSpeaking) {
       lastSpeakEndRef.current = Date.now();
     }
-  }, [isSpeaking, questionToken]);
+  }, [isSpeaking]);
 
   if (questionToken !== prevQuestionToken) {
     setPrevQuestionToken(questionToken);
     setInterim('');
-    setLastHeard('');
     setParseFails(0);
   }
 
@@ -106,7 +86,6 @@ export default function VoiceInput({
         // otherwise 3 consecutive echoes would flip us to the keypad.
         return;
       }
-      setLastHeard(transcript.trim());
       setInterim('');
       if (best !== null) {
         setParseFails(0);
@@ -131,8 +110,7 @@ export default function VoiceInput({
       if (expected === undefined || disabledRef.current) return;
       // Fast path: validate instantly when the transcript matches the
       // expected answer (directly or via trailing-token fallback).
-      if (transcriptMatchesExpected(text, expected)) {
-        setLastHeard(text.trim());
+      if (parseFrenchAnswer(text) === expected) {
         setInterim('');
         setParseFails(0);
         onSubmit(expected);
@@ -150,8 +128,6 @@ export default function VoiceInput({
   useEffect(() => {
     if (!isSupported) return;
     if (disabled || showKeypad || isSpeaking) {
-      // Use abort() (not stop()) because Chrome's stop() keeps emitting
-      // interims/finals for ~1s afterwards from audio it already buffered.
       abort();
       return;
     }
@@ -208,7 +184,7 @@ export default function VoiceInput({
       </button>
 
       <div className="voice-transcript" aria-live="polite">
-        {displayTranscript(interim) || displayTranscript(lastHeard) || (isListening ? 'Je t\'\u00E9coute\u2026' : 'Appuie pour parler')}
+        {displayTranscript(interim) || (isListening ? 'Je t\'\u00E9coute\u2026' : 'Appuie pour parler')}
       </div>
 
       {permissionBlocked && (

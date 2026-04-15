@@ -26,7 +26,6 @@ interface SpeechRecognitionLike extends EventTarget {
   continuous: boolean;
   maxAlternatives: number;
   start: () => void;
-  stop: () => void;
   abort: () => void;
   onresult: ((ev: SpeechRecognitionEvent) => void) | null;
   onerror: ((ev: SpeechRecognitionErrorEvent) => void) | null;
@@ -59,10 +58,9 @@ interface UseSpeechRecognitionOptions {
 
 interface UseSpeechRecognitionResult {
   start: () => void;
-  stop: () => void;
-  // Immediately kill audio capture + any pending results. Unlike stop(),
-  // which on Chrome waits for current processing to finish and keeps
-  // emitting interims/finals for ~1s.
+  // Immediately kill audio capture + any pending results. We use abort
+  // (not the native stop) because Chrome's stop() keeps emitting
+  // interims/finals for ~1s from already-buffered audio.
   abort: () => void;
   isListening: boolean;
   error: SpeechRecognitionError | null;
@@ -176,17 +174,6 @@ export function useSpeechRecognition({
     }
   }, [ensureRecognition]);
 
-  const stop = useCallback(() => {
-    wantListeningRef.current = false;
-    const rec = recognitionRef.current;
-    if (!rec) return;
-    try {
-      rec.stop();
-    } catch {
-      // ignore
-    }
-  }, []);
-
   const abort = useCallback(() => {
     wantListeningRef.current = false;
     const rec = recognitionRef.current;
@@ -212,5 +199,5 @@ export function useSpeechRecognition({
     };
   }, []);
 
-  return { start, stop, abort, isListening, error, isSupported };
+  return { start, abort, isListening, error, isSupported };
 }
