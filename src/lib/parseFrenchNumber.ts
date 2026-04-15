@@ -2,8 +2,11 @@
 // Accepts:
 //  - pure digit strings: "24", "7"
 //  - canonical French: "vingt-quatre", "soixante et onze", "quatre-vingts"
-//  - digit sequences: "deux quatre" (read as "24")
 // Returns null if the input cannot be interpreted as a number in range.
+// Intentionally strict: "deux trois" is NOT parsed as 23 — nobody actually
+// says "2×5" as "deux cinq" for 25, they say "vingt-cinq" or "25". Accepting
+// digit sequences creates false positives on TTS echo (e.g. "deux trois"
+// from hearing the question "2 × 3" would submit 23).
 
 const UNITS: Record<string, number> = {
   zero: 0,
@@ -123,23 +126,6 @@ export function parseFrenchNumber(input: string): number | null {
   }
 
   if (PHRASE_MAP.has(s)) return PHRASE_MAP.get(s)!;
-
-  // Digit-by-digit fallback: "deux quatre" -> 24, "2 4" -> 24
-  const tokens = s.split(' ');
-  if (tokens.length === 2) {
-    const [aTok, bTok] = tokens;
-    const a = /^\d$/.test(aTok) ? parseInt(aTok, 10) : UNITS[aTok];
-    const b = /^\d$/.test(bTok) ? parseInt(bTok, 10) : UNITS[bTok];
-    if (a !== undefined && b !== undefined && a >= 0 && a < 10 && b >= 0 && b < 10) {
-      return a * 10 + b;
-    }
-  }
-
-  // Last resort: strip all non-digit chars and see if a number appears
-  const digitsOnly = s.replace(/\D/g, '');
-  if (digitsOnly && digitsOnly.length <= 3) {
-    return parseInt(digitsOnly, 10);
-  }
 
   return null;
 }

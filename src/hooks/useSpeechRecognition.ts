@@ -60,6 +60,10 @@ interface UseSpeechRecognitionOptions {
 interface UseSpeechRecognitionResult {
   start: () => void;
   stop: () => void;
+  // Immediately kill audio capture + any pending results. Unlike stop(),
+  // which on Chrome waits for current processing to finish and keeps
+  // emitting interims/finals for ~1s.
+  abort: () => void;
   isListening: boolean;
   error: SpeechRecognitionError | null;
   isSupported: boolean;
@@ -104,6 +108,9 @@ export function useSpeechRecognition({
     const rec = new Ctor();
     rec.lang = lang;
     rec.interimResults = true;
+    // continuous:true was tested and felt worse in practice: Chrome still
+    // emits no-speech timeouts and seems to miss utterances while in that
+    // mode. Keep the short-session mode and rely on auto-restart.
     rec.continuous = false;
     rec.maxAlternatives = 5;
 
@@ -142,7 +149,6 @@ export function useSpeechRecognition({
     rec.onend = () => {
       setIsListening(false);
       if (wantListeningRef.current) {
-        // Auto-restart to emulate continuous listening without multiplying results.
         try {
           rec.start();
         } catch {
@@ -181,6 +187,17 @@ export function useSpeechRecognition({
     }
   }, []);
 
+  const abort = useCallback(() => {
+    wantListeningRef.current = false;
+    const rec = recognitionRef.current;
+    if (!rec) return;
+    try {
+      rec.abort();
+    } catch {
+      // ignore
+    }
+  }, []);
+
   useEffect(() => {
     return () => {
       wantListeningRef.current = false;
@@ -195,5 +212,5 @@ export function useSpeechRecognition({
     };
   }, []);
 
-  return { start, stop, isListening, error, isSupported };
+  return { start, stop, abort, isListening, error, isSupported };
 }

@@ -114,6 +114,16 @@ export default function SessionScreen({
     questionStartTime.current = Date.now();
   }, [currentIndex, currentQuestion, speak, speakQuestion]);
 
+  // In voice mode, start the response timer when the TTS finishes so we
+  // don't count the question playback against the user's response time.
+  useEffect(() => {
+    if (inputMode !== 'voice') return;
+    if (showIntro) return;
+    if (!isSpeaking) {
+      questionStartTime.current = Date.now();
+    }
+  }, [isSpeaking, inputMode, showIntro, currentIndex]);
+
   const moveToNext = useCallback(() => {
     const nextIndex = currentIndex + 1;
     if (nextIndex >= questions.length) {
@@ -387,6 +397,7 @@ export default function SessionScreen({
                 disabled={numpadDisabled}
                 isSpeaking={isSpeaking}
                 questionToken={`${currentQuestion.displayA}-${currentQuestion.displayB}-${currentIndex}`}
+                expectedValue={currentQuestion.fact.product}
               />
             ) : (
               <NumPad onSubmit={handleAnswer} disabled={numpadDisabled} />

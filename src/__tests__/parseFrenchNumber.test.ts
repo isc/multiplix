@@ -59,15 +59,19 @@ describe('parseFrenchNumber', () => {
     expect(parseFrenchNumber('vingt  quatre')).toBe(24);
   });
 
-  it('falls back to digit-by-digit for spoken digits', () => {
-    expect(parseFrenchNumber('deux quatre')).toBe(24);
-    expect(parseFrenchNumber('2 4')).toBe(24);
+  it('rejects digit-by-digit sequences to avoid TTS echo false positives', () => {
+    // Nobody says "deux trois" to mean 23 — they say "vingt-trois".
+    // Parsing it would submit echo from the question "2 × 3" as answer 23.
+    expect(parseFrenchNumber('deux trois')).toBeNull();
+    expect(parseFrenchNumber('deux quatre')).toBeNull();
+    expect(parseFrenchNumber('2 4')).toBeNull();
   });
 
   it('returns null for unparseable input', () => {
     expect(parseFrenchNumber('bonjour')).toBeNull();
     expect(parseFrenchNumber('')).toBeNull();
     expect(parseFrenchNumber('   ')).toBeNull();
+    expect(parseFrenchNumber('cinq fois deux')).toBeNull();
   });
 
   it('covers every integer 0..100 (canonical form)', () => {
