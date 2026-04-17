@@ -49,6 +49,16 @@
   white-space: nowrap;
 }
 
+.strategy-hint-recall {
+  margin-top: 10px;
+  padding-top: 10px;
+  border-top: 1px dashed #ffd54f;
+  font-size: 0.85rem;
+  font-style: italic;
+  line-height: 1.4;
+  color: #6d4c41;
+}
+
 @keyframes strategyHintIn {
   from { opacity: 0; transform: translateY(6px); }
   to { opacity: 1; transform: translateY(0); }

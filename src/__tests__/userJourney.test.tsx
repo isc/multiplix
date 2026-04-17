@@ -137,6 +137,11 @@ describe('Parcours utilisateur de bout en bout (DOM)', () => {
 
       fireEvent.click(findButton('Passer le test')!);
 
+      // -- RulesIntroScreen (3 étapes : intro, règle ×1, règle ×10) --
+      fireEvent.click(findButton(/C'est parti/)!);
+      fireEvent.click(findButton(/Suivant/)!);
+      fireEvent.click(findButton(/J'ai compris/)!);
+
       expect(findButton(/C'est parti/)).not.toBeNull();
 
       const initial = loadProfile()!;
