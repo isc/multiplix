@@ -127,6 +127,20 @@ En exploitant la commutativité (a×b = b×a), on réduit les 100 faits (1-10 ×
 
 Les faits ×1 et ×10 sont enseignés comme des **règles** (pas de la mémorisation) lors de la phase d'introduction.
 
+**Formulation pédagogique des règles :**
+
+- **×1** : « Tout nombre multiplié par 1 reste le même. »
+- **×10** : « Les chiffres glissent d'une place vers la gauche : un 0 vient prendre la place des unités. »
+
+La formulation classique « on ajoute un zéro » est volontairement évitée : le verbe « ajouter » prête à confusion avec l'addition, et la règle devient fausse dès l'introduction des nombres décimaux (1,2 × 10 = 12, et non 1,20). Le principe du « glisse-nombre » — décalage des chiffres dans le tableau de numération (unités → dizaines, dizaines → centaines, etc.) — est la formulation recommandée par plusieurs sources pédagogiques françaises :
+
+- [Le glisse-nombre — Collège Eugène Delacroix](https://eugenedelacroix.arsene76.fr/matieres-enseignees/mathematiques/le-glisse-nombre-ou-comment-comprendre-la-multiplication-par-10--2939.htm)
+- [Multiplier par 10, 100, 1000 — Maître Lucas](https://maitrelucas.fr/lecons/multiplier-par-10-100-1000/)
+- [La table de 10 — Maître Lucas](https://maitrelucas.fr/lecons/la-table-de-10/)
+- [Erreurs de multiplication et division — Mathsansbosse](https://mathsansbosse.fr/content/erreurs-de-multiplication-et-division)
+- [Multiplier par 10, 100 ou 1000 — SchoolMouv](https://www.schoolmouv.fr/cours/multiplier-par-10-100-ou-1000/fiche-de-cours)
+- [Décalage à gauche ou à droite ? — Neoprofs](https://www.neoprofs.org/t131596-decalage-a-gauche-ou-a-droite)
+
 ---
 
 ## 3. Parcours utilisateur
