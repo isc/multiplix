@@ -1,0 +1,41 @@
+name: Generate TTS
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: generate-tts
+  cancel-in-progress: false
+
+jobs:
+  generate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - run: npm ci
+
+      - name: Generate missing MP3 files
+        run: node scripts/generate-tts.mjs
+        env:
+          MISTRAL_API_KEY: ${{ secrets.MISTRAL_API_KEY }}
+
+      - name: Commit and push new MP3s
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add public/audio/tts/
+          if git diff --quiet --cached; then
+            echo "No new MP3s to commit."
+          else
+            git commit -m "assets(tts): régénérer MP3 via workflow_dispatch"
+            git push
+          fi
