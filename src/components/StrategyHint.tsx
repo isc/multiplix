@@ -7,8 +7,6 @@ interface StrategyHintProps {
 }
 
 export default function StrategyHint({ strategy, variant = 'feedback' }: StrategyHintProps) {
-  // For ×9 (near-ten) in intro phase, remind how ×10 works since the
-  // strategy relies on it: n × 10 = n0 (chiffres glissent d'une place).
   const showTenRecall = variant === 'intro' && strategy.kind === 'near-ten';
 
   return (

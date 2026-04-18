@@ -78,7 +78,6 @@ function migrateProfile(profile: UserProfile): UserProfile {
     profile.sessionHistory = [];
   }
   if (typeof profile.hasSeenRulesIntro !== 'boolean') {
-    // Existing users: assume they already know the game — don't interrupt them.
     profile.hasSeenRulesIntro = true;
   }
   return profile;

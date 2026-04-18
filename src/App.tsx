@@ -37,8 +37,8 @@ function initialScreen(profile: UserProfile | null): Screen {
 }
 
 export default function App() {
-  const [screen, setScreen] = useState<Screen>(() => initialScreen(loadProfile()));
   const [profile, setProfile] = useState<UserProfile | null>(() => loadProfile());
+  const [screen, setScreen] = useState<Screen>(() => initialScreen(profile));
   const [sessionQuestions, setSessionQuestions] = useState<SessionQuestion[]>([]);
   const [sessionResult, setSessionResult] = useState<SessionResult | null>(null);
   const [newBadges, setNewBadges] = useState<Badge[]>([]);
