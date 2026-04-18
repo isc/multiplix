@@ -1,0 +1,239 @@
+.rules-intro-screen {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 32px 20px;
+  gap: 24px;
+  animation: fadeIn 0.5s ease;
+}
+
+.rules-intro-step {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  animation: slideUp 0.4s ease;
+  text-align: center;
+  max-width: 360px;
+}
+
+.rules-intro-icon {
+  font-size: 3rem;
+  animation: scaleIn 0.4s ease;
+}
+
+.rules-intro-title {
+  font-size: 1.7rem;
+  font-weight: 800;
+  color: var(--primary);
+}
+
+.rules-intro-subtitle {
+  font-size: 1.05rem;
+  color: var(--text-light);
+  line-height: 1.6;
+}
+
+.rules-intro-message {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--text);
+  line-height: 1.5;
+}
+
+.rules-intro-examples {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 10px;
+  margin-top: 4px;
+}
+
+.rules-intro-example {
+  background: var(--surface);
+  border-radius: 14px;
+  padding: 10px 16px;
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: var(--text);
+  border: 2px solid var(--border);
+  animation: scaleIn 0.3s ease both;
+}
+
+.rules-intro-example:nth-child(1) { animation-delay: 0.2s; }
+.rules-intro-example:nth-child(2) { animation-delay: 0.35s; }
+
+.rules-intro-highlight {
+  color: var(--primary);
+}
+
+.rules-intro-tip {
+  font-size: 0.95rem;
+  color: var(--text-light);
+  font-style: italic;
+  line-height: 1.4;
+}
+
+.rules-intro-btn {
+  padding: 14px 36px;
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: white;
+  background: var(--primary);
+  border-radius: 16px;
+  transition: all 0.15s ease;
+  margin-top: 4px;
+}
+
+.rules-intro-btn:active {
+  transform: scale(0.95);
+}
+
+.rules-intro-btn-primary {
+  background: linear-gradient(135deg, var(--primary), var(--primary-light));
+  padding: 16px 44px;
+  font-size: 1.15rem;
+  font-weight: 800;
+  border-radius: 18px;
+  box-shadow: 0 4px 16px var(--shadow);
+}
+
+.rules-intro-dots {
+  display: flex;
+  gap: 8px;
+}
+
+.rules-intro-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--border);
+  transition: all 0.3s ease;
+}
+
+.rules-intro-dot.active {
+  background: var(--primary);
+  transform: scale(1.2);
+}
+
+/* --- Glisse-nombre visual --- */
+
+.glisse-demo {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  margin: 8px 0 4px;
+}
+
+.glisse-side {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+}
+
+.glisse-labels {
+  display: grid;
+  grid-template-columns: 44px 44px;
+  gap: 4px;
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: var(--text-light);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.glisse-labels span {
+  text-align: center;
+}
+
+.glisse-row {
+  display: grid;
+  grid-template-columns: 44px 44px;
+  gap: 4px;
+}
+
+.glisse-cell {
+  width: 44px;
+  height: 52px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: var(--text);
+  background: var(--surface);
+  border: 2px solid var(--border);
+  border-radius: 8px;
+}
+
+.glisse-cell.empty {
+  background: transparent;
+  border-style: dashed;
+  border-color: var(--border);
+}
+
+.glisse-cell.slide-in-left {
+  animation: glisseSlideLeft 0.9s ease-out both;
+  animation-delay: 0.2s;
+  color: var(--primary);
+}
+
+.glisse-cell.fade-in-zero {
+  animation: glisseFadeZero 0.5s ease-out both;
+  animation-delay: 0.9s;
+  color: var(--primary);
+}
+
+.glisse-caption {
+  font-size: 1.05rem;
+  font-weight: 800;
+  color: var(--primary);
+}
+
+.glisse-arrow {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  color: var(--text-light);
+}
+
+.glisse-arrow-label {
+  font-size: 0.8rem;
+  font-weight: 700;
+}
+
+.glisse-arrow-icon {
+  font-size: 1.3rem;
+  color: var(--primary);
+}
+
+@keyframes glisseSlideLeft {
+  0% {
+    transform: translateX(48px);
+    opacity: 0;
+  }
+  60% {
+    transform: translateX(0);
+    opacity: 1;
+  }
+  100% {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+@keyframes glisseFadeZero {
+  0% {
+    opacity: 0;
+    transform: scale(0.6);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}

@@ -7,6 +7,8 @@ interface StrategyHintProps {
 }
 
 export default function StrategyHint({ strategy, variant = 'feedback' }: StrategyHintProps) {
+  const showTenRecall = variant === 'intro' && strategy.kind === 'near-ten';
+
   return (
     <div className={`strategy-hint ${variant}`}>
       <div className="strategy-hint-title">
@@ -18,6 +20,12 @@ export default function StrategyHint({ strategy, variant = 'feedback' }: Strateg
           <div key={i} className="strategy-hint-line">{line}</div>
         ))}
       </div>
+      {showTenRecall && (
+        <div className="strategy-hint-recall">
+          Rappel : pour {'\u00D7'} 10, les chiffres glissent d'une place vers la
+          gauche et un 0 prend la place des unités.
+        </div>
+      )}
     </div>
   );
 }

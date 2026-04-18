@@ -37,6 +37,7 @@ export interface UserProfile {
   badges: Badge[];
   mascotLevel: number;
   sessionHistory: SessionResult[];
+  hasSeenRulesIntro: boolean;
 }
 
 export type BoxLevel = 1 | 2 | 3 | 4 | 5;

@@ -65,6 +65,7 @@ export function createNewProfile(name: string): UserProfile {
     badges: [],
     mascotLevel: 1,
     sessionHistory: [],
+    hasSeenRulesIntro: false,
   };
 }
 
@@ -75,6 +76,9 @@ export function createNewProfile(name: string): UserProfile {
 function migrateProfile(profile: UserProfile): UserProfile {
   if (!Array.isArray(profile.sessionHistory)) {
     profile.sessionHistory = [];
+  }
+  if (typeof profile.hasSeenRulesIntro !== 'boolean') {
+    profile.hasSeenRulesIntro = true;
   }
   return profile;
 }

@@ -15,11 +15,13 @@ import RecapScreen from './screens/RecapScreen';
 import ProgressScreen from './screens/ProgressScreen';
 import BadgesScreen from './screens/BadgesScreen';
 import RulesScreen from './screens/RulesScreen';
+import RulesIntroScreen from './screens/RulesIntroScreen';
 import ParentDashboard from './screens/ParentDashboard';
 import './App.css';
 
 type Screen =
   | 'welcome'
+  | 'rulesIntro'
   | 'home'
   | 'session'
   | 'recap'
@@ -28,9 +30,15 @@ type Screen =
   | 'rules'
   | 'parent';
 
+function initialScreen(profile: UserProfile | null): Screen {
+  if (!profile) return 'welcome';
+  if (!profile.hasSeenRulesIntro) return 'rulesIntro';
+  return 'home';
+}
+
 export default function App() {
-  const [screen, setScreen] = useState<Screen>(() => loadProfile() ? 'home' : 'welcome');
   const [profile, setProfile] = useState<UserProfile | null>(() => loadProfile());
+  const [screen, setScreen] = useState<Screen>(() => initialScreen(profile));
   const [sessionQuestions, setSessionQuestions] = useState<SessionQuestion[]>([]);
   const [sessionResult, setSessionResult] = useState<SessionResult | null>(null);
   const [newBadges, setNewBadges] = useState<Badge[]>([]);
@@ -91,6 +99,11 @@ export default function App() {
     }
 
     setProfile(newProfile);
+    setScreen('rulesIntro');
+  }, []);
+
+  const handleRulesIntroComplete = useCallback(() => {
+    setProfile((prev) => (prev ? { ...prev, hasSeenRulesIntro: true } : prev));
     setScreen('home');
   }, []);
 
@@ -273,6 +286,10 @@ export default function App() {
     <div className="app">
       {screen === 'welcome' && (
         <WelcomeScreen onComplete={handleWelcomeComplete} />
+      )}
+
+      {screen === 'rulesIntro' && profile && (
+        <RulesIntroScreen name={profile.name} onComplete={handleRulesIntroComplete} />
       )}
 
       {screen === 'home' && profile && (

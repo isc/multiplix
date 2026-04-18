@@ -11,7 +11,7 @@ export default function RulesScreen({ onBack }: RulesScreenProps) {
         <button className="rules-back-btn" onClick={onBack} aria-label="Retour">
           {'\u2190'}
         </button>
-        <div className="rules-title">{'\uD83D\uDCCF'} Les règles magiques</div>
+        <div className="rules-title">{'\uD83D\uDCCF'} Mes deux règles</div>
       </div>
 
       <div className="rules-content">
@@ -46,7 +46,7 @@ export default function RulesScreen({ onBack }: RulesScreenProps) {
           <div className="rule-card-icon">{'\uD83D\uDE80'}</div>
           <div className="rule-card-heading">Multiplier par 10</div>
           <div className="rule-card-message">
-            Pour multiplier par 10, on ajoute un zéro !
+            Les chiffres glissent d'une place vers la gauche : un 0 vient prendre la place des unités !
           </div>
           <div className="rule-examples">
             <div className="rule-example">
@@ -63,7 +63,7 @@ export default function RulesScreen({ onBack }: RulesScreenProps) {
             </div>
           </div>
           <div className="rule-card-tip">
-            Le nombre glisse d'une place vers la gauche et un 0 prend sa place !
+            Astuce : tous les résultats de la table de 10 se terminent par 0 !
           </div>
         </div>
       </div>

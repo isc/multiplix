@@ -152,6 +152,18 @@ function buildEntries() {
     key: 'recap-done',
     text: "Séance terminée ! Bravo, tu as bien travaillé !",
   });
+  entries.push({
+    key: 'rules-intro-welcome',
+    text: "Avant de commencer, je vais te montrer deux règles toutes simples pour multiplier par 1 et par 10. Pas besoin de les apprendre par coeur : tu vas comprendre comment elles marchent !",
+  });
+  entries.push({
+    key: 'rules-intro-x1',
+    text: "Tout nombre multiplié par 1 reste le même. Par exemple, 4 fois 1 égale 4, et 8 fois 1 égale 8. Facile, non ?",
+  });
+  entries.push({
+    key: 'rules-intro-x10',
+    text: "Pour multiplier par 10, les chiffres glissent d'une place vers la gauche, et un zéro vient prendre la place des unités. Par exemple, 3 devient 30, 7 devient 70, 12 devient 120. Astuce : tous les résultats de la table de 10 se terminent par zéro !",
+  });
 
   return entries;
 }

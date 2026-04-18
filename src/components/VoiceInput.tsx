@@ -55,7 +55,7 @@ export default function VoiceInput({
   const [prevQuestionToken, setPrevQuestionToken] = useState(questionToken);
   const disabledRef = useRef(disabled);
   const expectedRef = useRef(expectedValue);
-  const lastSpeakEndRef = useRef<number>(Date.now());
+  const lastSpeakEndRef = useRef<number>(0);
 
   useEffect(() => {
     disabledRef.current = disabled;
