@@ -430,6 +430,61 @@ async function captureRecap(page) {
 
 const SECTIONS = [
   {
+    id: 'principes',
+    title: 'Les principes',
+    body: `
+      <p>Multiplix n'est pas un simple quiz. Chaque choix de conception s'appuie
+      sur la recherche en psychologie cognitive et en didactique des
+      mathématiques. Cinq piliers portent l'application :</p>
+      <ul class="principles">
+        <li>
+          <strong>Répétition espacée.</strong> Chaque fait est revu juste avant
+          d'être oublié, via un système de boîtes (Leitner) aux intervalles
+          croissants : 0, 1, 3, 7 puis 21 jours. L'erreur renvoie le fait en
+          boîte 1. Bien plus durable que le bachotage en une soirée.
+          <span class="cite">Kang (2016) ; Cepeda et al. (2008) ; Rea &amp; Modigliani (1985)</span>
+        </li>
+        <li>
+          <strong>Faible interférence.</strong> Les faits qui se ressemblent
+          (même opérande, résultats proches) ne sont jamais introduits la même
+          semaine. Une séance contient uniquement des faits suffisamment
+          dissemblables pour que l'enfant ne les confonde pas en mémoire.
+          <span class="cite">Dotan &amp; Zviran-Ginat (2022)</span>
+        </li>
+        <li>
+          <strong>Entrelacement.</strong> Les tables sont mélangées au sein
+          d'une même séance plutôt que travaillées l'une après l'autre. L'enfant
+          doit aller chercher la bonne opération à chaque question, ce qui
+          solidifie le rappel à long terme.
+          <span class="cite">Rohrer &amp; Taylor (2007) ; Rohrer, Dedrick &amp; Burgess (2014)</span>
+        </li>
+        <li>
+          <strong>Comprendre avant de mémoriser.</strong> Chaque nouveau fait
+          est d'abord présenté comme une grille de points (addition répétée),
+          puis par la commutativité (3 × 5 = 5 × 3), enfin par une astuce de
+          dérivation adaptée (× 9 = × 10 − n, × 4 = double-double, × 6 = × 5 + n,
+          etc.). Quelques faits-repères (doubles, × 5, × 9, carrés) servent
+          d'appui aux faits dérivés. L'échafaudage disparaît quand le rappel
+          devient automatique.
+          <span class="cite">Van de Walle via Wichita Public Schools (2014) ; Brendefur et al. (2015)</span>
+        </li>
+        <li>
+          <strong>Feedback orienté progrès, pas performance.</strong> Pas de
+          score chiffré côté enfant, pas d'étoiles calculées sur le taux de
+          réussite : uniquement des encouragements constants et la mise en
+          avant des faits appris. L'objectif est la motivation intrinsèque et
+          la maîtrise, pas la note. Les chiffres bruts restent disponibles
+          dans l'espace parent.
+          <span class="cite">Butler (1988) ; Hattie &amp; Timperley (2007)</span>
+        </li>
+      </ul>
+      <p class="principles-footer">Détails et justifications dans
+      <a href="https://github.com/isc/multiplix/blob/main/audit-scientifique.md"><code>audit-scientifique.md</code></a>
+      et <a href="https://github.com/isc/multiplix/blob/main/specs-multiplix.md"><code>specs-multiplix.md</code></a>.</p>
+    `,
+    shots: [],
+  },
+  {
     id: 'welcome',
     title: 'Bienvenue',
     description: `À la toute première ouverture, Multiplix déroule un parcours
@@ -540,6 +595,18 @@ const SECTIONS = [
 
 function buildHtml({ generatedAt }) {
   const sectionHtml = SECTIONS.map((s) => {
+    const textContent = s.body
+      ? s.body.trim()
+      : `<p>${s.description.trim().replace(/\s+/g, ' ')}</p>`;
+    if (!s.shots.length) {
+      return `
+      <section id="${s.id}" class="section section-full">
+        <div class="section-text">
+          <h2>${s.title}</h2>
+          ${textContent}
+        </div>
+      </section>`;
+    }
     const shots = s.shots
       .map(
         (sh) => `
@@ -554,7 +621,7 @@ function buildHtml({ generatedAt }) {
       <section id="${s.id}" class="section">
         <div class="section-text">
           <h2>${s.title}</h2>
-          <p>${s.description.trim().replace(/\s+/g, ' ')}</p>
+          ${textContent}
         </div>
         <div class="${shotsClass}">
           ${shots}
@@ -626,7 +693,46 @@ function buildHtml({ generatedAt }) {
     color: var(--primary);
     font-size: 1.6rem;
   }
-  .section-text p { color: var(--text-muted); margin: 0; }
+  .section-text p { color: var(--text-muted); margin: 0 0 12px; }
+  .section-text p:last-child { margin-bottom: 0; }
+  .section.section-full {
+    grid-template-columns: 1fr;
+    gap: 0;
+  }
+  .section-full .section-text { max-width: 72ch; margin: 0 auto; }
+  ul.principles {
+    list-style: none;
+    padding: 0;
+    margin: 0 0 16px;
+    display: grid;
+    gap: 14px;
+  }
+  ul.principles li {
+    color: var(--text);
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 14px 16px;
+  }
+  ul.principles li strong { color: var(--primary); }
+  ul.principles .cite {
+    display: block;
+    margin-top: 6px;
+    color: var(--text-muted);
+    font-size: 0.82rem;
+    font-style: italic;
+  }
+  .principles-footer {
+    font-size: 0.88rem;
+    color: var(--text-muted);
+  }
+  .principles-footer a { color: var(--primary); text-decoration: none; }
+  .principles-footer a:hover { text-decoration: underline; }
+  .principles-footer code {
+    background: var(--bg);
+    padding: 1px 5px;
+    border-radius: 4px;
+  }
   .shots {
     display: grid;
     grid-template-columns: 1fr 1fr;
