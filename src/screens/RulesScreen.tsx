@@ -11,7 +11,7 @@ export default function RulesScreen({ onBack }: RulesScreenProps) {
         <button className="rules-back-btn" onClick={onBack} aria-label="Retour">
           {'\u2190'}
         </button>
-        <div className="rules-title">{'\uD83D\uDCCF'} Les règles magiques</div>
+        <div className="rules-title">{'\uD83D\uDCCF'} Mes deux règles</div>
       </div>
 
       <div className="rules-content">

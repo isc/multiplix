@@ -450,7 +450,7 @@ const SECTIONS = [
     description: `Le hub quotidien. La mascotte évolue au fil des progrès
       (œuf → bébé poussin → poussin → chouette → aigle). La flamme affiche la
       série en cours. Le gros bouton lance la séance du jour, et la barre du
-      bas donne accès aux progrès, aux badges et aux règles magiques. L'icône
+      bas donne accès aux progrès, aux badges et aux règles ×1 / ×10. L'icône
       engrenage (appui long de 1,5 s) ouvre l'espace parent.`,
     shots: [
       { file: '05-home', caption: 'Accueil avec mascotte niveau 3 et série de 5 jours.' },
@@ -513,11 +513,12 @@ const SECTIONS = [
   },
   {
     id: 'rules',
-    title: 'Les règles magiques',
-    description: `Deux astuces que l'app met en avant dès le début pour
+    title: 'Les règles ×1 et ×10',
+    description: `Deux règles que l'app met en avant dès le début pour
       alléger la charge mnésique : multiplier par 1 (le nombre ne change pas)
-      et multiplier par 10 (on ajoute un zéro). Ces tables ne font donc pas
-      partie des 36 faits appris.`,
+      et multiplier par 10 (les chiffres glissent d'une place vers la gauche,
+      un 0 prend la place des unités). Ces tables ne font donc pas partie
+      des 36 faits appris.`,
     shots: [
       { file: '12-rules', caption: 'Règles pour ×1 et ×10.' },
     ],

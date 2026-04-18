@@ -154,7 +154,7 @@ function buildEntries() {
   });
   entries.push({
     key: 'rules-intro-welcome',
-    text: "Avant de commencer, je vais te montrer deux règles magiques pour multiplier par 1 et par 10. Tu n'auras pas besoin de les apprendre par coeur : ce sont des astuces !",
+    text: "Avant de commencer, je vais te montrer deux règles toutes simples pour multiplier par 1 et par 10. Pas besoin de les apprendre par coeur : tu vas comprendre comment elles marchent !",
   });
   entries.push({
     key: 'rules-intro-x1',

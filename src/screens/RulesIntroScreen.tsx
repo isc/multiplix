@@ -38,12 +38,12 @@ export default function RulesIntroScreen({ name, onComplete }: RulesIntroScreenP
             Avant de commencer, {name} !
           </div>
           <div className="rules-intro-subtitle">
-            Je vais te montrer deux règles magiques
+            Je vais te montrer deux règles toutes simples
             <br />
             pour multiplier par <strong>1</strong> et par <strong>10</strong>.
             <br />
             <br />
-            Tu n'auras pas besoin de les apprendre par cœur : ce sont des astuces !
+            Pas besoin de les apprendre par cœur : tu vas comprendre comment elles marchent !
           </div>
           <button className="rules-intro-btn rules-intro-btn-primary" onClick={handleNext}>
             C'est parti !
