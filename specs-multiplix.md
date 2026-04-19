@@ -104,7 +104,6 @@ interface UserProfile {
   currentStreak: number;     // jours consécutifs
   longestStreak: number;
   badges: Badge[];
-  mascotLevel: number;       // évolution du personnage
 }
 
 interface Badge {
@@ -271,7 +270,6 @@ L'écran de récap ne doit jamais afficher de score brut (ex : "8/12 bonnes rép
 - **Nouveaux faits** — nombre de faits introduits dans la séance
 - **Progression globale** — avancement vers la maîtrise complète (ex : "Tu connais 18 faits sur 36" ou jauge de progression)
 - **Badges éventuels** — récompenses orientées effort et maîtrise
-- **Évolution de la mascotte** — si un palier est franchi
 - **Tables complétées** — avec célébration (confettis)
 
 **Ce qui n'est PAS affiché à l'enfant :**
@@ -306,17 +304,18 @@ Coupure son : bouton mute global qui persiste l'état dans `localStorage`.
 
 ### 4.1 Personnage mascotte
 
-Un petit animal/créature qui évolue avec la progression de Zoé :
+Un petit personnage **stable** qui accompagne l'enfant tout au long du parcours. La mascotte ne porte pas la progression (ce rôle revient à l'image mystère, §5.1) : elle est un **compagnon affectif**, pas une récompense à faire évoluer.
 
-| Niveau | Apparence | Débloqué quand |
-|--------|-----------|----------------|
-| 1 | Œuf | Début |
-| 2 | Bébé créature | 5 faits en boîte 2+ |
-| 3 | Créature enfant | 15 faits en boîte 3+ |
-| 4 | Créature ado | 25 faits en boîte 4+ |
-| 5 | Créature adulte | 36 faits en boîte 5 (tout maîtrisé) |
+**Rôles :**
+- Présence sur l'écran d'accueil (animations d'idle)
+- Feedback immédiat pendant la séance : réactions joyeuses aux bonnes réponses, encouragements neutres et positifs aux erreurs (**jamais de moue, jamais de déception**)
+- Ritualisation : bienvenue en début de séance, « à demain ! » en fin
+- Identité visuelle de l'app (icône, écran de lancement)
 
-La mascotte réagit aux réponses (saute de joie, fait la moue, encourage) et a des animations d'idle sur l'écran d'accueil.
+**Principe :** la mascotte n'évolue pas, ne « grandit » pas, n'a pas de niveau. Elle est le même visage familier à chaque séance, du premier jour au dernier fait maîtrisé. Ce choix évite :
+- le doublon avec la progression de l'image mystère (deux métaphores de progression qui se parasitent),
+- la logique « œuf → adulte » qui, une fois terminée, ne peut plus motiver,
+- toute forme de jugement (« faire la moue ») qui contredirait le principe *un fait oublié revient sans notion d'échec* (§1.1).
 
 ### 4.2 Badges
 
@@ -342,27 +341,39 @@ La mascotte réagit aux réponses (saute de joie, fait la moue, encourage) et a 
 
 Quand tous les faits d'une table passent en boîte 4+ :
 - Animation spéciale (feu d'artifice, confettis)
-- La table s'illumine sur la grille de progression
+- La ligne et la colonne correspondantes s'illuminent brièvement sur l'image mystère
 - Badge spécifique
 
 ---
 
 ## 5. Suivi de progression
 
-### 5.1 Vue enfant : la carte au trésor
+### 5.1 Vue enfant : l'image mystère
 
-Une grille visuelle 9×9 (tables 2 à 10) où chaque case représente un fait :
+La progression de l'enfant se matérialise par **une image unique qui se révèle au fil des séances**. La grille 9×9 (tables 2 à 10) constitue le support : chaque case affiche un **fragment** de l'image globale, et la finesse de chaque fragment reflète la boîte Leitner du fait correspondant.
 
-| Couleur | Signification |
-|---------|---------------|
-| Gris | Pas encore introduit |
-| Rouge | Boîte 1 (difficile / erreur récente) |
-| Orange | Boîte 2 |
-| Jaune | Boîte 3 |
-| Vert clair | Boîte 4 |
-| Vert + étoile | Boîte 5 (maîtrisé) |
+**Cinq niveaux de finesse (alignés sur les 5 boîtes Leitner) :**
 
-La grille est symétrique (commutativité) : les deux cases (a,b) et (b,a) ont toujours la même couleur. En tapant sur une case, l'enfant voit le fait et la grille de points associée.
+| État du fait | État visuel du fragment |
+|--------------|-------------------------|
+| Non introduit | Case opaque (fragment masqué) |
+| Boîte 1 | Silhouette floue |
+| Boîte 2 | Aplat simple, forme reconnaissable |
+| Boîte 3 | Couleurs principales |
+| Boîte 4 | Ombres et volumes |
+| Boîte 5 | Détails fins, fragment complet |
+
+À mesure que les faits progressent, la scène globale se compose. Un fait qui redescend de boîte (oubli) fait redescendre sa case d'un cran en finesse — pas d'échec, juste la brume qui revient. Ce comportement est le miroir visuel strict de l'algorithme Leitner (§1.1).
+
+**Commutativité visible :** comme (a,b) et (b,a) sont un seul et même fait (§1.2), les deux cases miroir se révèlent **en synchrone**. Elles affichent des fragments différents de l'image globale, mais évoluent toujours ensemble à chaque maîtrise ou oubli. Ce parallélisme visuel renforce pédagogiquement le principe de commutativité.
+
+**Fin de parcours :** quand les 36 faits sont en boîte 5, l'image est entièrement révélée. Une **brève animation** (un clin d'œil, un léger mouvement) marque la complétion, sans pop-up ni célébration envahissante. L'image reste ensuite affichée comme témoin de la réussite ; pendant la phase de maintenance (révisions tous les 21 jours), si un fait retombe, sa case se re-floute en miroir de l'algo et se re-révèle à la révision suivante réussie.
+
+**Interaction :** en tapant sur une case, l'enfant voit le fait sous-jacent et la grille de points associée.
+
+**Choix de l'image :** une scène riche, non genrée, sans texte, au style cohérent sur toute la grille. L'image a une valeur symbolique forte — c'est **l'image de la réussite**, pas une vignette interchangeable dans une collection. Production envisagée : une image vectorielle maître, dont les 5 niveaux de finesse sont générés algorithmiquement (flou progressif + simplification des chemins), ou un pixel-art avec résolutions croissantes par case.
+
+**Périmètre v1 :** une seule image pour le parcours complet. L'objectif de l'app est d'apprendre les tables ; une fois l'image révélée, l'app a rempli son rôle. Pas d'album à collectionner, pas de carotte artificielle pour faire revenir l'enfant au-delà de la maintenance. Si le périmètre s'étend un jour à d'autres matières (divisions, conjugaisons…), chaque matière pourra avoir sa propre image dédiée.
 
 ### 5.2 Vue parent : tableau de bord
 
@@ -370,6 +381,7 @@ Accessible via un code/geste (ex : appui long sur le logo), sans mot de passe co
 
 **Indicateurs :**
 - Nombre de faits par boîte (histogramme)
+- **Grille Leitner colorée** 9×9 (une couleur par boîte) — vue diagnostique brute, complémentaire à l'image mystère côté enfant
 - Faits les plus difficiles (boîte 1 depuis le plus longtemps, ou le plus d'erreurs)
 - Temps de réponse moyen par table
 - Historique des séances (date, durée, score)
@@ -431,13 +443,13 @@ function computeNextDue(box, lastSeen) {
 
 | Écran | Contenu |
 |-------|---------|
-| Accueil | Mascotte animée, prénom, streak, bouton "C'est parti !" |
+| Accueil | Mascotte (animations d'idle), prénom, streak, bouton "C'est parti !" |
 | Séance — Intro | Grille de points animée pour un nouveau fait |
 | Séance — Question | Question en gros, pavé numérique, barre de progression |
-| Séance — Feedback correct | Animation joyeuse, mascotte contente |
-| Séance — Feedback incorrect | Bonne réponse affichée avec grille, ton bienveillant |
+| Séance — Feedback correct | Animation joyeuse, mascotte enthousiaste |
+| Séance — Feedback incorrect | Bonne réponse affichée avec grille, ton bienveillant (mascotte neutre, jamais déçue) |
 | Récap séance | Bilan progrès (faits promus, progression globale), badge éventuel, bouton "À demain" |
-| Progression | Grille colorée des faits |
+| Progression | Image mystère (vue enfant, §5.1) ; grille Leitner colorée réservée au dashboard parent (§5.2) |
 | Badges | Collection de badges obtenus |
 | Parent | Dashboard détaillé (accès protégé) |
 
@@ -457,7 +469,7 @@ function computeNextDue(box, lastSeen) {
 - Réponse correcte : son court et joyeux (type xylophone montant)
 - Réponse incorrecte : son neutre et doux (pas de buzzer)
 - Badge obtenu : fanfare courte
-- Évolution de la mascotte : mélodie spéciale
+- Image mystère complétée (tous les faits en boîte 5) : mélodie de complétion
 - **Option de couper le son** toujours accessible
 
 ---
@@ -500,7 +512,7 @@ L'application est considérée comme ayant atteint son objectif quand :
 
 - Extension aux tables de 11 et 12
 - Mode défi : séance bonus optionnelle le week-end
-- Personnalisation de la mascotte (couleur, accessoires gagnés)
+- Personnalisation de la mascotte (couleurs, accessoires choisis par l'enfant — sans logique de déblocage, pour ne pas réintroduire une couche de progression parasite)
 - Intégration Strava-like : partage de la streak avec un parent
 - Mode multi-enfant (plusieurs profils sur le même appareil)
 - Lien division : une fois un fait maîtrisé en multiplication, introduction du fait de division associé
