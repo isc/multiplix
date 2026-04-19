@@ -350,7 +350,7 @@ Quand tous les faits d'une table passent en boîte 4+ :
 
 ### 5.1 Vue enfant : l'image mystère
 
-La progression de l'enfant se matérialise par **une image unique qui se révèle au fil des séances**. La grille 9×9 (tables 2 à 10) constitue le support : chaque case affiche un **fragment** de l'image globale, et la finesse de chaque fragment reflète la boîte Leitner du fait correspondant.
+La progression de l'enfant se matérialise par **une image unique qui se révèle au fil des séances**. La grille 8×8 (tables 2 à 9, les ×1 et ×10 étant traités comme règles §3.1 et donc non représentés) constitue le support : chaque case affiche un **fragment** de l'image globale, et la finesse de chaque fragment reflète la boîte Leitner du fait correspondant.
 
 **Cinq niveaux de finesse (alignés sur les 5 boîtes Leitner) :**
 
@@ -381,7 +381,7 @@ Accessible via un code/geste (ex : appui long sur le logo), sans mot de passe co
 
 **Indicateurs :**
 - Nombre de faits par boîte (histogramme)
-- **Grille Leitner colorée** 9×9 (une couleur par boîte) — vue diagnostique brute, complémentaire à l'image mystère côté enfant
+- **Grille Leitner colorée** 8×8 (une couleur par boîte) — vue diagnostique brute, complémentaire à l'image mystère côté enfant
 - Faits les plus difficiles (boîte 1 depuis le plus longtemps, ou le plus d'erreurs)
 - Temps de réponse moyen par table
 - Historique des séances (date, durée, score)

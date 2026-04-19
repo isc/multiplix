@@ -148,7 +148,6 @@ describe('Parcours utilisateur de bout en bout (DOM)', () => {
       expect(initial.facts).toHaveLength(36);
       expect(initial.facts.every((f) => f.box === 1)).toBe(true);
       expect(initial.facts.every((f) => !f.introduced)).toBe(true);
-      expect(initial.mascotLevel).toBe(1);
       expect(initial.badges).toHaveLength(0);
 
       // -- 3. Boucle quotidienne jusqu'à maîtrise complète --
@@ -199,7 +198,6 @@ describe('Parcours utilisateur de bout en bout (DOM)', () => {
       const final = loadProfile()!;
       expect(final.facts.every((f) => f.box === 5)).toBe(true);
       expect(final.facts.every((f) => f.introduced)).toBe(true);
-      expect(final.mascotLevel).toBe(5);
       expect(final.totalSessions).toBe(sessionsPlayed);
 
       const completedTables = getCompletedTables(final.facts);

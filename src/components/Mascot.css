@@ -44,15 +44,6 @@
   50% { transform: translateY(-15px) scale(1.1); }
 }
 
-.mascot-figure.sad {
-  animation: mascotSad 2s ease-in-out infinite;
-}
-
-@keyframes mascotSad {
-  0%, 100% { transform: translateY(0) rotate(0deg); }
-  50% { transform: translateY(3px) rotate(-3deg); }
-}
-
 .mascot-figure.celebrate {
   animation: mascotCelebrate 0.6s ease-in-out infinite;
 }

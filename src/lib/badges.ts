@@ -115,19 +115,3 @@ function hasConsecutiveFastAnswers(times: number[], count: number, thresholdMs: 
   return false;
 }
 
-export function computeMascotLevel(profile: UserProfile): number {
-  const { facts } = profile;
-  // Single pass to count per-box thresholds
-  let box2Plus = 0, box3Plus = 0, box4Plus = 0, box5 = 0;
-  for (const f of facts) {
-    if (f.box >= 2) box2Plus++;
-    if (f.box >= 3) box3Plus++;
-    if (f.box >= 4) box4Plus++;
-    if (f.box >= 5) box5++;
-  }
-  if (box5 >= 36) return 5;
-  if (box4Plus >= 25) return 4;
-  if (box3Plus >= 15) return 3;
-  if (box2Plus >= 5) return 2;
-  return 1;
-}

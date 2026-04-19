@@ -3,6 +3,7 @@ import type { UserProfile } from '../types';
 import { RESPONSE_TIME } from '../types';
 import { factsForTable } from '../lib/badges';
 import { getFactKey } from '../lib/facts';
+import ProgressGrid from '../components/ProgressGrid';
 import './ParentDashboard.css';
 
 const Y_TICKS = [0, 25, 50, 75, 100];
@@ -170,6 +171,13 @@ export default function ParentDashboard({
             </div>
           ))}
         </div>
+      </div>
+
+      {/* Leitner color grid (diagnostic view — complements the child's
+          mystery image in §5.1 by showing the raw box state per fact) */}
+      <div className="parent-section">
+        <h3>Grille Leitner</h3>
+        <ProgressGrid facts={profile.facts} />
       </div>
 
       {/* Evolution graph */}

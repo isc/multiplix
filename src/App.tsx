@@ -3,7 +3,7 @@ import type { UserProfile, SessionQuestion, SessionResult, MultiFact, Badge } fr
 import { BOX_INTERVALS, RESPONSE_TIME } from './types';
 import { composeSession } from './lib/sessionComposer';
 import { processAnswer, addDays, resetFact } from './lib/leitner';
-import { checkBadges, computeMascotLevel, getCompletedTables } from './lib/badges';
+import { checkBadges, getCompletedTables } from './lib/badges';
 import { loadProfile, saveProfile, createNewProfile, exportProfile, importProfile } from './lib/storage';
 import { getFactKey } from './lib/facts';
 import { todayISO, daysBetween } from './lib/utils';
@@ -43,7 +43,6 @@ export default function App() {
   const [sessionResult, setSessionResult] = useState<SessionResult | null>(null);
   const [newBadges, setNewBadges] = useState<Badge[]>([]);
   const [newlyCompletedTables, setNewlyCompletedTables] = useState<number[]>([]);
-  const [previousMascotLevel, setPreviousMascotLevel] = useState(1);
 
   // Track session stats for badge checking
   const sessionConsecutiveCorrect = useRef(0);
@@ -207,9 +206,6 @@ export default function App() {
         sessionHistory,
       };
 
-      setPreviousMascotLevel(profile.mascotLevel);
-      updatedProfile.mascotLevel = computeMascotLevel(updatedProfile);
-
       // Pass previousLastSessionDate so PERSEVERANCE badge can check the gap
       const sessionStats = {
         consecutiveCorrect: sessionMaxConsecutiveCorrect.current,
@@ -307,7 +303,6 @@ export default function App() {
       {screen === 'session' && profile && sessionQuestions.length > 0 && (
         <SessionScreen
           questions={sessionQuestions}
-          mascotLevel={profile.mascotLevel}
           onComplete={handleSessionComplete}
           onAnswer={handleAnswer}
         />
@@ -318,8 +313,6 @@ export default function App() {
           result={sessionResult}
           newBadges={newBadges}
           newlyCompletedTables={newlyCompletedTables}
-          mascotLevel={profile.mascotLevel}
-          previousMascotLevel={previousMascotLevel}
           knownFactsCount={profile.facts.filter((f) => f.box >= 3).length}
           totalFacts={profile.facts.length}
           onFinish={handleRecapFinish}

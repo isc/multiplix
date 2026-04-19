@@ -35,7 +35,6 @@ export interface UserProfile {
   longestStreak: number;
   lastSessionDate: string | null;
   badges: Badge[];
-  mascotLevel: number;
   sessionHistory: SessionResult[];
   hasSeenRulesIntro: boolean;
 }

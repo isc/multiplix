@@ -22,7 +22,6 @@ const VOICE_FEEDBACK_SLOW = 3000;
 
 interface SessionScreenProps {
   questions: SessionQuestion[];
-  mascotLevel: number;
   onComplete: (result: SessionResult) => void;
   onAnswer: (
     fact: MultiFact,
@@ -41,7 +40,6 @@ type IntroStep = 'grid' | 'commute' | 'strategy';
 
 export default function SessionScreen({
   questions: initialQuestions,
-  mascotLevel,
   onComplete,
   onAnswer,
 }: SessionScreenProps) {
@@ -59,7 +57,7 @@ export default function SessionScreen({
     factBox: BoxLevel;
   } | null>(null);
   const [numpadDisabled, setNumpadDisabled] = useState(false);
-  const [mascotMood, setMascotMood] = useState<'idle' | 'happy' | 'sad'>('idle');
+  const [mascotMood, setMascotMood] = useState<'idle' | 'happy'>('idle');
 
   const { isMuted, playCorrect, playIncorrect } = useSound();
   const { speak, stop: stopSpeech, isSpeaking } = useTTS(isMuted);
@@ -176,10 +174,14 @@ export default function SessionScreen({
       if (correct) playCorrect();
       else playIncorrect();
 
-      // React mascot mood
+      // React mascot mood — jamais de moue/déception : seulement content ou neutre
       if (mascotMoodTimeout.current) clearTimeout(mascotMoodTimeout.current);
-      setMascotMood(correct ? 'happy' : 'sad');
-      mascotMoodTimeout.current = setTimeout(() => setMascotMood('idle'), 1500);
+      if (correct) {
+        setMascotMood('happy');
+        mascotMoodTimeout.current = setTimeout(() => setMascotMood('idle'), 1500);
+      } else {
+        setMascotMood('idle');
+      }
 
       // Notify parent (App) to update Leitner state
       onAnswer(currentQuestion.fact, correct, timeMs, value, currentQuestion.isBonusReview);
@@ -294,7 +296,7 @@ export default function SessionScreen({
       <div className="session-header">
         {!showIntro && (
           <div className="session-mascot">
-            <Mascot level={mascotLevel} mood={mascotMood} size="small" />
+            <Mascot mood={mascotMood} size="small" />
           </div>
         )}
         <div className="session-progress">

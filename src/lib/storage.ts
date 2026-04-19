@@ -63,7 +63,6 @@ export function createNewProfile(name: string): UserProfile {
     longestStreak: 0,
     lastSessionDate: null,
     badges: [],
-    mascotLevel: 1,
     sessionHistory: [],
     hasSeenRulesIntro: false,
   };
@@ -80,6 +79,8 @@ function migrateProfile(profile: UserProfile): UserProfile {
   if (typeof profile.hasSeenRulesIntro !== 'boolean') {
     profile.hasSeenRulesIntro = true;
   }
+  // Strip deprecated mascotLevel field from older profiles
+  delete (profile as UserProfile & { mascotLevel?: number }).mascotLevel;
   return profile;
 }
 
@@ -98,7 +99,6 @@ function isValidProfile(obj: unknown): boolean {
   if (typeof p.currentStreak !== 'number') return false;
   if (typeof p.longestStreak !== 'number') return false;
   if (!Array.isArray(p.badges)) return false;
-  if (typeof p.mascotLevel !== 'number') return false;
 
   // Validate each fact has the expected shape
   for (const fact of p.facts) {

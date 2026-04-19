@@ -102,18 +102,40 @@ export function useSound() {
     playNote(ctx, NOTE.C6, now + noteDuration * 3, noteDuration * 2, volume, 'triangle');
   }, [isMuted, getAudioContext, playNote]);
 
-  const playLevelUp = useCallback(() => {
+  const playTableComplete = useCallback(() => {
     if (isMuted) return;
     const ctx = getAudioContext();
     const now = ctx.currentTime;
     const noteDuration = 0.12;
     const volume = 0.18;
 
-    // Longer ascending melody: C5 -> E5 -> G5 -> C6 -> D6 -> E6 -> C6 (special moment)
+    // Longer ascending melody: C5 -> E5 -> G5 -> C6 -> D6 -> E6 -> C6 (table complete)
     const notes = [NOTE.C5, NOTE.E5, NOTE.G5, NOTE.C6, NOTE.D6, NOTE.E6, NOTE.C6];
     notes.forEach((freq, i) => {
       const isLast = i === notes.length - 1;
       const dur = isLast ? noteDuration * 3 : noteDuration;
+      playNote(ctx, freq, now + i * noteDuration, dur, volume, 'triangle');
+    });
+  }, [isMuted, getAudioContext, playNote]);
+
+  // Fuller completion melody for when the whole mystery image is revealed
+  // (all 36 facts reach box 5). Played on the final table-complete event
+  // that flips the last fact, via the RecapScreen.
+  const playImageComplete = useCallback(() => {
+    if (isMuted) return;
+    const ctx = getAudioContext();
+    const now = ctx.currentTime;
+    const noteDuration = 0.15;
+    const volume = 0.2;
+
+    // Two ascending arpeggios ending on a held high note
+    const notes = [
+      NOTE.C5, NOTE.E5, NOTE.G5, NOTE.C6,
+      NOTE.E6, NOTE.G5, NOTE.C6, NOTE.E6,
+    ];
+    notes.forEach((freq, i) => {
+      const isLast = i === notes.length - 1;
+      const dur = isLast ? noteDuration * 4 : noteDuration;
       playNote(ctx, freq, now + i * noteDuration, dur, volume, 'triangle');
     });
   }, [isMuted, getAudioContext, playNote]);
@@ -136,6 +158,7 @@ export function useSound() {
     playCorrect,
     playIncorrect,
     playBadge,
-    playLevelUp,
+    playTableComplete,
+    playImageComplete,
   };
 }
