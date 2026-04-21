@@ -158,7 +158,7 @@ function buildSampleProfile({ sessionAvailable = true } = {}) {
 // --- Page helpers -----------------------------------------------------------
 
 async function seedProfile(page, profile) {
-  await page.addInitScript((p) => {
+  await page.addInitScript(({ p, mockTodayIso }) => {
     // Deterministic Math.random so session composition / fact ordering is
     // stable across CI runs. Seeded mulberry32.
     let rngState = 0x5EED1337;
@@ -170,6 +170,21 @@ async function seedProfile(page, profile) {
       return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
     };
 
+    // Freeze the wall clock to SEED_TODAY so `nextDue` / `lastSeen` / "due"
+    // logic behaves identically regardless of when CI happens to run.
+    const frozen = new Date(`${mockTodayIso}T09:00:00.000Z`).getTime();
+    const RealDate = Date;
+    // eslint-disable-next-line no-global-assign
+    Date = class extends RealDate {
+      constructor(...args) {
+        if (args.length === 0) return new RealDate(frozen);
+        return new RealDate(...args);
+      }
+      static now() { return frozen; }
+      static UTC(...args) { return RealDate.UTC(...args); }
+      static parse(s) { return RealDate.parse(s); }
+    };
+
     if (p === null) {
       localStorage.removeItem('multiplix-profile');
     } else {
@@ -177,7 +192,7 @@ async function seedProfile(page, profile) {
     }
     // Mute sounds to avoid anything weird in headless.
     localStorage.setItem('multiplix-muted', 'true');
-  }, profile);
+  }, { p: profile, mockTodayIso: SEED_TODAY });
 }
 
 /** Returns the Leitner box of the currently displayed question's fact. */
