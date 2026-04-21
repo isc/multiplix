@@ -5,20 +5,15 @@ on:
     branches: [main]
 
 permissions:
-  contents: read
-  pages: write
-  id-token: write
+  contents: write
 
 concurrency:
-  group: pages
-  cancel-in-progress: true
+  group: gh-pages
+  cancel-in-progress: false
 
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
     steps:
       - uses: actions/checkout@v4
 
@@ -36,10 +31,14 @@ jobs:
       # Generate the HTML user guide with screenshots into dist/guide/.
       - run: npm run user-guide
 
-      - uses: actions/configure-pages@v5
-      - uses: actions/upload-pages-artifact@v3
+      # Publish dist/ at the ROOT of the `gh-pages` branch. `keep_files: true`
+      # preserves the sibling `previews/` directory written by the preview
+      # workflow, so branch previews survive main deploys.
+      - name: Publish to gh-pages (root)
+        uses: peaceiris/actions-gh-pages@v4
         with:
-          path: dist
-
-      - id: deployment
-        uses: actions/deploy-pages@v4
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./dist
+          publish_branch: gh-pages
+          keep_files: true
+          commit_message: 'deploy: main @ ${{ github.sha }}'
