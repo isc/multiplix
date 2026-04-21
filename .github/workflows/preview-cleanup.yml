@@ -1,0 +1,52 @@
+name: Cleanup branch preview
+
+on:
+  pull_request:
+    types: [closed]
+
+permissions:
+  contents: write
+  pull-requests: write
+
+concurrency:
+  group: gh-pages
+  cancel-in-progress: false
+
+jobs:
+  delete-preview:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Compute preview slug
+        id: slug
+        run: |
+          raw='${{ github.head_ref }}'
+          slug=$(echo "$raw" | tr -c 'a-zA-Z0-9-' '-' | tr -s '-' | sed 's/^-\|-$//g')
+          echo "slug=$slug" >> "$GITHUB_OUTPUT"
+
+      - name: Checkout gh-pages
+        uses: actions/checkout@v4
+        with:
+          ref: gh-pages
+          fetch-depth: 1
+          # Need a token that can push back.
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Remove preview directory
+        run: |
+          dir="previews/${{ steps.slug.outputs.slug }}"
+          if [ -d "$dir" ]; then
+            git config user.name 'github-actions[bot]'
+            git config user.email 'github-actions[bot]@users.noreply.github.com'
+            git rm -rf "$dir"
+            git commit -m "cleanup: remove preview ${{ steps.slug.outputs.slug }}"
+            git push origin gh-pages
+          else
+            echo "No preview directory at $dir, nothing to clean."
+          fi
+
+      - name: Update PR comment
+        uses: marocchino/sticky-pull-request-comment@v2
+        with:
+          header: preview-${{ steps.slug.outputs.slug }}
+          message: |
+            _Preview supprimée_ (PR fermée). Les URLs ne sont plus accessibles.
