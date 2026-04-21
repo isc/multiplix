@@ -159,6 +159,17 @@ function buildSampleProfile({ sessionAvailable = true } = {}) {
 
 async function seedProfile(page, profile) {
   await page.addInitScript((p) => {
+    // Deterministic Math.random so session composition / fact ordering is
+    // stable across CI runs. Seeded mulberry32.
+    let rngState = 0x5EED1337;
+    Math.random = () => {
+      rngState |= 0;
+      rngState = (rngState + 0x6D2B79F5) | 0;
+      let t = Math.imul(rngState ^ (rngState >>> 15), 1 | rngState);
+      t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+      return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+    };
+
     if (p === null) {
       localStorage.removeItem('multiplix-profile');
     } else {
@@ -167,6 +178,32 @@ async function seedProfile(page, profile) {
     // Mute sounds to avoid anything weird in headless.
     localStorage.setItem('multiplix-muted', 'true');
   }, profile);
+}
+
+/** Returns the Leitner box of the currently displayed question's fact. */
+async function readCurrentFactBox(page, q) {
+  return page.evaluate((qq) => {
+    const raw = localStorage.getItem('multiplix-profile');
+    if (!raw) return null;
+    const profile = JSON.parse(raw);
+    const a = Math.min(qq.a, qq.b);
+    const b = Math.max(qq.a, qq.b);
+    const fact = profile.facts.find((f) => f.a === a && f.b === b);
+    return fact ? fact.box : null;
+  }, q);
+}
+
+/**
+ * Facts that `getStrategy()` returns non-null for (see lib/strategies.ts):
+ * all facts except the ×2 table and 3×3 (base facts — grid + repeated
+ * addition is already the best intro).
+ */
+function factHasStrategy(a, b) {
+  const lo = Math.min(a, b);
+  const hi = Math.max(a, b);
+  if (lo === 2) return false;
+  if (lo === 3 && hi === 3) return false;
+  return true;
 }
 
 // Disable CSS animations everywhere. This keeps clicks from being rejected as
@@ -365,10 +402,32 @@ async function captureSessionScreens(page) {
   await page.click('.feedback-overlay');
   await page.waitForSelector('.feedback-overlay', { state: 'detached', timeout: 3000 });
 
-  // Walk past any intros that might follow, then answer incorrectly to
-  // capture the "incorrect" overlay.
+  // Walk past any intros that might follow. Then scan forward until we land
+  // on a question whose fact is both in box ≤ 2 AND has a derivation strategy
+  // — that guarantees the incorrect-feedback overlay shows a non-empty
+  // strategy hint in the screenshot.
   await clickAllIntroSteps(page);
-  const q2 = await readQuestion(page);
+  const MAX_SCAN = 20;
+  let q2 = null;
+  for (let i = 0; i < MAX_SCAN; i++) {
+    const q = await readQuestion(page);
+    const box = await readCurrentFactBox(page, q);
+    if (box !== null && box <= 2 && factHasStrategy(q.a, q.b)) {
+      q2 = q;
+      break;
+    }
+    // Not a good candidate — answer correctly and advance.
+    await answerWith(page, q.a * q.b);
+    await page.waitForSelector('.feedback-overlay.correct', { timeout: 3000 });
+    await page.click('.feedback-overlay');
+    await page.waitForSelector('.feedback-overlay', { state: 'detached', timeout: 3000 });
+    await clickAllIntroSteps(page);
+  }
+  if (!q2) {
+    log('WARN: no box≤2 fact with strategy found — 09-session-feedback-incorrect may miss the hint');
+    q2 = await readQuestion(page);
+  }
+
   const wrong = q2.a * q2.b === 1 ? 2 : 1;
   await answerWith(page, wrong);
   await page.waitForSelector('.feedback-overlay.incorrect', { timeout: 3000 });
