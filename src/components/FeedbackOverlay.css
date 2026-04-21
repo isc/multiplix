@@ -91,6 +91,8 @@
   padding: 8px 16px;
   border-radius: 12px;
   display: inline-block;
+  max-width: 100%;
+  box-sizing: border-box;
 }
 
 .feedback-dotgrid {

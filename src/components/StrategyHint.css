@@ -38,7 +38,7 @@
 
 .strategy-hint-lines {
   font-family: 'Courier New', ui-monospace, monospace;
-  font-size: 1.05rem;
+  font-size: 0.95rem;
   font-weight: 700;
   color: #6d4c41;
   line-height: 1.6;
@@ -46,7 +46,10 @@
 }
 
 .strategy-hint-line {
-  white-space: nowrap;
+  /* Allow soft wrapping for narrow containers / font fallbacks (e.g. CI
+     screenshots where Courier New isn't installed and the fallback
+     monospace is wider than expected). */
+  overflow-wrap: break-word;
 }
 
 .strategy-hint-recall {
