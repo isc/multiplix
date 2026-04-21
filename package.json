@@ -12,7 +12,8 @@
     "lint": "eslint .",
     "preview": "vite preview",
     "test": "vitest run",
-    "user-guide": "node scripts/generate-user-guide.mjs"
+    "user-guide": "node scripts/generate-user-guide.mjs",
+    "mystery-levels": "node scripts/generate-mystery-levels.mjs"
   },
   "dependencies": {
     "react": "^19.2.4",
@@ -32,6 +33,7 @@
     "globals": "^17.4.0",
     "jsdom": "^29.0.2",
     "playwright": "^1.59.1",
+    "sharp": "^0.34.5",
     "typescript": "~5.9.3",
     "typescript-eslint": "^8.57.0",
     "vite": "^6.4.1",
