@@ -151,7 +151,6 @@ function buildSampleProfile({ sessionAvailable = true } = {}) {
       { id: 'veloce', name: 'Véloce', description: '5 réponses < 2s de suite', earnedDate: '2026-04-05', icon: '🚀' },
       { id: 'exploration', name: 'Exploration', description: 'Avoir vu tous les faits', icon: '🗺️', earnedDate: '2026-04-08' },
     ],
-    mascotLevel: 3,
     sessionHistory,
   };
 }
@@ -506,13 +505,14 @@ const SECTIONS = [
   {
     id: 'home',
     title: 'Écran d\'accueil',
-    description: `Le hub quotidien. La mascotte évolue au fil des progrès
-      (œuf → bébé poussin → poussin → chouette → aigle). La flamme affiche la
+    description: `Le hub quotidien. La mascotte est un compagnon stable —
+      elle accueille l'enfant à chaque session, réagit aux bonnes réponses,
+      encourage en cas d'erreur, sans jamais juger. La flamme affiche la
       série en cours. Le gros bouton lance la séance du jour, et la barre du
       bas donne accès aux progrès, aux badges et aux règles ×1 / ×10. L'icône
       engrenage (appui long de 1,5 s) ouvre l'espace parent.`,
     shots: [
-      { file: '05-home', caption: 'Accueil avec mascotte niveau 3 et série de 5 jours.' },
+      { file: '05-home', caption: 'Accueil avec la mascotte et la série de 5 jours.' },
     ],
   },
   {
@@ -540,23 +540,26 @@ const SECTIONS = [
     id: 'recap',
     title: 'Bilan de séance',
     description: `À la fin d'une séance, l'écran de bilan récapitule les
-      faits nouveaux, les progrès réalisés, et déclenche les confettis s'il
-      y a eu une montée de niveau de la mascotte, une table entièrement
-      maîtrisée ou un nouveau badge. La progression globale est affichée via
-      une barre « X faits connus sur 36 ».`,
+      faits nouveaux, les progrès réalisés, et déclenche les confettis si
+      une table est entièrement maîtrisée, si l'image mystère est complétée,
+      ou pour un nouveau badge. La progression globale est affichée via une
+      barre « X faits connus sur 36 ».`,
     shots: [
       { file: '14-recap', caption: 'Bilan d\'une séance avec barre de progression.' },
     ],
   },
   {
     id: 'progress',
-    title: 'Ma carte au trésor',
-    description: `Une grille interactive montre chaque fait (a×b) coloré selon
-      sa boîte Leitner : gris (pas encore vu), rouge, orange, jaune, vert clair,
-      puis vert foncé (maîtrisé). Les totaux « découverts / maîtrisés / total »
-      sont affichés en haut.`,
+    title: 'Mon image mystère',
+    description: `Une grille 8×8 (tables 2 à 9) où chaque case est un
+      fragment d'une image cachée. Plus l'enfant maîtrise un fait, plus
+      son fragment gagne en finesse — silhouette floue, aplat, couleurs,
+      ombres, détails complets, en miroir des 5 boîtes Leitner. Un fait
+      oublié voit son fragment se re-flouter un peu, sans notion d'échec.
+      Quand les 36 faits sont maîtrisés, l'image est entièrement révélée.
+      Les totaux « découverts / maîtrisés / total » sont affichés en haut.`,
     shots: [
-      { file: '10-progress', caption: 'Grille des faits colorés selon la boîte Leitner.' },
+      { file: '10-progress', caption: 'Image mystère qui se révèle au fur et à mesure des progrès.' },
     ],
   },
   {
