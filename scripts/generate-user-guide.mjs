@@ -29,7 +29,11 @@ const OUT_DIR = join(ROOT, 'dist', 'guide');
 const SHOTS_DIR = join(OUT_DIR, 'screenshots');
 
 const PORT = Number(process.env.GUIDE_PORT ?? 4173);
-const BASE_URL = `http://localhost:${PORT}/multiplix/`;
+// Matches the base baked in at build time (see vite.config.ts). For main
+// deploys this is `/multiplix/`; for branch previews it's overridden via
+// the `VITE_BASE_PATH` env variable.
+const BASE_PATH = process.env.VITE_BASE_PATH ?? '/multiplix/';
+const BASE_URL = `http://localhost:${PORT}${BASE_PATH}`;
 
 // Mobile-ish portrait viewport so screenshots match how kids use the PWA.
 const VIEWPORT = { width: 420, height: 900 };
