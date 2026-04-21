@@ -4,10 +4,7 @@ import { VitePWA } from 'vite-plugin-pwa'
 
 // https://vite.dev/config/
 export default defineConfig({
-  // Base path is baked in at build time. Defaults to the main deploy path
-  // (`/multiplix/`) but can be overridden via `VITE_BASE_PATH` for branch
-  // previews (e.g. `/multiplix/previews/<slug>/`).
-  base: process.env.VITE_BASE_PATH ?? '/multiplix/',
+  base: '/multiplix/',
   plugins: [
     react(),
     VitePWA({
