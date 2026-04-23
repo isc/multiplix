@@ -149,7 +149,7 @@ La formulation classique « on ajoute un zéro » est volontairement évitée : 
 1. Écran d'accueil avec le personnage mascotte (voir §4)
 2. Saisie du prénom → "Salut Zoé !"
 3. Explication ludique : "Je suis [Mascotte]. On va apprendre les multiplications ensemble, 5 minutes par jour !"
-4. Test de positionnement rapide (optionnel) : 15 faits mélangés, pas de timer visible → détermine quels faits sont déjà connus pour démarrer à la bonne boîte
+4. Test de positionnement rapide (optionnel) : 15 faits mélangés, pas de timer visible → détermine quels faits sont déjà connus pour démarrer à la bonne boîte. Un bouton **« Je ne sais pas »** permet de passer une question sans forcer une réponse au hasard ; c'est traité comme une erreur (placement en boîte 1), ce qui évite de polluer le diagnostic avec des bonnes réponses devinées. Une voix d'intro (`placement-intro`) annonce l'option au démarrage du test.
 5. Introduction des règles ×1 et ×10 (écran `RulesIntroScreen`) — affiché une fois, juste après le test de positionnement. Trois étapes : accueil (« Deux règles toutes simples »), règle ×1 avec exemples, règle ×10 avec visuel du « glisse-nombre » (animation : un chiffre glisse de la colonne des unités vers celle des dizaines, un 0 apparaît aux unités). Le passage est persisté via `UserProfile.hasSeenRulesIntro` pour ne pas le rejouer.
 6. Première séance avec les 2 premiers faits (les plus simples : 2×2 et 2×3). Le plafond de 2 nouveaux faits par séance (§3.4bis) s'applique dès la première séance — 2×4 et 2×5 sont introduits aux séances suivantes quand 2×2 et 2×3 sont en boîte 2+.
 
