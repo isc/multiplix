@@ -300,7 +300,7 @@ async function captureHome(page) {
 }
 
 const NAV_SCREENS = [
-  { navText: 'Progrès', screenSel: '.progress-screen', backSel: '.progress-back-btn', shot: '10-progress' },
+  { navText: 'Mon image', screenSel: '.progress-screen', backSel: '.progress-back-btn', shot: '10-progress' },
   { navText: 'Badges',  screenSel: '.badges-screen',   backSel: '.badges-back-btn',   shot: '11-badges'   },
   { navText: 'Règles',  screenSel: '.rules-screen',    backSel: '.rules-back-btn',    shot: '12-rules'    },
 ];

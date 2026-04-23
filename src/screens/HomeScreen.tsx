@@ -127,7 +127,7 @@ export default function HomeScreen({
 
       <div className="home-nav">
         <button className="home-nav-btn" onClick={onShowProgress}>
-          {'\uD83D\uDDFA\uFE0F'} Progrès
+          {'\uD83D\uDDFA\uFE0F'} Mon image
         </button>
         <button className="home-nav-btn" onClick={onShowBadges}>
           {'\uD83C\uDFC5'} Badges
