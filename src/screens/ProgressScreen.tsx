@@ -1,5 +1,5 @@
 import type { UserProfile } from '../types';
-import ProgressGrid from '../components/ProgressGrid';
+import MysteryImage from '../components/MysteryImage';
 import './ProgressScreen.css';
 
 interface ProgressScreenProps {
@@ -18,7 +18,7 @@ export default function ProgressScreen({ profile, onBack }: ProgressScreenProps)
         <button className="progress-back-btn" onClick={onBack} aria-label="Retour">
           {'\u2190'}
         </button>
-        <div className="progress-title">Ma carte au trésor</div>
+        <div className="progress-title">Mon image mystère</div>
       </div>
 
       <div className="progress-stats-summary">
@@ -36,33 +36,11 @@ export default function ProgressScreen({ profile, onBack }: ProgressScreenProps)
         </div>
       </div>
 
-      <ProgressGrid facts={profile.facts} />
+      <MysteryImage facts={profile.facts} theme={profile.mysteryTheme} />
 
       <div className="progress-legend">
-        <div className="progress-legend-item">
-          <div className="progress-legend-dot" style={{ background: 'var(--box-gray)' }} />
-          Nouveau
-        </div>
-        <div className="progress-legend-item">
-          <div className="progress-legend-dot" style={{ background: 'var(--box-red)' }} />
-          Difficile
-        </div>
-        <div className="progress-legend-item">
-          <div className="progress-legend-dot" style={{ background: 'var(--box-orange)' }} />
-          En cours
-        </div>
-        <div className="progress-legend-item">
-          <div className="progress-legend-dot" style={{ background: 'var(--box-yellow)' }} />
-          Progresse
-        </div>
-        <div className="progress-legend-item">
-          <div className="progress-legend-dot" style={{ background: 'var(--box-lightgreen)' }} />
-          Presque
-        </div>
-        <div className="progress-legend-item">
-          <div className="progress-legend-dot" style={{ background: 'var(--box-green)' }} />
-          Maîtrisé !
-        </div>
+        Chaque fait que tu connais mieux fait apparaître un peu plus de l'image.
+        Quand tous les faits sont maîtrisés, l'image est complète !
       </div>
     </div>
   );

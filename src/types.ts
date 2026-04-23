@@ -26,6 +26,12 @@ export interface Badge {
   icon: string;
 }
 
+// `village` est réservé au guide utilisateur (pour ne pas spoiler) ;
+// les profils réels tirent aléatoirement dans MYSTERY_POOL à la création.
+export const MYSTERY_POOL = ['market', 'ocean'] as const;
+
+export type MysteryTheme = (typeof MYSTERY_POOL)[number] | 'village';
+
 export interface UserProfile {
   name: string;
   startDate: string;
@@ -35,9 +41,9 @@ export interface UserProfile {
   longestStreak: number;
   lastSessionDate: string | null;
   badges: Badge[];
-  mascotLevel: number;
   sessionHistory: SessionResult[];
   hasSeenRulesIntro: boolean;
+  mysteryTheme: MysteryTheme;
 }
 
 export type BoxLevel = 1 | 2 | 3 | 4 | 5;

@@ -96,7 +96,7 @@ export default function HomeScreen({
         </button>
       </div>
 
-      <Mascot level={profile.mascotLevel} mood="idle" size="large" showLabel />
+      <Mascot mood="idle" size="large" />
 
       <div className="home-greeting">
         Salut <span>{profile.name}</span> !

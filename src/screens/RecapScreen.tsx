@@ -1,5 +1,6 @@
 import { useEffect, useRef } from 'react';
 import type { SessionResult, Badge as BadgeType } from '../types';
+import { BADGE_IDS } from '../types';
 import Mascot from '../components/Mascot';
 import Badge from '../components/Badge';
 import { useSound } from '../hooks/useSound';
@@ -11,8 +12,6 @@ interface RecapScreenProps {
   result: SessionResult;
   newBadges: BadgeType[];
   newlyCompletedTables: number[];
-  mascotLevel: number;
-  previousMascotLevel: number;
   knownFactsCount: number;
   totalFacts: number;
   onFinish: () => void;
@@ -22,34 +21,32 @@ export default function RecapScreen({
   result,
   newBadges,
   newlyCompletedTables,
-  mascotLevel,
-  previousMascotLevel,
   knownFactsCount,
   totalFacts,
   onFinish,
 }: RecapScreenProps) {
-  const { isMuted, playBadge, playLevelUp } = useSound();
+  const { isMuted, playBadge, playTableComplete, playImageComplete } = useSound();
   const { speak } = useTTS(isMuted);
   const { triggerConfetti } = useConfetti();
   const hasPlayedRef = useRef(false);
 
-  const leveledUp = mascotLevel > previousMascotLevel;
+  const imageJustCompleted = newBadges.some((b) => b.id === BADGE_IDS.GENIE_MATHS);
 
   useEffect(() => {
     if (hasPlayedRef.current) return;
     hasPlayedRef.current = true;
 
-    if (newlyCompletedTables.length > 0) {
-      playLevelUp();
+    if (imageJustCompleted) {
+      playImageComplete();
       triggerConfetti();
-    } else if (leveledUp) {
-      playLevelUp();
+    } else if (newlyCompletedTables.length > 0) {
+      playTableComplete();
       triggerConfetti();
     } else if (newBadges.length > 0) {
       playBadge();
       triggerConfetti();
     }
-  }, [leveledUp, newBadges, newlyCompletedTables, playBadge, playLevelUp, triggerConfetti]);
+  }, [imageJustCompleted, newBadges, newlyCompletedTables, playBadge, playImageComplete, playTableComplete, triggerConfetti]);
 
   // Speak on every mount (including StrictMode's simulated remount in dev).
   // The useTTS cleanup on unmount would otherwise silence the audio if speak
@@ -59,7 +56,7 @@ export default function RecapScreen({
   }, [speak]);
 
   const mascotMood =
-    newlyCompletedTables.length > 0 || leveledUp
+    imageJustCompleted || newlyCompletedTables.length > 0
       ? 'celebrate'
       : newBadges.length > 0
         ? 'happy'
@@ -83,7 +80,7 @@ export default function RecapScreen({
         </div>
       )}
 
-      <Mascot level={mascotLevel} mood={mascotMood as 'celebrate' | 'happy' | 'idle'} size="normal" />
+      <Mascot mood={mascotMood} size="normal" />
 
       <div className="recap-title">Séance terminée !</div>
 

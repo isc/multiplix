@@ -1,6 +1,7 @@
 import type { UserProfile } from '../types';
+import { MYSTERY_POOL } from '../types';
 import { createInitialFacts } from './facts';
-import { todayISO } from './utils';
+import { pickRandom, todayISO } from './utils';
 
 const STORAGE_KEY = 'multiplix-profile';
 
@@ -63,9 +64,9 @@ export function createNewProfile(name: string): UserProfile {
     longestStreak: 0,
     lastSessionDate: null,
     badges: [],
-    mascotLevel: 1,
     sessionHistory: [],
     hasSeenRulesIntro: false,
+    mysteryTheme: pickRandom(MYSTERY_POOL),
   };
 }
 
@@ -80,6 +81,14 @@ function migrateProfile(profile: UserProfile): UserProfile {
   if (typeof profile.hasSeenRulesIntro !== 'boolean') {
     profile.hasSeenRulesIntro = true;
   }
+  // `village` est accepté tel quel (guide utilisateur) ; sinon le thème
+  // doit appartenir au pool, et à défaut on en retire un au hasard.
+  const t = profile.mysteryTheme;
+  if (t !== 'village' && !MYSTERY_POOL.includes(t)) {
+    profile.mysteryTheme = pickRandom(MYSTERY_POOL);
+  }
+  // Strip deprecated mascotLevel field from older profiles
+  delete (profile as UserProfile & { mascotLevel?: number }).mascotLevel;
   return profile;
 }
 
@@ -98,7 +107,6 @@ function isValidProfile(obj: unknown): boolean {
   if (typeof p.currentStreak !== 'number') return false;
   if (typeof p.longestStreak !== 'number') return false;
   if (!Array.isArray(p.badges)) return false;
-  if (typeof p.mascotLevel !== 'number') return false;
 
   // Validate each fact has the expected shape
   for (const fact of p.facts) {

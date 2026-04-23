@@ -169,12 +169,12 @@ export default function WelcomeScreen({ onComplete }: WelcomeScreenProps) {
     <div className="welcome-screen">
       {step === 0 && (
         <div className="welcome-step" key="step0">
-          <Mascot level={1} mood="idle" size="large" />
+          <Mascot mood="idle" size="large" />
           <div className="welcome-title">Bonjour !</div>
           <div className="welcome-subtitle">
-            Je suis un petit œuf magique.
+            Je suis Piou, ton petit copain d'apprentissage.
             <br />
-            Aide-moi à grandir en apprenant les tables de multiplication !
+            On va apprendre les tables de multiplication ensemble !
           </div>
           <button className="welcome-btn welcome-btn-primary" onClick={handleNext}>
             Suivant
@@ -184,7 +184,7 @@ export default function WelcomeScreen({ onComplete }: WelcomeScreenProps) {
 
       {step === 1 && (
         <div className="welcome-step" key="step1">
-          <Mascot level={1} mood="happy" size="normal" />
+          <Mascot mood="happy" size="normal" />
           <div className="welcome-title">Comment tu t'appelles ?</div>
           <input
             className="welcome-input"
@@ -208,7 +208,7 @@ export default function WelcomeScreen({ onComplete }: WelcomeScreenProps) {
 
       {step === 2 && (
         <div className="welcome-step" key="step2">
-          <Mascot level={1} mood="celebrate" size="large" />
+          <Mascot mood="celebrate" size="large" />
           <div className="welcome-title">
             Salut {name} !
           </div>

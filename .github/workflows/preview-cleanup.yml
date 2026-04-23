@@ -45,8 +45,12 @@ jobs:
           fi
 
       - name: Update PR comment
-        uses: marocchino/sticky-pull-request-comment@v2
+        uses: Wandalen/wretry.action@v3.8.0
         with:
-          header: preview-${{ steps.slug.outputs.slug }}
-          message: |
-            _Preview supprimée_ (PR fermée). Les URLs ne sont plus accessibles.
+          action: marocchino/sticky-pull-request-comment@v2
+          attempt_limit: 3
+          attempt_delay: 10000
+          with: |
+            header: preview-${{ steps.slug.outputs.slug }}
+            message: |
+              _Preview supprimée_ (PR fermée). Les URLs ne sont plus accessibles.

@@ -29,7 +29,11 @@ const OUT_DIR = join(ROOT, 'dist', 'guide');
 const SHOTS_DIR = join(OUT_DIR, 'screenshots');
 
 const PORT = Number(process.env.GUIDE_PORT ?? 4173);
-const BASE_URL = `http://localhost:${PORT}/multiplix/`;
+// Matches the base baked in at build time (see vite.config.ts). For main
+// deploys this is `/multiplix/`; for branch previews it's overridden via
+// the `VITE_BASE_PATH` env variable.
+const BASE_PATH = process.env.VITE_BASE_PATH ?? '/multiplix/';
+const BASE_URL = `http://localhost:${PORT}${BASE_PATH}`;
 
 // Mobile-ish portrait viewport so screenshots match how kids use the PWA.
 const VIEWPORT = { width: 420, height: 900 };
@@ -147,15 +151,43 @@ function buildSampleProfile({ sessionAvailable = true } = {}) {
       { id: 'veloce', name: 'Véloce', description: '5 réponses < 2s de suite', earnedDate: '2026-04-05', icon: '🚀' },
       { id: 'exploration', name: 'Exploration', description: 'Avoir vu tous les faits', icon: '🗺️', earnedDate: '2026-04-08' },
     ],
-    mascotLevel: 3,
     sessionHistory,
+    // Image mystère réservée au guide : évite de spoiler market/ocean qui
+    // sont tirés au sort à la création d'un vrai profil.
+    mysteryTheme: 'village',
   };
 }
 
 // --- Page helpers -----------------------------------------------------------
 
 async function seedProfile(page, profile) {
-  await page.addInitScript((p) => {
+  await page.addInitScript(({ p, mockTodayIso }) => {
+    // Deterministic Math.random so session composition / fact ordering is
+    // stable across CI runs. Seeded mulberry32.
+    let rngState = 0x5EED1337;
+    Math.random = () => {
+      rngState |= 0;
+      rngState = (rngState + 0x6D2B79F5) | 0;
+      let t = Math.imul(rngState ^ (rngState >>> 15), 1 | rngState);
+      t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+      return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+    };
+
+    // Freeze the wall clock to SEED_TODAY so `nextDue` / `lastSeen` / "due"
+    // logic behaves identically regardless of when CI happens to run.
+    const frozen = new Date(`${mockTodayIso}T09:00:00.000Z`).getTime();
+    const RealDate = Date;
+    // eslint-disable-next-line no-global-assign
+    Date = class extends RealDate {
+      constructor(...args) {
+        if (args.length === 0) return new RealDate(frozen);
+        return new RealDate(...args);
+      }
+      static now() { return frozen; }
+      static UTC(...args) { return RealDate.UTC(...args); }
+      static parse(s) { return RealDate.parse(s); }
+    };
+
     if (p === null) {
       localStorage.removeItem('multiplix-profile');
     } else {
@@ -163,7 +195,33 @@ async function seedProfile(page, profile) {
     }
     // Mute sounds to avoid anything weird in headless.
     localStorage.setItem('multiplix-muted', 'true');
-  }, profile);
+  }, { p: profile, mockTodayIso: SEED_TODAY });
+}
+
+/** Returns the Leitner box of the currently displayed question's fact. */
+async function readCurrentFactBox(page, q) {
+  return page.evaluate((qq) => {
+    const raw = localStorage.getItem('multiplix-profile');
+    if (!raw) return null;
+    const profile = JSON.parse(raw);
+    const a = Math.min(qq.a, qq.b);
+    const b = Math.max(qq.a, qq.b);
+    const fact = profile.facts.find((f) => f.a === a && f.b === b);
+    return fact ? fact.box : null;
+  }, q);
+}
+
+/**
+ * Facts that `getStrategy()` returns non-null for (see lib/strategies.ts):
+ * all facts except the ×2 table and 3×3 (base facts — grid + repeated
+ * addition is already the best intro).
+ */
+function factHasStrategy(a, b) {
+  const lo = Math.min(a, b);
+  const hi = Math.max(a, b);
+  if (lo === 2) return false;
+  if (lo === 3 && hi === 3) return false;
+  return true;
 }
 
 // Disable CSS animations everywhere. This keeps clicks from being rejected as
@@ -362,10 +420,32 @@ async function captureSessionScreens(page) {
   await page.click('.feedback-overlay');
   await page.waitForSelector('.feedback-overlay', { state: 'detached', timeout: 3000 });
 
-  // Walk past any intros that might follow, then answer incorrectly to
-  // capture the "incorrect" overlay.
+  // Walk past any intros that might follow. Then scan forward until we land
+  // on a question whose fact is both in box ≤ 2 AND has a derivation strategy
+  // — that guarantees the incorrect-feedback overlay shows a non-empty
+  // strategy hint in the screenshot.
   await clickAllIntroSteps(page);
-  const q2 = await readQuestion(page);
+  const MAX_SCAN = 20;
+  let q2 = null;
+  for (let i = 0; i < MAX_SCAN; i++) {
+    const q = await readQuestion(page);
+    const box = await readCurrentFactBox(page, q);
+    if (box !== null && box <= 2 && factHasStrategy(q.a, q.b)) {
+      q2 = q;
+      break;
+    }
+    // Not a good candidate — answer correctly and advance.
+    await answerWith(page, q.a * q.b);
+    await page.waitForSelector('.feedback-overlay.correct', { timeout: 3000 });
+    await page.click('.feedback-overlay');
+    await page.waitForSelector('.feedback-overlay', { state: 'detached', timeout: 3000 });
+    await clickAllIntroSteps(page);
+  }
+  if (!q2) {
+    log('WARN: no box≤2 fact with strategy found — 09-session-feedback-incorrect may miss the hint');
+    q2 = await readQuestion(page);
+  }
+
   const wrong = q2.a * q2.b === 1 ? 2 : 1;
   await answerWith(page, wrong);
   await page.waitForSelector('.feedback-overlay.incorrect', { timeout: 3000 });
@@ -502,13 +582,14 @@ const SECTIONS = [
   {
     id: 'home',
     title: 'Écran d\'accueil',
-    description: `Le hub quotidien. La mascotte évolue au fil des progrès
-      (œuf → bébé poussin → poussin → chouette → aigle). La flamme affiche la
+    description: `Le hub quotidien. La mascotte est un compagnon stable —
+      elle accueille l'enfant à chaque session, réagit aux bonnes réponses,
+      encourage en cas d'erreur, sans jamais juger. La flamme affiche la
       série en cours. Le gros bouton lance la séance du jour, et la barre du
       bas donne accès aux progrès, aux badges et aux règles ×1 / ×10. L'icône
       engrenage (appui long de 1,5 s) ouvre l'espace parent.`,
     shots: [
-      { file: '05-home', caption: 'Accueil avec mascotte niveau 3 et série de 5 jours.' },
+      { file: '05-home', caption: 'Accueil avec la mascotte et la série de 5 jours.' },
     ],
   },
   {
@@ -536,23 +617,26 @@ const SECTIONS = [
     id: 'recap',
     title: 'Bilan de séance',
     description: `À la fin d'une séance, l'écran de bilan récapitule les
-      faits nouveaux, les progrès réalisés, et déclenche les confettis s'il
-      y a eu une montée de niveau de la mascotte, une table entièrement
-      maîtrisée ou un nouveau badge. La progression globale est affichée via
-      une barre « X faits connus sur 36 ».`,
+      faits nouveaux, les progrès réalisés, et déclenche les confettis si
+      une table est entièrement maîtrisée, si l'image mystère est complétée,
+      ou pour un nouveau badge. La progression globale est affichée via une
+      barre « X faits connus sur 36 ».`,
     shots: [
       { file: '14-recap', caption: 'Bilan d\'une séance avec barre de progression.' },
     ],
   },
   {
     id: 'progress',
-    title: 'Ma carte au trésor',
-    description: `Une grille interactive montre chaque fait (a×b) coloré selon
-      sa boîte Leitner : gris (pas encore vu), rouge, orange, jaune, vert clair,
-      puis vert foncé (maîtrisé). Les totaux « découverts / maîtrisés / total »
-      sont affichés en haut.`,
+    title: 'Mon image mystère',
+    description: `Une grille 8×8 (tables 2 à 9) où chaque case est un
+      fragment d'une image cachée. Plus l'enfant maîtrise un fait, plus
+      son fragment gagne en finesse — silhouette floue, aplat, couleurs,
+      ombres, détails complets, en miroir des 5 boîtes Leitner. Un fait
+      oublié voit son fragment se re-flouter un peu, sans notion d'échec.
+      Quand les 36 faits sont maîtrisés, l'image est entièrement révélée.
+      Les totaux « découverts / maîtrisés / total » sont affichés en haut.`,
     shots: [
-      { file: '10-progress', caption: 'Grille des faits colorés selon la boîte Leitner.' },
+      { file: '10-progress', caption: 'Image mystère qui se révèle au fur et à mesure des progrès.' },
     ],
   },
   {
