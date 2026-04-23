@@ -176,7 +176,6 @@ async function seedProfile(page, profile) {
     // logic behaves identically regardless of when CI happens to run.
     const frozen = new Date(`${mockTodayIso}T09:00:00.000Z`).getTime();
     const RealDate = Date;
-    // eslint-disable-next-line no-global-assign
     Date = class extends RealDate {
       constructor(...args) {
         if (args.length === 0) return new RealDate(frozen);
