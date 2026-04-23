@@ -156,6 +156,13 @@
   color: var(--secondary);
 }
 
+.welcome-test-hint {
+  font-size: 0.9rem;
+  color: var(--text-muted);
+  font-style: italic;
+  margin-top: 4px;
+}
+
 .welcome-btn-dont-know {
   background: transparent;
   color: var(--text-light);

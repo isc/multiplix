@@ -176,6 +176,9 @@ export default function WelcomeScreen({ onComplete }: WelcomeScreenProps) {
               >
                 Je ne sais pas
               </button>
+              <div className="welcome-test-hint">
+                Réponds du mieux que tu peux !
+              </div>
             </>
           )}
         </div>
