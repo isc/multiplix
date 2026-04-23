@@ -26,17 +26,11 @@ export interface Badge {
   icon: string;
 }
 
-/**
- * Image mystère associée au profil. `village` est réservé au guide
- * utilisateur (pour ne pas spoiler) ; les profils réels tirent aléatoirement
- * dans MYSTERY_POOL à la création.
- */
-export type MysteryTheme = 'market' | 'ocean' | 'village';
+// `village` est réservé au guide utilisateur (pour ne pas spoiler) ;
+// les profils réels tirent aléatoirement dans MYSTERY_POOL à la création.
+export const MYSTERY_POOL = ['market', 'ocean'] as const;
 
-export const MYSTERY_POOL: ReadonlyArray<Exclude<MysteryTheme, 'village'>> = [
-  'market',
-  'ocean',
-];
+export type MysteryTheme = (typeof MYSTERY_POOL)[number] | 'village';
 
 export interface UserProfile {
   name: string;

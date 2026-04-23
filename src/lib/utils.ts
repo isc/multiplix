@@ -27,6 +27,6 @@ export function shuffle<T>(arr: T[]): T[] {
   return a;
 }
 
-export function pickRandom<T>(arr: T[]): T {
+export function pickRandom<T>(arr: readonly T[]): T {
   return arr[Math.floor(Math.random() * arr.length)];
 }

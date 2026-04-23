@@ -32,10 +32,9 @@ export default function MysteryImage({ facts, theme }: MysteryImageProps) {
   return (
     <div className="mystery-image-container">
       <div className="mystery-image">
-        {/* Chaque cellule est une fenêtre sur la version niveau-N du master :
-            background-size 800% + background-position par (col, row) donne
-            la bonne tranche de l'image pour cette cellule, sur la variante
-            de finesse correspondant à sa boîte Leitner. */}
+        {/* Chaque cellule affiche la tranche (col, row) de la variante de
+            finesse correspondant à sa boîte Leitner, via background-size
+            800% + background-position en sprite. */}
         <div className="mystery-cells">
           {HEADERS.map((row, rowIdx) =>
             HEADERS.map((col, colIdx) => {

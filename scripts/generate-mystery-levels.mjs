@@ -151,23 +151,19 @@ async function main() {
 
   const pipelines = makePipelines(size);
 
-  for (const { level, apply } of pipelines) {
-    // On repart du master à chaque niveau pour éviter que les transformations
-    // se cumulent entre les étapes (blur puis posterize sur un blur n'est pas
-    // la même chose que blur fresh).
-    const base = sharp(master).extract({
-      left: offsetX,
-      top: offsetY,
-      width: squareSide,
-      height: squareSide,
-    }).resize(size, size);
-
-    const outputPath = join(out, `level-${level}.png`);
-    const transformed = apply(base);
-    // Force une sortie PNG RGBA propre même si le pipeline contient un palette.
-    await transformed.toColourspace('srgb').png().toFile(outputPath);
-    console.log(`✓ level-${level}.png`);
-  }
+  // Les 5 niveaux sont indépendants : on repart du master à chaque fois
+  // (éviter le cumul blur + posterize sur un blur, qui n'est pas la même
+  // chose qu'un blur fresh) et on les génère en parallèle.
+  await Promise.all(
+    pipelines.map(async ({ level, apply }) => {
+      const base = sharp(master)
+        .extract({ left: offsetX, top: offsetY, width: squareSide, height: squareSide })
+        .resize(size, size);
+      const outputPath = join(out, `level-${level}.png`);
+      await apply(base).toColourspace('srgb').png().toFile(outputPath);
+      console.log(`✓ level-${level}.png`);
+    }),
+  );
 
   console.log('done ✔');
 }
