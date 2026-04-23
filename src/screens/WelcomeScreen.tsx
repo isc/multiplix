@@ -106,8 +106,7 @@ export default function WelcomeScreen({ onComplete }: WelcomeScreenProps) {
 
   const handleTestAnswer = useCallback(
     (value: number) => {
-      const fact = testFacts[testIndex];
-      const [a, b] = fact;
+      const [a, b] = testFacts[testIndex];
       recordTestResult(value === a * b);
     },
     [testFacts, testIndex, recordTestResult],
@@ -128,15 +127,11 @@ export default function WelcomeScreen({ onComplete }: WelcomeScreenProps) {
     () => testFacts.map(([a, b]) => (Math.random() > 0.5 ? [a, b] : [b, a])),
   );
 
-  // TTS for placement test: play the intro once on entry, then chain to the first question.
-  // Subsequent questions (testIndex > 0) play directly when the index advances.
-  const placementIntroPlayed = useRef(false);
   useEffect(() => {
     if (step !== 3) return;
     const [displayA, displayB] = displayOrders[testIndex];
     const questionKey = `q-${displayA}-${displayB}`;
-    if (!placementIntroPlayed.current && testIndex === 0) {
-      placementIntroPlayed.current = true;
+    if (testIndex === 0) {
       speak('placement-intro', () => speak(questionKey));
     } else {
       speak(questionKey);
@@ -178,7 +173,7 @@ export default function WelcomeScreen({ onComplete }: WelcomeScreenProps) {
             <>
               <NumPad onSubmit={handleTestAnswer} disabled={numpadDisabled} />
               <button
-                className="welcome-btn-dont-know"
+                className="welcome-btn welcome-btn-skip"
                 onClick={handleDontKnow}
                 disabled={numpadDisabled}
               >

@@ -93,8 +93,14 @@
   box-shadow: none;
 }
 
-.welcome-btn-skip:active {
+.welcome-btn-skip:active:not(:disabled) {
   color: var(--text);
+}
+
+.welcome-btn-skip:disabled {
+  background: transparent;
+  opacity: 0.4;
+  cursor: not-allowed;
 }
 
 /* Placement test */
@@ -161,27 +167,6 @@
   color: var(--text-muted);
   font-style: italic;
   margin-top: 4px;
-}
-
-.welcome-btn-dont-know {
-  background: transparent;
-  color: var(--text-light);
-  font-size: 0.95rem;
-  font-weight: 600;
-  padding: 10px 20px;
-  border-radius: 12px;
-  text-decoration: underline;
-  transition: color 0.15s ease, transform 0.15s ease;
-}
-
-.welcome-btn-dont-know:active:not(:disabled) {
-  color: var(--text);
-  transform: scale(0.97);
-}
-
-.welcome-btn-dont-know:disabled {
-  opacity: 0.4;
-  cursor: not-allowed;
 }
 
 .welcome-dots {
