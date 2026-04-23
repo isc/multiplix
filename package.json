@@ -4,13 +4,15 @@
   "version": "0.0.0",
   "type": "module",
   "engines": {
-    "node": ">=20.19"
+    "node": ">=22.12"
   },
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",
     "lint": "eslint .",
     "preview": "vite preview",
+    "check-node": "node scripts/check-node.mjs",
+    "pretest": "npm run check-node",
     "test": "vitest run",
     "user-guide": "node scripts/generate-user-guide.mjs",
     "mystery-levels": "node scripts/generate-mystery-levels.mjs"
