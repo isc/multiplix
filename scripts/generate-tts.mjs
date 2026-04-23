@@ -149,6 +149,10 @@ function buildEntries() {
     text: "Je vais te poser quelques questions pour voir ce que tu connais déjà. Pas de stress, il n'y a pas de piège !",
   });
   entries.push({
+    key: 'placement-intro',
+    text: "Réponds du mieux que tu peux. Et si tu ne sais pas, tape sur « Je ne sais pas ».",
+  });
+  entries.push({
     key: 'recap-done',
     text: "Séance terminée ! Bravo, tu as bien travaillé !",
   });
