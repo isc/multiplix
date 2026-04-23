@@ -266,8 +266,8 @@ L'écran de récap ne doit jamais afficher de score brut (ex : "8/12 bonnes rép
 
 **Ce qui est affiché :**
 - **Message chaleureux constant** — identique quel que soit le résultat de la séance. L'enfant a fait sa séance, c'est l'essentiel.
-- **Faits promus** — nombre de faits qui ont monté de boîte ("3 progrès !")
 - **Nouveaux faits** — nombre de faits introduits dans la séance
+- **Invitation à l'image mystère** — bouton vers l'écran de progression (§5.1). Libellé neutre *« Voir mon image »* par défaut ; libellé valorisant *« Ton image a changé ! Viens la voir »* uniquement quand au moins un fait a réellement monté de boîte dans la séance (comparaison boîte initiale → boîte finale, pas un simple compteur de bonnes réponses). Le nombre exact de faits promus n'est pas affiché : la métaphore visuelle suffit, et chiffrer la progression risquerait de réintroduire un signal ego-involving.
 - **Progression globale** — avancement vers la maîtrise complète (ex : "Tu connais 18 faits sur 36" ou jauge de progression)
 - **Badges éventuels** — récompenses orientées effort et maîtrise
 - **Tables complétées** — avec célébration (confettis)
