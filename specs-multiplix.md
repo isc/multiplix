@@ -322,13 +322,13 @@ Un petit personnage **stable** qui accompagne l'enfant tout au long du parcours.
 | Badge | Condition | Icône |
 |-------|-----------|-------|
 | Premier pas | Terminer la 1ère séance | 🌱 |
-| Régulier·e | 7 jours consécutifs | 🔥 |
+| Régularité | 7 jours consécutifs | 🔥 |
 | Machine | 10 réponses correctes d'affilée dans une séance | ⚡ |
-| Exploratrice | Avoir vu tous les faits au moins une fois | 🗺️ |
+| Exploration | Avoir vu tous les faits au moins une fois | 🗺️ |
 | Table de [N] | Maîtriser tous les faits d'une table | ⭐ |
-| Mathématicienne | Tous les faits en boîte 5 | 🏆 |
+| Génie des maths | Tous les faits en boîte 5 | 🏆 |
 | Véloce | 5 réponses < 2s d'affilée | 🚀 |
-| Persévérante | Revenir après 3+ jours d'absence | 💪 |
+| Persévérance | Revenir après 3+ jours d'absence | 💪 |
 | Flamme éternelle | 30 jours consécutifs | 🌟 |
 
 ### 4.3 Streak (série de jours)
