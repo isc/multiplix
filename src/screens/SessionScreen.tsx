@@ -299,17 +299,19 @@ export default function SessionScreen({
             <Mascot mood={mascotMood} size="small" />
           </div>
         )}
-        <div className="session-progress">
-          {progressDots.map((status, i) => (
-            <div key={i} className={`session-progress-dot ${status}`}>
-              {status === 'correct'
-                ? '\u2713'
-                : status === 'incorrect'
-                  ? '\u2717'
-                  : ''}
-            </div>
-          ))}
-        </div>
+        {!showIntro && (
+          <div className="session-progress">
+            {progressDots.map((status, i) => (
+              <div key={i} className={`session-progress-dot ${status}`}>
+                {status === 'correct'
+                  ? '\u2713'
+                  : status === 'incorrect'
+                    ? '\u2717'
+                    : ''}
+              </div>
+            ))}
+          </div>
+        )}
       </div>
 
       {/* Introduction phase */}
