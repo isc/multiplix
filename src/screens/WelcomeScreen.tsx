@@ -66,8 +66,8 @@ export default function WelcomeScreen({ onComplete }: WelcomeScreenProps) {
     onComplete(name.trim(), []);
   };
 
-  const handleTestAnswer = useCallback(
-    (value: number) => {
+  const recordTestResult = useCallback(
+    (correct: boolean) => {
       if (numpadDisabled) return;
       setNumpadDisabled(true);
       stopSpeech();
@@ -75,7 +75,6 @@ export default function WelcomeScreen({ onComplete }: WelcomeScreenProps) {
       const fact = testFacts[testIndex];
       const [a, b] = fact;
       const timeMs = Date.now() - questionStartTime.current;
-      const correct = value === a * b;
 
       const result: PlacementResult = {
         factKey: getFactKey(a, b),
@@ -105,6 +104,18 @@ export default function WelcomeScreen({ onComplete }: WelcomeScreenProps) {
     [numpadDisabled, testFacts, testIndex, testResults, name, onComplete, stopSpeech],
   );
 
+  const handleTestAnswer = useCallback(
+    (value: number) => {
+      const [a, b] = testFacts[testIndex];
+      recordTestResult(value === a * b);
+    },
+    [testFacts, testIndex, recordTestResult],
+  );
+
+  const handleDontKnow = useCallback(() => {
+    recordTestResult(false);
+  }, [recordTestResult]);
+
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === 'Enter' && name.trim()) {
       handleNext();
@@ -116,11 +127,15 @@ export default function WelcomeScreen({ onComplete }: WelcomeScreenProps) {
     () => testFacts.map(([a, b]) => (Math.random() > 0.5 ? [a, b] : [b, a])),
   );
 
-  // TTS for placement test questions
   useEffect(() => {
     if (step !== 3) return;
     const [displayA, displayB] = displayOrders[testIndex];
-    speak(`q-${displayA}-${displayB}`);
+    const questionKey = `q-${displayA}-${displayB}`;
+    if (testIndex === 0) {
+      speak('placement-intro', () => speak(questionKey));
+    } else {
+      speak(questionKey);
+    }
   }, [step, testIndex, displayOrders, speak]);
 
   // Placement test screen
@@ -155,11 +170,20 @@ export default function WelcomeScreen({ onComplete }: WelcomeScreenProps) {
             </div>
           )}
           {!feedback && (
-            <NumPad onSubmit={handleTestAnswer} disabled={numpadDisabled} />
+            <>
+              <NumPad onSubmit={handleTestAnswer} disabled={numpadDisabled} />
+              <button
+                className="welcome-btn welcome-btn-skip"
+                onClick={handleDontKnow}
+                disabled={numpadDisabled}
+              >
+                Je ne sais pas
+              </button>
+              <div className="welcome-test-hint">
+                Réponds du mieux que tu peux !
+              </div>
+            </>
           )}
-        </div>
-        <div className="welcome-test-hint">
-          Réponds du mieux que tu peux !
         </div>
       </div>
     );
@@ -217,7 +241,7 @@ export default function WelcomeScreen({ onComplete }: WelcomeScreenProps) {
             pour voir ce que tu connais déjà.
             <br />
             <br />
-            Pas de stress, il n'y a pas de piège !
+            Pas de stress : si tu ne sais pas, tape sur « Je ne sais pas ».
           </div>
           <button className="welcome-btn welcome-btn-primary" onClick={handleNext}>
             C'est parti !

@@ -17,9 +17,8 @@ export function useTTS(isMuted: boolean) {
     }
   }, [isMuted]);
 
-  // speak() takes an audio key (e.g. "q-3-7", "intro-2-5", "welcome-hello")
-  // and plays the corresponding pre-generated file from public/audio/tts/.
-  const speak = useCallback((key: string) => {
+  // onEnd fires only on natural end — not on interrupt, pause, or mute.
+  const speak = useCallback((key: string, onEnd?: () => void) => {
     if (mutedRef.current) return;
     if (audioRef.current) {
       audioRef.current.pause();
@@ -33,9 +32,12 @@ export function useTTS(isMuted: boolean) {
         setIsSpeaking(false);
       }
     };
-    audio.addEventListener('ended', clearIfCurrent);
-    audio.addEventListener('error', clearIfCurrent);
-    audio.addEventListener('pause', clearIfCurrent);
+    audio.addEventListener('ended', () => {
+      clearIfCurrent();
+      if (audioRef.current === audio && onEnd) onEnd();
+    }, { once: true });
+    audio.addEventListener('error', clearIfCurrent, { once: true });
+    audio.addEventListener('pause', clearIfCurrent, { once: true });
     audio.play().catch(() => {
       clearIfCurrent();
     });

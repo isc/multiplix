@@ -93,8 +93,14 @@
   box-shadow: none;
 }
 
-.welcome-btn-skip:active {
+.welcome-btn-skip:active:not(:disabled) {
   color: var(--text);
+}
+
+.welcome-btn-skip:disabled {
+  background: transparent;
+  opacity: 0.4;
+  cursor: not-allowed;
 }
 
 /* Placement test */
@@ -160,6 +166,7 @@
   font-size: 0.9rem;
   color: var(--text-muted);
   font-style: italic;
+  margin-top: 4px;
 }
 
 .welcome-dots {
