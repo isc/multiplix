@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback, useRef, useMemo } from 'react';
-import type { UserProfile, SessionQuestion, SessionResult, MultiFact, Badge } from './types';
+import type { UserProfile, SessionQuestion, SessionResult, MultiFact, Badge, BoxLevel } from './types';
 import { BOX_INTERVALS, RESPONSE_TIME } from './types';
 import { composeSession } from './lib/sessionComposer';
 import { processAnswer, addDays, resetFact } from './lib/leitner';
@@ -48,6 +48,12 @@ export default function App() {
   const sessionConsecutiveCorrect = useRef(0);
   const sessionMaxConsecutiveCorrect = useRef(0);
   const sessionResponseTimes = useRef<number[]>([]);
+  // Per-session box deltas: a fact counts as "promoted" only if its final box
+  // ends strictly above the box it started the session in. Matches spec §3.5
+  // and the mystery-image metaphor (§5.1) — only real Leitner transitions.
+  const sessionInitialBoxes = useRef(new Map<string, BoxLevel>());
+  const sessionPromoted = useRef(new Set<string>());
+  const sessionDemoted = useRef(new Set<string>());
 
   // Snapshot of tables already mastered before the session starts
   const tablesCompletedBeforeSession = useRef<Set<number>>(new Set());
@@ -122,6 +128,9 @@ export default function App() {
     sessionConsecutiveCorrect.current = 0;
     sessionMaxConsecutiveCorrect.current = 0;
     sessionResponseTimes.current = [];
+    sessionInitialBoxes.current = new Map();
+    sessionPromoted.current = new Set();
+    sessionDemoted.current = new Set();
 
     tablesCompletedBeforeSession.current = getCompletedTables(profile.facts);
 
@@ -161,6 +170,24 @@ export default function App() {
           updatedFact.introduced = true;
         }
 
+        // Track net box delta over the session (idempotent set ops — safe under
+        // React strict-mode double-invocation of this reducer).
+        const factKey = getFactKey(fact.a, fact.b);
+        if (!sessionInitialBoxes.current.has(factKey)) {
+          sessionInitialBoxes.current.set(factKey, currentFact.box);
+        }
+        const initialBox = sessionInitialBoxes.current.get(factKey)!;
+        if (updatedFact.box > initialBox) {
+          sessionPromoted.current.add(factKey);
+          sessionDemoted.current.delete(factKey);
+        } else if (updatedFact.box < initialBox) {
+          sessionPromoted.current.delete(factKey);
+          sessionDemoted.current.add(factKey);
+        } else {
+          sessionPromoted.current.delete(factKey);
+          sessionDemoted.current.delete(factKey);
+        }
+
         const updatedFacts = prev.facts.map((f) =>
           f.a === fact.a && f.b === fact.b ? updatedFact : f,
         );
@@ -172,8 +199,17 @@ export default function App() {
 
   // Session complete
   const handleSessionComplete = useCallback(
-    (result: SessionResult) => {
+    (rawResult: SessionResult) => {
       if (!profile) return;
+
+      // Override the fact-level counters with the App-side tracking that
+      // compares initial vs final box (spec §3.5). SessionScreen's version
+      // counted any correct+fast answer, even for facts already at box 5.
+      const result: SessionResult = {
+        ...rawResult,
+        factsPromoted: sessionPromoted.current.size,
+        factsDemoted: sessionDemoted.current.size,
+      };
 
       const today = todayISO();
       const previousLastSessionDate = profile.lastSessionDate;
@@ -316,6 +352,12 @@ export default function App() {
           knownFactsCount={profile.facts.filter((f) => f.box >= 3).length}
           totalFacts={profile.facts.length}
           onFinish={handleRecapFinish}
+          onShowProgress={() => {
+            setSessionResult(null);
+            setNewBadges([]);
+            setNewlyCompletedTables([]);
+            setScreen('progress');
+          }}
         />
       )}
 

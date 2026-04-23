@@ -71,8 +71,6 @@ export default function SessionScreen({
   const questionStartTime = useRef(0);
   const correctCount = useRef(0);
   const totalTimeMs = useRef(0);
-  const promotedFacts = useRef(new Set<string>());
-  const demotedFacts = useRef(new Set<string>());
   const introducedFacts = useRef(new Set<string>());
 
   const currentQuestion = questions[currentIndex] as SessionQuestion | undefined;
@@ -136,8 +134,10 @@ export default function SessionScreen({
         correctCount: correctCount.current,
         averageTimeMs: Math.round(avgTime),
         newFactsIntroduced: introducedFacts.current.size,
-        factsPromoted: promotedFacts.current.size,
-        factsDemoted: demotedFacts.current.size,
+        // factsPromoted/factsDemoted are overridden by App.tsx, which has
+        // access to the initial→final box delta per fact.
+        factsPromoted: 0,
+        factsDemoted: 0,
       });
     } else {
       setCurrentIndex(nextIndex);
@@ -159,17 +159,6 @@ export default function SessionScreen({
 
       totalTimeMs.current += timeMs;
       if (correct) correctCount.current++;
-
-      // Track distinct promoted/demoted facts (skip for bonus review)
-      if (!currentQuestion.isBonusReview) {
-        const factKey = getFactKey(currentQuestion.fact.a, currentQuestion.fact.b);
-        if (correct && timeMs < RESPONSE_TIME.SLOW) {
-          promotedFacts.current.add(factKey);
-        }
-        if (!correct) {
-          demotedFacts.current.add(factKey);
-        }
-      }
 
       if (correct) playCorrect();
       else playIncorrect();

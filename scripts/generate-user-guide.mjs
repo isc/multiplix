@@ -616,11 +616,12 @@ const SECTIONS = [
   {
     id: 'recap',
     title: 'Bilan de séance',
-    description: `À la fin d'une séance, l'écran de bilan récapitule les
-      faits nouveaux, les progrès réalisés, et déclenche les confettis si
-      une table est entièrement maîtrisée, si l'image mystère est complétée,
-      ou pour un nouveau badge. La progression globale est affichée via une
-      barre « X faits connus sur 36 ».`,
+    description: `À la fin d'une séance, l'écran de bilan affiche les
+      éventuels nouveaux faits, invite à aller voir l'image mystère (avec
+      une mention spéciale quand elle a changé) et déclenche les confettis
+      si une table est entièrement maîtrisée, si l'image mystère est
+      complétée, ou pour un nouveau badge. La progression globale est
+      affichée via une barre « X faits connus sur 36 ».`,
     shots: [
       { file: '14-recap', caption: 'Bilan d\'une séance avec barre de progression.' },
     ],

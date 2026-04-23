@@ -15,6 +15,7 @@ interface RecapScreenProps {
   knownFactsCount: number;
   totalFacts: number;
   onFinish: () => void;
+  onShowProgress: () => void;
 }
 
 export default function RecapScreen({
@@ -24,6 +25,7 @@ export default function RecapScreen({
   knownFactsCount,
   totalFacts,
   onFinish,
+  onShowProgress,
 }: RecapScreenProps) {
   const { isMuted, playBadge, playTableComplete, playImageComplete } = useSound();
   const { speak } = useTTS(isMuted);
@@ -86,20 +88,28 @@ export default function RecapScreen({
 
       <div className="recap-message">Bravo, tu as bien travaillé !</div>
 
-      <div className="recap-stats">
-        {result.newFactsIntroduced > 0 && (
+      {result.newFactsIntroduced > 0 && (
+        <div className="recap-stats">
           <div className="recap-stat">
             <div className="recap-stat-value">{result.newFactsIntroduced}</div>
             <div>nouveau{result.newFactsIntroduced > 1 ? 'x' : ''}</div>
           </div>
+        </div>
+      )}
+
+      <button
+        className={`recap-image-link${result.factsPromoted > 0 ? ' has-changed' : ''}`}
+        onClick={onShowProgress}
+      >
+        {result.factsPromoted > 0 ? (
+          <>
+            <span className="recap-image-link-teaser">Ton image a changé !</span>
+            <span className="recap-image-link-cta">Viens la voir →</span>
+          </>
+        ) : (
+          <span className="recap-image-link-cta">Voir mon image →</span>
         )}
-        {result.factsPromoted > 0 && (
-          <div className="recap-stat">
-            <div className="recap-stat-value">{result.factsPromoted}</div>
-            <div>progrès</div>
-          </div>
-        )}
-      </div>
+      </button>
 
       <div className="recap-progress">
         <div className="recap-progress-label">
