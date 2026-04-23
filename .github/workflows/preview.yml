@@ -58,15 +58,22 @@ jobs:
           keep_files: true
           commit_message: 'preview: ${{ steps.slug.outputs.slug }} @ ${{ github.event.pull_request.head.sha }}'
 
+      # Wrapped in wretry parce que l'API GitHub issues renvoie parfois un
+      # 504 transitoire sur ce step (cf. run 24829541258). 3 tentatives
+      # espacées de 10 s suffisent dans quasi tous les cas.
       - name: Comment PR with preview links
-        uses: marocchino/sticky-pull-request-comment@v2
+        uses: Wandalen/wretry.action@v3.8.0
         with:
-          header: preview-${{ steps.slug.outputs.slug }}
-          message: |
-            **Preview déployée** pour cette PR :
+          action: marocchino/sticky-pull-request-comment@v2
+          attempt_limit: 3
+          attempt_delay: 10000
+          with: |
+            header: preview-${{ steps.slug.outputs.slug }}
+            message: |
+              **Preview déployée** pour cette PR :
 
-            - App : https://isc.github.io/multiplix/previews/${{ steps.slug.outputs.slug }}/
-            - Guide : https://isc.github.io/multiplix/previews/${{ steps.slug.outputs.slug }}/guide/
+              - App : https://isc.github.io/multiplix/previews/${{ steps.slug.outputs.slug }}/
+              - Guide : https://isc.github.io/multiplix/previews/${{ steps.slug.outputs.slug }}/guide/
 
-            Commit : `${{ github.event.pull_request.head.sha }}`
-            _Le preview est mis à jour à chaque push et supprimé à la fermeture de la PR._
+              Commit : `${{ github.event.pull_request.head.sha }}`
+              _Le preview est mis à jour à chaque push et supprimé à la fermeture de la PR._
