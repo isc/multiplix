@@ -36,7 +36,7 @@ export default function ProgressScreen({ profile, onBack }: ProgressScreenProps)
         </div>
       </div>
 
-      <MysteryImage facts={profile.facts} />
+      <MysteryImage facts={profile.facts} theme={profile.mysteryTheme} />
 
       <div className="progress-legend">
         Chaque fait que tu connais mieux fait apparaître un peu plus de l'image.

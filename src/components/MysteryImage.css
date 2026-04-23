@@ -15,14 +15,6 @@
   background: #d0d0d6;
 }
 
-.mystery-scene {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  display: block;
-}
-
 .mystery-cells {
   position: absolute;
   inset: 0;
@@ -35,75 +27,20 @@
   border: none;
   padding: 0;
   cursor: pointer;
-  transition:
-    backdrop-filter 0.5s ease,
-    -webkit-backdrop-filter 0.5s ease,
-    background 0.5s ease;
+  background-repeat: no-repeat;
+  transition: background 0.5s ease;
   -webkit-tap-highlight-color: transparent;
 }
 
-/* Default (pas introduit) : case opaque, fragment masqué */
+/* Non introduit : case opaque, fragment masqué */
 .mystery-cell.mystery-level-0 {
   background: linear-gradient(135deg, #c8c8d0 0%, #aeaeb8 100%);
-  backdrop-filter: none;
-  -webkit-backdrop-filter: none;
   cursor: default;
 }
 
-/* Boîte 1 : silhouette floue */
-.mystery-cell.mystery-level-1 {
-  background: rgba(230, 230, 235, 0.35);
-  backdrop-filter: blur(10px) saturate(0.35);
-  -webkit-backdrop-filter: blur(10px) saturate(0.35);
-}
-
-/* Boîte 2 : aplat simple, forme reconnaissable */
-.mystery-cell.mystery-level-2 {
-  background: rgba(235, 235, 240, 0.18);
-  backdrop-filter: blur(5px) saturate(0.55);
-  -webkit-backdrop-filter: blur(5px) saturate(0.55);
-}
-
-/* Boîte 3 : couleurs principales */
-.mystery-cell.mystery-level-3 {
-  background: transparent;
-  backdrop-filter: blur(2.5px) saturate(0.8);
-  -webkit-backdrop-filter: blur(2.5px) saturate(0.8);
-}
-
-/* Boîte 4 : ombres et volumes */
-.mystery-cell.mystery-level-4 {
-  background: transparent;
-  backdrop-filter: blur(1px);
-  -webkit-backdrop-filter: blur(1px);
-}
-
-/* Boîte 5 : détails fins */
-.mystery-cell.mystery-level-5 {
-  background: transparent;
-  backdrop-filter: none;
-  -webkit-backdrop-filter: none;
-}
-
-/* Subtil halo sur les cases de la diagonale (carrés) */
+/* Subtil halo sur les cases de la diagonale complètement révélées */
 .mystery-cell.mystery-diagonal.mystery-level-5 {
   box-shadow: inset 0 0 0 2px rgba(255, 215, 0, 0.6);
-}
-
-/* Fallback: browsers without backdrop-filter support */
-@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
-  .mystery-cell.mystery-level-1 {
-    background: rgba(200, 200, 210, 0.75);
-  }
-  .mystery-cell.mystery-level-2 {
-    background: rgba(210, 210, 220, 0.5);
-  }
-  .mystery-cell.mystery-level-3 {
-    background: rgba(220, 220, 230, 0.25);
-  }
-  .mystery-cell.mystery-level-4 {
-    background: rgba(230, 230, 240, 0.1);
-  }
 }
 
 /* Detail overlay (when tapping an introduced cell) */

@@ -1,8 +1,13 @@
-import type { UserProfile } from '../types';
+import type { MysteryTheme, UserProfile } from '../types';
+import { MYSTERY_POOL } from '../types';
 import { createInitialFacts } from './facts';
 import { todayISO } from './utils';
 
 const STORAGE_KEY = 'multiplix-profile';
+
+function pickMysteryTheme(): MysteryTheme {
+  return MYSTERY_POOL[Math.floor(Math.random() * MYSTERY_POOL.length)];
+}
 
 /**
  * Loads the user profile from localStorage.
@@ -65,6 +70,7 @@ export function createNewProfile(name: string): UserProfile {
     badges: [],
     sessionHistory: [],
     hasSeenRulesIntro: false,
+    mysteryTheme: pickMysteryTheme(),
   };
 }
 
@@ -78,6 +84,12 @@ function migrateProfile(profile: UserProfile): UserProfile {
   }
   if (typeof profile.hasSeenRulesIntro !== 'boolean') {
     profile.hasSeenRulesIntro = true;
+  }
+  if (!profile.mysteryTheme || !MYSTERY_POOL.includes(profile.mysteryTheme as never)) {
+    // `village` est accepté tel quel (guide utilisateur), sinon on tire au sort.
+    if (profile.mysteryTheme !== 'village') {
+      profile.mysteryTheme = pickMysteryTheme();
+    }
   }
   // Strip deprecated mascotLevel field from older profiles
   delete (profile as UserProfile & { mascotLevel?: number }).mascotLevel;

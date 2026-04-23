@@ -26,6 +26,18 @@ export interface Badge {
   icon: string;
 }
 
+/**
+ * Image mystère associée au profil. `village` est réservé au guide
+ * utilisateur (pour ne pas spoiler) ; les profils réels tirent aléatoirement
+ * dans MYSTERY_POOL à la création.
+ */
+export type MysteryTheme = 'market' | 'ocean' | 'village';
+
+export const MYSTERY_POOL: ReadonlyArray<Exclude<MysteryTheme, 'village'>> = [
+  'market',
+  'ocean',
+];
+
 export interface UserProfile {
   name: string;
   startDate: string;
@@ -37,6 +49,7 @@ export interface UserProfile {
   badges: Badge[];
   sessionHistory: SessionResult[];
   hasSeenRulesIntro: boolean;
+  mysteryTheme: MysteryTheme;
 }
 
 export type BoxLevel = 1 | 2 | 3 | 4 | 5;

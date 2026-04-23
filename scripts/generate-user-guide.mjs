@@ -152,6 +152,9 @@ function buildSampleProfile({ sessionAvailable = true } = {}) {
       { id: 'exploration', name: 'Exploration', description: 'Avoir vu tous les faits', icon: '🗺️', earnedDate: '2026-04-08' },
     ],
     sessionHistory,
+    // Image mystère réservée au guide : évite de spoiler market/ocean qui
+    // sont tirés au sort à la création d'un vrai profil.
+    mysteryTheme: 'village',
   };
 }
 
