@@ -48,12 +48,11 @@ export default function App() {
   const sessionConsecutiveCorrect = useRef(0);
   const sessionMaxConsecutiveCorrect = useRef(0);
   const sessionResponseTimes = useRef<number[]>([]);
-  // Per-session box deltas: a fact counts as "promoted" only if its final box
-  // ends strictly above the box it started the session in. Matches spec §3.5
-  // and the mystery-image metaphor (§5.1) — only real Leitner transitions.
+  // A fact counts as "promoted" only if its final box ends strictly above the
+  // one it started the session in (spec §3.5). This is what actually drives a
+  // visible change on the mystery image (§5.1).
   const sessionInitialBoxes = useRef(new Map<string, BoxLevel>());
   const sessionPromoted = useRef(new Set<string>());
-  const sessionDemoted = useRef(new Set<string>());
 
   // Snapshot of tables already mastered before the session starts
   const tablesCompletedBeforeSession = useRef<Set<number>>(new Set());
@@ -130,7 +129,6 @@ export default function App() {
     sessionResponseTimes.current = [];
     sessionInitialBoxes.current = new Map();
     sessionPromoted.current = new Set();
-    sessionDemoted.current = new Set();
 
     tablesCompletedBeforeSession.current = getCompletedTables(profile.facts);
 
@@ -170,8 +168,8 @@ export default function App() {
           updatedFact.introduced = true;
         }
 
-        // Track net box delta over the session (idempotent set ops — safe under
-        // React strict-mode double-invocation of this reducer).
+        // Idempotent set ops — safe under React strict-mode double-invocation
+        // of this reducer.
         const factKey = getFactKey(fact.a, fact.b);
         if (!sessionInitialBoxes.current.has(factKey)) {
           sessionInitialBoxes.current.set(factKey, currentFact.box);
@@ -179,13 +177,8 @@ export default function App() {
         const initialBox = sessionInitialBoxes.current.get(factKey)!;
         if (updatedFact.box > initialBox) {
           sessionPromoted.current.add(factKey);
-          sessionDemoted.current.delete(factKey);
-        } else if (updatedFact.box < initialBox) {
-          sessionPromoted.current.delete(factKey);
-          sessionDemoted.current.add(factKey);
         } else {
           sessionPromoted.current.delete(factKey);
-          sessionDemoted.current.delete(factKey);
         }
 
         const updatedFacts = prev.facts.map((f) =>
@@ -199,16 +192,12 @@ export default function App() {
 
   // Session complete
   const handleSessionComplete = useCallback(
-    (rawResult: SessionResult) => {
+    (partial: Omit<SessionResult, 'factsPromoted'>) => {
       if (!profile) return;
 
-      // Override the fact-level counters with the App-side tracking that
-      // compares initial vs final box (spec §3.5). SessionScreen's version
-      // counted any correct+fast answer, even for facts already at box 5.
       const result: SessionResult = {
-        ...rawResult,
+        ...partial,
         factsPromoted: sessionPromoted.current.size,
-        factsDemoted: sessionDemoted.current.size,
       };
 
       const today = todayISO();
@@ -266,12 +255,14 @@ export default function App() {
     [profile],
   );
 
-  const handleRecapFinish = useCallback(() => {
+  const exitRecap = useCallback((next: Screen) => {
     setSessionResult(null);
     setNewBadges([]);
     setNewlyCompletedTables([]);
-    setScreen('home');
+    setScreen(next);
   }, []);
+
+  const handleRecapFinish = useCallback(() => exitRecap('home'), [exitRecap]);
 
   const handleResetFact = useCallback((a: number, b: number) => {
     const today = todayISO();
@@ -352,12 +343,7 @@ export default function App() {
           knownFactsCount={profile.facts.filter((f) => f.box >= 3).length}
           totalFacts={profile.facts.length}
           onFinish={handleRecapFinish}
-          onShowProgress={() => {
-            setSessionResult(null);
-            setNewBadges([]);
-            setNewlyCompletedTables([]);
-            setScreen('progress');
-          }}
+          onShowProgress={() => exitRecap('progress')}
         />
       )}
 

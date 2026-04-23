@@ -89,11 +89,9 @@ export default function RecapScreen({
       <div className="recap-message">Bravo, tu as bien travaillé !</div>
 
       {result.newFactsIntroduced > 0 && (
-        <div className="recap-stats">
-          <div className="recap-stat">
-            <div className="recap-stat-value">{result.newFactsIntroduced}</div>
-            <div>nouveau{result.newFactsIntroduced > 1 ? 'x' : ''}</div>
-          </div>
+        <div className="recap-stat">
+          <div className="recap-stat-value">{result.newFactsIntroduced}</div>
+          <div>nouveau{result.newFactsIntroduced > 1 ? 'x' : ''}</div>
         </div>
       )}
 

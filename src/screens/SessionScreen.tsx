@@ -22,7 +22,7 @@ const VOICE_FEEDBACK_SLOW = 3000;
 
 interface SessionScreenProps {
   questions: SessionQuestion[];
-  onComplete: (result: SessionResult) => void;
+  onComplete: (result: Omit<SessionResult, 'factsPromoted'>) => void;
   onAnswer: (
     fact: MultiFact,
     correct: boolean,
@@ -134,10 +134,6 @@ export default function SessionScreen({
         correctCount: correctCount.current,
         averageTimeMs: Math.round(avgTime),
         newFactsIntroduced: introducedFacts.current.size,
-        // factsPromoted/factsDemoted are overridden by App.tsx, which has
-        // access to the initial→final box delta per fact.
-        factsPromoted: 0,
-        factsDemoted: 0,
       });
     } else {
       setCurrentIndex(nextIndex);

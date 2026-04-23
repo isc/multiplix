@@ -77,8 +77,7 @@ export interface SessionResult {
   correctCount: number;
   averageTimeMs: number;
   newFactsIntroduced: number;
-  factsPromoted: number;   // faits montés de boîte
-  factsDemoted: number;    // faits redescendus en boîte 1
+  factsPromoted: number;   // faits dont la boîte finale > boîte initiale dans la séance
 }
 
 // Badges IDs

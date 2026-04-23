@@ -132,7 +132,6 @@ function buildSampleProfile({ sessionAvailable = true } = {}) {
       averageTimeMs: 2600 - i * 80,
       newFactsIntroduced: i % 2 === 0 ? 2 : 1,
       factsPromoted: 3 + (i % 3),
-      factsDemoted: i % 4 === 0 ? 1 : 0,
     };
   });
 
