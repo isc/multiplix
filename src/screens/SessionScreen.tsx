@@ -56,6 +56,11 @@ export default function SessionScreen({
     factBox: BoxLevel;
   } | null>(null);
   const [numpadDisabled, setNumpadDisabled] = useState(false);
+  // Double-submit guard : les clics synchrones rapides sur « Valider » ne
+  // laissent pas le temps à React de re-rendre avec numpadDisabled=true, donc
+  // la closure du handler voit l'ancien state. On ajoute une barrière via ref
+  // évaluée en synchrone, à reset à chaque changement de question.
+  const submittingRef = useRef(false);
 
   const { isMuted, playCorrect, playIncorrect } = useSound();
   const { speak, stop: stopSpeech, isSpeaking } = useTTS(isMuted);
@@ -83,6 +88,7 @@ export default function SessionScreen({
       setShowIntro(false);
     }
     setNumpadDisabled(false);
+    submittingRef.current = false;
   }
 
   // Side effects when the question changes (TTS, timer, tracking)
@@ -132,7 +138,8 @@ export default function SessionScreen({
 
   const handleAnswer = useCallback(
     (value: number) => {
-      if (!currentQuestion || numpadDisabled) return;
+      if (!currentQuestion || submittingRef.current) return;
+      submittingRef.current = true;
       setNumpadDisabled(true);
       stopSpeech();
 
@@ -195,7 +202,7 @@ export default function SessionScreen({
         speak(`strategy-${currentQuestion.fact.a}-${currentQuestion.fact.b}`);
       }
     },
-    [currentQuestion, numpadDisabled, currentIndex, questions.length, onAnswer, playCorrect, playIncorrect, stopSpeech, speak, inputMode],
+    [currentQuestion, currentIndex, questions.length, onAnswer, playCorrect, playIncorrect, stopSpeech, speak, inputMode],
   );
 
   const handleFeedbackDismiss = useCallback(() => {
