@@ -1,6 +1,8 @@
 .feedback-overlay {
   position: fixed;
-  top: 0;
+  /* 30px ≈ hauteur de .session-header (dots de progression) pour qu'ils
+     restent visibles en haut pendant le feedback. */
+  top: 30px;
   left: 0;
   right: 0;
   bottom: 0;
