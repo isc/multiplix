@@ -732,50 +732,124 @@ function buildHtml({ generatedAt }) {
 <meta name="viewport" content="width=device-width,initial-scale=1" />
 <title>Multiplix — Guide d'utilisation</title>
 <link rel="icon" href="../favicon.svg" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400..700;1,9..144,400..600&family=Nunito:wght@400;600;700;800&display=swap" />
 <style>
   :root {
-    --primary: #6C63FF;
-    --bg: #F8F9FF;
-    --surface: #FFFFFF;
-    --border: #E3E4F5;
-    --text: #2A2A3C;
-    --text-muted: #6E7189;
+    --cream: #FBF6EC;
+    --cream-deep: #F3EADB;
+    --paper: #FFFFFF;
+    --ink: #1E1A2E;
+    --ink-soft: #52495F;
+    --ink-muted: #8A8295;
+    --line: #E6DECE;
+    --line-soft: #EFE7D6;
+    --indigo: #4F46BA;
+    --indigo-soft: #E8E6F7;
+    --indigo-ink: #2B2478;
+    --coral: #E8623D;
+    --honey: #D99A1F;
+    --honey-soft: #F7E9C4;
+    --sage: #3F9B7A;
+    --sage-soft: #D9EDE2;
+    --serif: 'Fraunces', 'Iowan Old Style', Georgia, serif;
+    --sans: 'Nunito', 'SF Pro Text', system-ui, sans-serif;
   }
   * { box-sizing: border-box; }
   body {
     margin: 0;
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Nunito, Roboto, sans-serif;
-    background: var(--bg);
-    color: var(--text);
+    font-family: var(--sans);
+    background: var(--cream);
+    color: var(--ink);
     line-height: 1.55;
+    -webkit-font-smoothing: antialiased;
   }
   header {
-    background: linear-gradient(135deg, #6C63FF 0%, #8B83FF 100%);
-    color: white;
-    padding: 48px 24px;
+    background: var(--cream);
+    color: var(--ink);
+    padding: 56px 24px 40px;
     text-align: center;
+    border-bottom: 1px solid var(--line);
   }
-  header h1 { margin: 0 0 8px; font-size: 2.2rem; }
-  header p { margin: 0; opacity: 0.92; }
-  header a { color: #FFEB8A; }
-  main { max-width: 1200px; margin: 0 auto; padding: 24px; }
+  header .eyebrow {
+    font-size: 12px;
+    font-weight: 800;
+    color: var(--ink-muted);
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    margin-bottom: 8px;
+  }
+  header h1 {
+    margin: 0 0 10px;
+    font-family: var(--serif);
+    font-size: 44px;
+    font-weight: 600;
+    letter-spacing: -1px;
+    color: var(--ink);
+  }
+  header h1 em {
+    color: var(--indigo);
+    font-style: italic;
+  }
+  header p {
+    margin: 0;
+    color: var(--ink-soft);
+    font-size: 16px;
+  }
+  header .back-link {
+    display: inline-block;
+    margin-top: 18px;
+    font-family: var(--sans);
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--indigo);
+    text-decoration: none;
+    padding: 8px 16px;
+    border-radius: 999px;
+    border: 1.5px solid var(--line);
+    background: var(--paper);
+    transition: background 0.15s;
+  }
+  header .back-link:hover { background: var(--cream-deep); }
+  main { max-width: 1200px; margin: 0 auto; padding: 32px 24px; }
   nav.toc {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 12px;
-    padding: 16px 20px;
-    margin-bottom: 32px;
+    background: var(--paper);
+    border: 1.5px solid var(--line);
+    border-radius: 22px;
+    padding: 20px 24px;
+    margin-bottom: 40px;
   }
-  nav.toc ul { margin: 0; padding-left: 20px; columns: 2; }
-  nav.toc li { margin: 4px 0; }
-  nav.toc a { color: var(--primary); text-decoration: none; }
-  nav.toc a:hover { text-decoration: underline; }
+  nav.toc .toc-label {
+    font-size: 11px;
+    font-weight: 800;
+    color: var(--ink-muted);
+    letter-spacing: 0.6px;
+    text-transform: uppercase;
+    margin-bottom: 12px;
+  }
+  nav.toc ul {
+    margin: 0;
+    padding: 0;
+    columns: 2;
+    list-style: none;
+  }
+  nav.toc li { margin: 6px 0; break-inside: avoid; }
+  nav.toc a {
+    font-family: var(--serif);
+    font-size: 16px;
+    font-weight: 500;
+    color: var(--ink);
+    text-decoration: none;
+    letter-spacing: -0.2px;
+  }
+  nav.toc a:hover { color: var(--indigo); }
   section.section {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 16px;
-    padding: 32px;
-    margin-bottom: 24px;
+    background: var(--paper);
+    border: 1.5px solid var(--line);
+    border-radius: 22px;
+    padding: 36px;
+    margin-bottom: 20px;
     display: grid;
     grid-template-columns: minmax(0, 5fr) minmax(0, 6fr);
     gap: 40px;
@@ -783,11 +857,19 @@ function buildHtml({ generatedAt }) {
   }
   .section-text { max-width: 55ch; }
   .section-text h2 {
-    margin: 0 0 12px;
-    color: var(--primary);
-    font-size: 1.6rem;
+    margin: 0 0 14px;
+    font-family: var(--serif);
+    color: var(--ink);
+    font-size: 28px;
+    font-weight: 600;
+    letter-spacing: -0.5px;
+    line-height: 1.2;
   }
-  .section-text p { color: var(--text-muted); margin: 0 0 12px; }
+  .section-text p {
+    color: var(--ink-soft);
+    margin: 0 0 12px;
+    font-size: 15px;
+  }
   .section-text p:last-child { margin-bottom: 0; }
   .section.section-full {
     grid-template-columns: 1fr;
@@ -799,33 +881,41 @@ function buildHtml({ generatedAt }) {
     padding: 0;
     margin: 0 0 16px;
     display: grid;
-    gap: 14px;
+    gap: 12px;
   }
   ul.principles li {
-    color: var(--text);
-    background: var(--bg);
-    border: 1px solid var(--border);
-    border-radius: 10px;
-    padding: 14px 16px;
+    color: var(--ink);
+    background: var(--cream);
+    border: 1.5px solid var(--line);
+    border-radius: 14px;
+    padding: 14px 18px;
+    font-size: 14px;
+    line-height: 1.5;
   }
-  ul.principles li strong { color: var(--primary); }
+  ul.principles li strong {
+    color: var(--indigo);
+    font-weight: 700;
+  }
   ul.principles .cite {
     display: block;
     margin-top: 6px;
-    color: var(--text-muted);
-    font-size: 0.82rem;
+    color: var(--ink-muted);
+    font-size: 12px;
     font-style: italic;
   }
   .principles-footer {
-    font-size: 0.88rem;
-    color: var(--text-muted);
+    font-size: 14px;
+    color: var(--ink-soft);
   }
-  .principles-footer a { color: var(--primary); text-decoration: none; }
+  .principles-footer a { color: var(--indigo); text-decoration: none; font-weight: 700; }
   .principles-footer a:hover { text-decoration: underline; }
   .principles-footer code {
-    background: var(--bg);
-    padding: 1px 5px;
+    background: var(--cream);
+    border: 1px solid var(--line);
+    padding: 1px 6px;
     border-radius: 4px;
+    font-family: 'JetBrains Mono', ui-monospace, monospace;
+    font-size: 0.85em;
   }
   .shots {
     display: grid;
@@ -836,8 +926,9 @@ function buildHtml({ generatedAt }) {
   .shots-1 { grid-template-columns: minmax(0, 320px); justify-content: center; }
   figure.shot {
     margin: 0;
-    background: #F0F1FB;
-    border-radius: 12px;
+    background: var(--cream);
+    border: 1.5px solid var(--line);
+    border-radius: 18px;
     padding: 12px;
     text-align: center;
     width: 100%;
@@ -848,44 +939,55 @@ function buildHtml({ generatedAt }) {
     width: 100%;
     height: auto;
     margin: 0 auto;
-    border-radius: 8px;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
-    background: white;
+    border-radius: 12px;
+    background: var(--paper);
   }
   figure.shot figcaption {
     margin-top: 10px;
-    font-size: 0.9rem;
-    color: var(--text-muted);
+    font-size: 13px;
+    color: var(--ink-soft);
+    font-weight: 600;
   }
   footer {
     text-align: center;
-    color: var(--text-muted);
-    padding: 24px;
-    font-size: 0.85rem;
+    color: var(--ink-muted);
+    padding: 32px 24px;
+    font-size: 13px;
+    border-top: 1px solid var(--line);
+    margin-top: 24px;
   }
-  footer code { background: var(--surface); padding: 2px 6px; border-radius: 4px; }
+  footer code {
+    background: var(--paper);
+    border: 1px solid var(--line);
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-family: 'JetBrains Mono', ui-monospace, monospace;
+    font-size: 0.9em;
+  }
   @media (max-width: 800px) {
     section.section { grid-template-columns: 1fr; gap: 24px; padding: 24px; }
     .shots-1 { justify-self: center; }
   }
   @media (max-width: 640px) {
     nav.toc ul { columns: 1; }
-    header { padding: 32px 16px; }
-    main { padding: 16px; }
-    section.section { padding: 16px; }
+    header { padding: 36px 20px 28px; }
+    header h1 { font-size: 32px; }
+    main { padding: 20px 16px; }
+    section.section { padding: 20px; border-radius: 18px; }
     .shots { grid-template-columns: 1fr; }
   }
 </style>
 </head>
 <body>
 <header>
-  <h1>Multiplix — Guide d'utilisation</h1>
+  <div class="eyebrow">Guide d'utilisation</div>
+  <h1>Multiplix<em>.</em></h1>
   <p>Toutes les vues de l'application, capturées automatiquement.</p>
-  <p><a href="../">← Retour à l'application</a></p>
+  <a class="back-link" href="../">← Retour à l'application</a>
 </header>
 <main>
   <nav class="toc">
-    <strong>Sommaire</strong>
+    <div class="toc-label">Sommaire</div>
     <ul>${toc}</ul>
   </nav>
   ${sectionHtml}
