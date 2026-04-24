@@ -128,7 +128,7 @@ export default function ParentDashboard({
         </button>
         <div className="parent-header-titles">
           <div className="parent-eyebrow">Espace parent</div>
-          <div className="parent-title">{profile.name} \u00b7 profil</div>
+          <div className="parent-title">{profile.name}{' \u00b7 '}profil</div>
         </div>
       </div>
 
