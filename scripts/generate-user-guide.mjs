@@ -980,6 +980,10 @@ function buildHtml({ generatedAt }) {
     border-top: 1px solid var(--line);
     margin-top: 24px;
   }
+  footer p { margin: 0 0 8px; }
+  footer p:last-child { margin-bottom: 0; font-size: 12px; color: var(--ink-soft); }
+  footer a { color: var(--indigo); text-decoration: none; font-weight: 700; }
+  footer a:hover { text-decoration: underline; }
   footer code {
     background: var(--paper);
     border: 1px solid var(--line);
@@ -1016,8 +1020,16 @@ function buildHtml({ generatedAt }) {
   ${sectionHtml}
 </main>
 <footer>
-  Guide généré automatiquement le ${generatedAt} ·
-  Régénérable en local avec <code>npm run user-guide</code>.
+  <p>
+    Pour aller plus loin :
+    <a href="https://github.com/isc/multiplix/blob/main/specs-multiplix.md">spécifications fonctionnelles</a> ·
+    <a href="https://github.com/isc/multiplix/blob/main/audit-scientifique.md">audit scientifique</a> ·
+    <a href="https://github.com/isc/multiplix">code source</a>
+  </p>
+  <p>
+    Guide généré automatiquement le ${generatedAt} ·
+    Régénérable en local avec <code>npm run user-guide</code>.
+  </p>
 </footer>
 </body>
 </html>`;
