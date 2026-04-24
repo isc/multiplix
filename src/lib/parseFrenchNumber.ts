@@ -130,16 +130,28 @@ export function parseFrenchNumber(input: string): number | null {
 }
 
 // Parse a spoken answer in range 0..100. Tries the whole string, then the
-// trailing 1-3 tokens (handles filler words like "euh 30" or mis-heard
-// prefixes like "prendre 30").
+// trailing 2-3 tokens (handles filler words like "euh trente-deux"), then as
+// a last resort the trailing single token — but only if the prefix contains
+// no recognizable number word. Rationale : une compound cassé comme "quatre
+// vingts un" (pluriel fautif) ne doit pas se replier sur "un" → 1, car
+// l'enfant pensait dire 81. Préfère retourner null pour forcer un retry.
 export function parseFrenchAnswer(input: string): number | null {
   const direct = parseFrenchNumber(input);
   if (direct !== null && direct >= 0 && direct <= 100) return direct;
   const tokens = input.trim().split(/\s+/).filter(Boolean);
-  for (let k = 1; k <= Math.min(3, tokens.length); k++) {
+  for (let k = 2; k <= Math.min(3, tokens.length); k++) {
     const tail = tokens.slice(-k).join(' ');
     const n = parseFrenchNumber(tail);
     if (n !== null && n >= 0 && n <= 100) return n;
+  }
+  if (tokens.length >= 1) {
+    const last = tokens[tokens.length - 1];
+    const n = parseFrenchNumber(last);
+    if (n === null || n < 0 || n > 100) return null;
+    const prefix = tokens.slice(0, -1);
+    // Reject si un token du préfixe est déjà un nombre — sinon on masque un
+    // compound cassé en ne gardant que son dernier mot.
+    if (prefix.every((t) => parseFrenchNumber(t) === null)) return n;
   }
   return null;
 }

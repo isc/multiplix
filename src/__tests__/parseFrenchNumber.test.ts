@@ -1,6 +1,6 @@
 // @vitest-environment node
 import { describe, it, expect } from 'vitest';
-import { parseFrenchNumber } from '../lib/parseFrenchNumber';
+import { parseFrenchNumber, parseFrenchAnswer } from '../lib/parseFrenchNumber';
 
 describe('parseFrenchNumber', () => {
   it('parses pure digit strings', () => {
@@ -101,5 +101,29 @@ describe('parseFrenchNumber', () => {
     for (const [n, phrase] of Object.entries(expected)) {
       expect(parseFrenchNumber(phrase), phrase).toBe(parseInt(n, 10));
     }
+  });
+});
+
+describe('parseFrenchAnswer', () => {
+  it('accepte les filler words en préfixe ("euh", "prendre", etc.)', () => {
+    expect(parseFrenchAnswer('euh trente-deux')).toBe(32);
+    expect(parseFrenchAnswer('prendre trente')).toBe(30);
+    expect(parseFrenchAnswer('ah, trente-deux')).toBe(32);
+    expect(parseFrenchAnswer('euh 30')).toBe(30);
+  });
+
+  it('rejette le single-token fallback si un mot-nombre précède (compound cassé)', () => {
+    // "quatre vingts un" (pluriel fautif) ne doit pas se replier sur "un" = 1.
+    expect(parseFrenchAnswer('quatre vingts un')).toBeNull();
+    // "cent un" non mappé : ne doit pas se replier sur "un" = 1.
+    expect(parseFrenchAnswer('cent un')).toBeNull();
+  });
+
+  it('accepte les nombres simples et compounds reconnus', () => {
+    expect(parseFrenchAnswer('72')).toBe(72);
+    expect(parseFrenchAnswer('81')).toBe(81);
+    expect(parseFrenchAnswer('quatre-vingt-un')).toBe(81);
+    expect(parseFrenchAnswer('soixante-douze')).toBe(72);
+    expect(parseFrenchAnswer('zéro')).toBe(0);
   });
 });
