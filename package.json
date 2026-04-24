@@ -15,7 +15,8 @@
     "pretest": "npm run check-node",
     "test": "vitest run",
     "user-guide": "node scripts/generate-user-guide.mjs",
-    "mystery-levels": "node scripts/generate-mystery-levels.mjs"
+    "mystery-levels": "node scripts/generate-mystery-levels.mjs",
+    "feedback:list": "node --env-file=.env.local scripts/feedback-list.mjs"
   },
   "dependencies": {
     "react": "^19.2.4",
