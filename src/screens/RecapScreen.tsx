@@ -89,8 +89,8 @@ export default function RecapScreen({
   return (
     <div className="recap-screen">
       <div className="recap-head">
+        <Confetti />
         <div className="recap-mascot-wrap">
-          <Confetti />
           <Mascot mood={mascotMood} size="normal" />
         </div>
         <div className="recap-title">Séance terminée&nbsp;!</div>
