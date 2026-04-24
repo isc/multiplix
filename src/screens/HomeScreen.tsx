@@ -1,6 +1,7 @@
-import { useRef, useCallback } from 'react';
+import { useState } from 'react';
 import type { UserProfile } from '../types';
 import Mascot from '../components/Mascot';
+import ParentGate from '../components/ParentGate';
 import { useSound } from '../hooks/useSound';
 import { useInputMode } from '../hooks/useInputMode';
 import { isSpeechRecognitionSupported } from '../hooks/useSpeechRecognition';
@@ -114,21 +115,7 @@ export default function HomeScreen({
 }: HomeScreenProps) {
   const { isMuted, toggleMute } = useSound();
   const { inputMode, toggleInputMode } = useInputMode();
-  const longPressTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
-
-  const handleParentPressStart = useCallback((e: React.TouchEvent | React.MouseEvent) => {
-    e.preventDefault();
-    longPressTimer.current = setTimeout(() => {
-      onShowParent();
-    }, 1500);
-  }, [onShowParent]);
-
-  const handleParentPressEnd = useCallback(() => {
-    if (longPressTimer.current) {
-      clearTimeout(longPressTimer.current);
-      longPressTimer.current = null;
-    }
-  }, []);
+  const [showParentGate, setShowParentGate] = useState(false);
 
   return (
     <div className="home-screen">
@@ -169,13 +156,8 @@ export default function HomeScreen({
           )}
           <button
             className="home-chrome-btn home-parent-btn"
-            onMouseDown={handleParentPressStart}
-            onMouseUp={handleParentPressEnd}
-            onMouseLeave={handleParentPressEnd}
-            onTouchStart={handleParentPressStart}
-            onTouchEnd={handleParentPressEnd}
-            onTouchCancel={handleParentPressEnd}
-            aria-label="Accès parent (appui long)"
+            onClick={() => setShowParentGate(true)}
+            aria-label="Accès parent"
           >
             <IconGear />
           </button>
@@ -218,6 +200,13 @@ export default function HomeScreen({
           </button>
         </div>
       </div>
+
+      {showParentGate && (
+        <ParentGate
+          onSuccess={() => { setShowParentGate(false); onShowParent(); }}
+          onClose={() => setShowParentGate(false)}
+        />
+      )}
     </div>
   );
 }

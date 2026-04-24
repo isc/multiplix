@@ -314,16 +314,17 @@ async function captureNavScreen(page, { navText, screenSel, backSel, shot: shotN
 }
 
 async function captureParentDashboard(page) {
-  // Long press on the gear button (1.5s).
-  const btn = page.locator('.home-parent-btn');
-  const box = await btn.boundingBox();
-  if (!box) throw new Error('parent gear button not found');
-  await page.mouse.move(box.x + box.width / 2, box.y + box.height / 2);
-  await page.mouse.down();
-  // 2s with buffer over the app's 1.5s threshold — slow CI schedulers can
-  // stretch timers, so a tight 1.7s margin occasionally under-shoots.
-  await sleep(2000);
-  await page.mouse.up();
+  // Open the parent gate (click) then solve the displayed multiplication.
+  await page.click('.home-parent-btn');
+  await page.waitForSelector('.parent-gate-modal');
+  const [a, b] = await page.evaluate(() => {
+    const nums = [...document.querySelectorAll('.parent-gate-question > span')]
+      .map((n) => parseInt(n.textContent, 10))
+      .filter((n) => Number.isFinite(n));
+    return [nums[0], nums[1]];
+  });
+  await page.fill('.parent-gate-input', String(a * b));
+  await page.click('.parent-gate-submit');
   await page.waitForSelector('.parent-dashboard');
   await shot(page, '13-parent-dashboard');
   await page.click('.parent-back-btn');
@@ -601,7 +602,8 @@ const SECTIONS = [
       encourage en cas d'erreur, sans jamais juger. La flamme affiche la
       série en cours. Le gros bouton lance la séance du jour, et la barre du
       bas donne accès aux progrès, aux badges et aux règles ×1 / ×10. L'icône
-      engrenage (appui long de 1,5 s) ouvre l'espace parent.`,
+      engrenage ouvre l'espace parent, après une courte multiplication-gate
+      pour écarter les doigts curieux.`,
     shots: [
       { file: '05-home', caption: 'Accueil avec la mascotte et la série de 5 jours.' },
     ],
@@ -680,8 +682,9 @@ const SECTIONS = [
   {
     id: 'parent',
     title: 'Espace parent',
-    description: `Accessible depuis l'accueil par un appui long sur
-      l'engrenage (1,5 s). On y retrouve : les statistiques générales, un
+    description: `Accessible depuis l'accueil via l'engrenage, après une
+      petite multiplication (opérandes entre 12 et 19) pour confirmer qu'un
+      adulte est derrière l'écran. On y retrouve : les statistiques générales, un
       histogramme des boîtes Leitner, l'évolution du taux de réussite,
       les faits les plus difficiles (avec possibilité de les réinitialiser),
       les temps de réponse moyens par table, l'historique des 10 dernières
