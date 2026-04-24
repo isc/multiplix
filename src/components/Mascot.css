@@ -13,9 +13,7 @@
   overflow: visible;
 }
 
-.mascot.small  { width: 40px;  height: 40px; }
-.mascot.normal { width: 96px;  height: 96px; }
-.mascot.large  { width: 180px; height: 180px; }
+.mascot { width: 140px; height: 140px; }
 
 /* ---- Palette ---- */
 

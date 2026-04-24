@@ -2,19 +2,18 @@ import './Mascot.css';
 
 interface MascotProps {
   mood: 'happy' | 'idle' | 'celebrate';
-  size?: 'small' | 'normal' | 'large';
 }
 
-// Piou — mascotte stable, stage unique. Seules les humeurs varient
-// (idle / happy / celebrate) via animations CSS. SVG inline pour un
-// rendu identique sur tous les navigateurs et pour animer les parties
+// Piou — mascotte stable : stage unique, taille unique. Seule l'humeur
+// change (idle / happy / celebrate) via animations CSS. SVG inline pour
+// un rendu identique sur tous les navigateurs et pour animer les parties
 // (corps, ailes, yeux) indépendamment.
 const MASCOT_NAME = 'Piou';
 
-export default function Mascot({ mood, size = 'normal' }: MascotProps) {
+export default function Mascot({ mood }: MascotProps) {
   return (
     <div
-      className={`mascot ${size} ${mood}`}
+      className={`mascot ${mood}`}
       role="img"
       aria-label={`Mascotte ${MASCOT_NAME}, humeur: ${mood}`}
     >

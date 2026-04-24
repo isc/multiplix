@@ -187,7 +187,7 @@ export default function HomeScreen({
           <div className="home-mascot-wrap">
             <div className="home-mascot-halo" />
             <div className="home-mascot-inner">
-              <Mascot mood="idle" size="large" />
+              <Mascot mood="idle" />
             </div>
             <div className="home-greeting">
               Salut <span>{profile.name}</span> !

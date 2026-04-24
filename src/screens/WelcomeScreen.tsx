@@ -195,7 +195,7 @@ export default function WelcomeScreen({ onComplete }: WelcomeScreenProps) {
     <div className="welcome-screen">
       {step === 0 && (
         <div className="welcome-step" key="step0">
-          <Mascot mood="idle" size="large" />
+          <Mascot mood="idle" />
           <div className="welcome-title">Bonjour !</div>
           <div className="welcome-subtitle">
             Je suis Piou, ton petit copain d'apprentissage.
@@ -210,7 +210,7 @@ export default function WelcomeScreen({ onComplete }: WelcomeScreenProps) {
 
       {step === 1 && (
         <div className="welcome-step" key="step1">
-          <Mascot mood="happy" size="normal" />
+          <Mascot mood="happy" />
           <div className="welcome-title">Comment tu t'appelles ?</div>
           <input
             className="welcome-input"
@@ -234,7 +234,7 @@ export default function WelcomeScreen({ onComplete }: WelcomeScreenProps) {
 
       {step === 2 && (
         <div className="welcome-step" key="step2">
-          <Mascot mood="celebrate" size="large" />
+          <Mascot mood="celebrate" />
           <div className="welcome-title">
             Salut {name} !
           </div>

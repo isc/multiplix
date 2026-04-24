@@ -33,7 +33,7 @@ export default function RulesIntroScreen({ name, onComplete }: RulesIntroScreenP
     <div className="rules-intro-screen">
       {step === 0 && (
         <div className="rules-intro-step" key="intro">
-          <Mascot mood="celebrate" size="large" />
+          <Mascot mood="celebrate" />
           <div className="rules-intro-title">
             Avant de commencer, {name} !
           </div>
