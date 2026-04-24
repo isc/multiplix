@@ -574,8 +574,7 @@ const SECTIONS = [
         </li>
       </ul>
       <p class="principles-footer">Détails et justifications dans
-      <a href="https://github.com/isc/multiplix/blob/main/audit-scientifique.md"><code>audit-scientifique.md</code></a>
-      et <a href="https://github.com/isc/multiplix/blob/main/specs-multiplix.md"><code>specs-multiplix.md</code></a>.</p>
+      <a href="https://github.com/isc/multiplix/blob/main/specs-multiplix.md"><code>specs-multiplix.md</code></a>.</p>
     `,
     shots: [],
   },
@@ -1023,7 +1022,6 @@ function buildHtml({ generatedAt }) {
   <p>
     Pour aller plus loin :
     <a href="https://github.com/isc/multiplix/blob/main/specs-multiplix.md">spécifications fonctionnelles</a> ·
-    <a href="https://github.com/isc/multiplix/blob/main/audit-scientifique.md">audit scientifique</a> ·
     <a href="https://github.com/isc/multiplix">code source</a>
   </p>
   <p>

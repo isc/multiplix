@@ -17,7 +17,7 @@ App d'apprentissage des tables de multiplication (PWA React + TypeScript).
 - `src/screens/` — écrans de l'app
 - `src/hooks/` — hooks custom (son, timer, streak, confetti)
 - `specs-multiplix.md` — spécifications fonctionnelles complètes
-- `audit-scientifique.md` — audit de conformité aux sources scientifiques
+- `TODO.md` — évolutions techniques envisagées (pistes non tranchées)
 
 ## Guide utilisateur
 
