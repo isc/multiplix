@@ -5,6 +5,7 @@ import { factsForTable } from '../lib/badges';
 import { getFactKey } from '../lib/facts';
 import ProgressGrid from '../components/ProgressGrid';
 import BackChevron from '../components/BackChevron';
+import FeedbackModal from '../components/FeedbackModal';
 import './ParentDashboard.css';
 
 const Y_TICKS = [0, 25, 50, 75, 100];
@@ -29,6 +30,7 @@ export default function ParentDashboard({
   const [showImport, setShowImport] = useState(false);
   const [importJson, setImportJson] = useState('');
   const [confirmReset, setConfirmReset] = useState<string | null>(null);
+  const [showFeedback, setShowFeedback] = useState(false);
 
   const { boxCounts, maxBoxCount, hardFacts, tableAvgTimes } = useMemo(() => {
     const counts = [0, 0, 0, 0, 0, 0];
@@ -392,6 +394,15 @@ export default function ParentDashboard({
         </button>
       </div>
 
+      <div className="parent-actions">
+        <button
+          className="parent-action-btn"
+          onClick={() => setShowFeedback(true)}
+        >
+          Envoyer un avis
+        </button>
+      </div>
+
       {showImport && (
         <div className="parent-import-area">
           <textarea
@@ -408,6 +419,10 @@ export default function ParentDashboard({
             Confirmer l'import
           </button>
         </div>
+      )}
+
+      {showFeedback && (
+        <FeedbackModal profile={profile} onClose={() => setShowFeedback(false)} />
       )}
     </div>
   );
