@@ -107,7 +107,10 @@ export default function FeedbackOverlay({
         </div>
         {strategy && <StrategyHint strategy={strategy} variant="feedback" />}
         <div className="feedback-dotgrid">
-          <DotGrid a={fact.a} b={fact.b} animated={false} size="small" />
+          <div className="feedback-dotgrid-eyebrow">
+            {fact.a} {'×'} {fact.b} = {fact.a} rangée{fact.a > 1 ? 's' : ''} de {fact.b}
+          </div>
+          <DotGrid a={fact.a} b={fact.b} animated={false} bare />
         </div>
         <button type="button" className="feedback-ok-btn" onClick={onDismiss}>
           J'ai compris

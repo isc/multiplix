@@ -70,6 +70,16 @@ export default function RulesScreen({ onBack }: RulesScreenProps) {
           <div className="rule-card-message">
             Les chiffres glissent d'une place vers la gauche : un <b>0</b> vient prendre la place des unités !
           </div>
+          <div className="rule-glisse">
+            <div className="rule-glisse-row">
+              <span className="rule-slot rule-slot-empty">&nbsp;</span>
+              <span className="rule-slot rule-slot-digit">7</span>
+              <span className="rule-glisse-arrow">→</span>
+              <span className="rule-slot rule-slot-digit">7</span>
+              <span className="rule-slot rule-slot-zero">0</span>
+            </div>
+            <div className="rule-glisse-caption">7 {'×'} 10 = 70</div>
+          </div>
           <div className="rule-examples">
             <div className="rule-example">3 {'×'} 10 = <span className="rule-example-highlight">30</span></div>
             <div className="rule-example">7 {'×'} 10 = <span className="rule-example-highlight">70</span></div>
