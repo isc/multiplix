@@ -527,10 +527,15 @@ const SECTIONS = [
       mathématiques. Cinq piliers portent l'application :</p>
       <ul class="principles">
         <li>
-          <strong>Répétition espacée.</strong> Chaque fait est revu juste avant
-          d'être oublié, via un système de boîtes (Leitner) aux intervalles
-          croissants : 0, 1, 3, 7 puis 21 jours. L'erreur renvoie le fait en
-          boîte 1. Bien plus durable que le bachotage en une soirée.
+          <strong>Répétition espacée — les boîtes de Leitner.</strong> Chaque
+          fait vit dans l'une des cinq boîtes numérotées de 1 (à peine appris)
+          à 5 (bien ancré). Un fait nouveau démarre en boîte 1 : il est revu
+          le jour même. Une bonne réponse le fait monter d'une boîte et
+          repousse la prochaine révision : 1 jour en boîte 2, 3 jours en
+          boîte 3, 7 jours en boîte 4, 21 jours en boîte 5. Une erreur le
+          renvoie en boîte 1, le temps de le réancrer. L'enfant revoit ainsi
+          chaque fait juste avant de l'oublier, avec des intervalles de plus
+          en plus longs — bien plus durable que le bachotage en une soirée.
           <span class="cite">Kang (2016) ; Cepeda et al. (2008) ; Rea &amp; Modigliani (1985)</span>
         </li>
         <li>
