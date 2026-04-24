@@ -103,11 +103,26 @@
   }
   nav.toc ul {
     margin: 0;
-    padding: 0;
+    padding: 0 0 0 4px;
     columns: 2;
     list-style: none;
   }
-  nav.toc li { margin: 6px 0; break-inside: avoid; }
+  nav.toc li {
+    margin: 6px 0;
+    break-inside: avoid;
+    padding-left: 18px;
+    position: relative;
+  }
+  nav.toc li::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0.7em;
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--honey);
+  }
   nav.toc a {
     font-family: var(--serif);
     font-size: 16px;
