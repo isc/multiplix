@@ -144,7 +144,7 @@ export default function HomeScreen({
             </div>
           ) : profile.totalSessions > 0 ? (
             <div className="home-streak-pill">
-              <span className="home-streak-pill-flame" style={{ opacity: 0.4 }}><IconFlame /></span>
+              <span className="home-streak-pill-flame home-streak-pill-flame-muted"><IconFlame /></span>
               <span className="home-streak-pill-prompt">On s'y remet&nbsp;?</span>
             </div>
           ) : null}
@@ -186,9 +186,7 @@ export default function HomeScreen({
         <div className="home-mascot-section">
           <div className="home-mascot-wrap">
             <div className="home-mascot-halo" />
-            <div className="home-mascot-inner">
-              <Mascot mood="idle" />
-            </div>
+            <Mascot mood="idle" />
             <div className="home-greeting">
               Salut <span>{profile.name}</span> !
             </div>

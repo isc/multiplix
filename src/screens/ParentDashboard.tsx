@@ -4,6 +4,7 @@ import { RESPONSE_TIME } from '../types';
 import { factsForTable } from '../lib/badges';
 import { getFactKey } from '../lib/facts';
 import ProgressGrid from '../components/ProgressGrid';
+import BackChevron from '../components/BackChevron';
 import './ParentDashboard.css';
 
 const Y_TICKS = [0, 25, 50, 75, 100];
@@ -122,9 +123,7 @@ export default function ParentDashboard({
     <div className="parent-dashboard">
       <div className="parent-header">
         <button className="parent-back-btn" onClick={onBack} aria-label="Retour">
-          <svg width="18" height="18" viewBox="0 0 20 20" fill="none" aria-hidden="true">
-            <path d="M12 4l-6 6 6 6" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
-          </svg>
+          <BackChevron />
         </button>
         <div className="parent-header-titles">
           <div className="parent-eyebrow">Espace parent</div>

@@ -1,5 +1,6 @@
 import type { Badge as BadgeType } from '../types';
 import BadgeComponent from '../components/Badge';
+import BackChevron from '../components/BackChevron';
 import { ALL_BADGE_DEFINITIONS } from '../lib/badges';
 import './BadgesScreen.css';
 
@@ -15,9 +16,7 @@ export default function BadgesScreen({ earnedBadges, onBack }: BadgesScreenProps
     <div className="badges-screen">
       <div className="badges-header">
         <button className="badges-back-btn" onClick={onBack} aria-label="Retour">
-          <svg width="18" height="18" viewBox="0 0 20 20" fill="none" aria-hidden="true">
-            <path d="M12 4l-6 6 6 6" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
-          </svg>
+          <BackChevron />
         </button>
         <div className="badges-title">Mes badges</div>
       </div>

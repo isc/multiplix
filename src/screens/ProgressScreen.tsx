@@ -1,5 +1,6 @@
 import type { UserProfile } from '../types';
 import MysteryImage from '../components/MysteryImage';
+import BackChevron from '../components/BackChevron';
 import './ProgressScreen.css';
 
 interface ProgressScreenProps {
@@ -16,7 +17,7 @@ export default function ProgressScreen({ profile, onBack }: ProgressScreenProps)
     <div className="progress-screen">
       <div className="progress-header">
         <button className="progress-back-btn" onClick={onBack} aria-label="Retour">
-          {'\u2190'}
+          <BackChevron />
         </button>
         <div className="progress-title">Mon image mystère</div>
       </div>

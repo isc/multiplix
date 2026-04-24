@@ -2,6 +2,8 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
+  width: 140px;
+  height: 140px;
   user-select: none;
   -webkit-user-select: none;
 }
@@ -12,8 +14,6 @@
   height: 100%;
   overflow: visible;
 }
-
-.mascot { width: 140px; height: 140px; }
 
 /* ---- Palette ---- */
 

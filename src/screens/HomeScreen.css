@@ -44,6 +44,10 @@
   display: inline-block;
 }
 
+.home-streak-pill-flame-muted {
+  opacity: 0.4;
+}
+
 .home-streak-pill-count {
   font-family: var(--sans);
   font-size: 13px;
@@ -111,11 +115,9 @@
   pointer-events: none;
 }
 
-.home-mascot-inner {
+.home-mascot-wrap > .mascot {
   position: relative;
   z-index: 1;
-  display: flex;
-  justify-content: center;
 }
 
 .home-greeting {
