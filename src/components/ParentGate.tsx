@@ -7,8 +7,8 @@ interface ParentGateProps {
 }
 
 function pickOperands(): [number, number] {
-  const a = 12 + Math.floor(Math.random() * 8); // 12..19
-  const b = 12 + Math.floor(Math.random() * 8);
+  const a = 11 + Math.floor(Math.random() * 9); // 11..19
+  const b = 3 + Math.floor(Math.random() * 7);  // 3..9
   return [a, b];
 }
 

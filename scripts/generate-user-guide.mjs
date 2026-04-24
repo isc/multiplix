@@ -683,8 +683,9 @@ const SECTIONS = [
     id: 'parent',
     title: 'Espace parent',
     description: `Accessible depuis l'accueil via l'engrenage, après une
-      petite multiplication (opérandes entre 12 et 19) pour confirmer qu'un
-      adulte est derrière l'écran. On y retrouve : les statistiques générales, un
+      petite multiplication (un opérande entre 11 et 19, l'autre entre 3
+      et 9) pour confirmer qu'un adulte est derrière l'écran. On y retrouve :
+      les statistiques générales, un
       histogramme des boîtes Leitner, l'évolution du taux de réussite,
       les faits les plus difficiles (avec possibilité de les réinitialiser),
       les temps de réponse moyens par table, l'historique des 10 dernières
