@@ -10,31 +10,39 @@
   z-index: 200;
   animation: fadeIn 0.2s ease;
   padding: 20px;
+  max-width: 480px;
+  margin: 0 auto;
 }
 
 .feedback-overlay.correct {
-  background: rgba(76, 175, 80, 0.15);
+  background: rgba(63, 155, 122, 0.08);
 }
 
 .feedback-overlay.incorrect {
-  background: rgba(255, 107, 107, 0.1);
+  background: rgba(232, 98, 61, 0.06);
 }
 
 .feedback-card {
-  background: var(--surface);
-  border-radius: 24px;
-  padding: 32px 24px;
+  background: var(--paper);
+  border-radius: 22px;
+  padding: 28px 24px;
   text-align: center;
   max-width: 360px;
   width: 100%;
   animation: scaleIn 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
+  border: 1.5px solid var(--line);
+  box-shadow: var(--shadow-md);
+}
+
+.feedback-overlay.incorrect .feedback-card {
+  text-align: left;
 }
 
 .feedback-emoji {
-  font-size: 4rem;
+  font-size: 3rem;
   line-height: 1;
   margin-bottom: 12px;
+  display: none;
 }
 
 .feedback-emoji.celebrate {
@@ -52,7 +60,8 @@
 .feedback-star {
   font-size: 3rem;
   line-height: 1;
-  margin-bottom: 8px;
+  margin-bottom: 12px;
+  color: var(--honey);
   animation: starPop 0.5s ease;
 }
 
@@ -63,57 +72,90 @@
 }
 
 .feedback-message {
-  font-size: 1.5rem;
-  font-weight: 800;
-  margin-bottom: 8px;
+  font-family: var(--serif);
+  font-size: 34px;
+  font-weight: 600;
+  letter-spacing: -0.5px;
+  line-height: 1.2;
+  margin-bottom: 4px;
 }
 
 .feedback-message.correct {
-  color: var(--success);
+  color: var(--ink);
 }
 
 .feedback-message.incorrect {
-  color: var(--secondary);
+  font-size: 24px;
+  color: var(--coral);
+  margin-bottom: 10px;
+  text-align: center;
+}
+
+.feedback-overlay.incorrect .feedback-message.incorrect {
+  text-align: center;
 }
 
 .feedback-sub {
-  font-size: 1rem;
-  color: var(--text-light);
+  font-family: var(--sans);
+  font-size: 14px;
+  color: var(--ink-soft);
   margin-bottom: 12px;
 }
 
 .feedback-answer {
-  font-size: 1.3rem;
-  font-weight: 700;
-  color: var(--primary);
+  font-family: var(--serif);
+  font-size: 30px;
+  font-weight: 600;
+  color: var(--ink);
   margin-bottom: 16px;
-  background: var(--background);
-  padding: 8px 16px;
-  border-radius: 12px;
-  display: inline-block;
-  max-width: 100%;
-  box-sizing: border-box;
+  text-align: center;
+  letter-spacing: -0.5px;
+  display: block;
+}
+
+.feedback-overlay.correct .feedback-answer {
+  font-size: 15px;
+  font-weight: 400;
+  font-family: var(--sans);
+  color: var(--ink-soft);
+  margin-top: 6px;
+  margin-bottom: 0;
+}
+
+.feedback-overlay.correct .feedback-answer b,
+.feedback-overlay.correct .feedback-answer strong {
+  color: var(--ink);
+  font-weight: 700;
+}
+
+/* In incorrect feedback we want the result in indigo */
+.feedback-overlay.incorrect .feedback-answer b {
+  color: var(--indigo);
 }
 
 .feedback-dotgrid {
-  margin-top: 8px;
+  margin-top: 14px;
+  display: flex;
+  justify-content: center;
 }
 
 .feedback-ok-btn {
-  margin-top: 20px;
-  background: var(--primary);
-  color: white;
+  margin-top: 18px;
+  width: 100%;
+  background: var(--indigo);
+  color: #fff;
   border: none;
-  border-radius: 12px;
-  padding: 12px 40px;
-  font-size: 1.1rem;
-  font-weight: 700;
+  border-radius: 999px;
+  padding: 14px 28px;
+  font-family: var(--sans);
+  font-size: 16px;
+  font-weight: 800;
   cursor: pointer;
-  min-width: 120px;
-  min-height: 48px;
-  transition: transform 0.1s ease, background 0.2s ease;
+  letter-spacing: 0.2px;
+  box-shadow: 0 2px 0 var(--indigo-ink), 0 6px 20px rgba(79, 70, 186, 0.25);
+  transition: transform 0.1s ease;
 }
 
 .feedback-ok-btn:active {
-  transform: scale(0.96);
+  transform: translateY(1px);
 }
