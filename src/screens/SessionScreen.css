@@ -110,7 +110,7 @@
 
 .session-intro-explanation {
   font-family: var(--sans);
-  font-size: 15px;
+  font-size: 14px;
   color: var(--ink-soft);
   text-align: center;
   line-height: 1.55;
@@ -124,7 +124,7 @@
 
 .session-intro-commutativity {
   font-family: var(--sans);
-  font-size: 15px;
+  font-size: 14px;
   color: var(--ink-soft);
   text-align: center;
   line-height: 1.55;
@@ -138,9 +138,9 @@
 .session-intro-btn {
   width: 100%;
   max-width: 320px;
-  padding: 16px 28px;
+  padding: 18px 28px;
   font-family: var(--sans);
-  font-size: 17px;
+  font-size: 18px;
   font-weight: 800;
   color: var(--cream);
   background: var(--ink);

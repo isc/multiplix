@@ -35,8 +35,10 @@ const PORT = Number(process.env.GUIDE_PORT ?? 4173);
 const BASE_PATH = process.env.VITE_BASE_PATH ?? '/multiplix/';
 const BASE_URL = `http://localhost:${PORT}${BASE_PATH}`;
 
-// Mobile-ish portrait viewport so screenshots match how kids use the PWA.
-const VIEWPORT = { width: 420, height: 900 };
+// Mobile-ish portrait viewport. Matches the 360×760 iPhone logical frame
+// the mockup (Redesign Multiplix.html) uses, so side-by-side comparisons
+// line up without rescaling tricks.
+const VIEWPORT = { width: 360, height: 760 };
 const DEVICE_SCALE = 2;
 
 // Anchor date for seed data — single source of truth for every capture.

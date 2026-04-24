@@ -108,9 +108,9 @@
 }
 
 .rules-intro-btn {
-  padding: 14px 32px;
+  padding: 18px 32px;
   font-family: var(--sans);
-  font-size: 17px;
+  font-size: 18px;
   font-weight: 800;
   color: var(--cream);
   background: var(--ink);
