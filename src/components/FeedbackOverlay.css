@@ -19,8 +19,9 @@
 .feedback-overlay.correct {
   background: var(--cream);
   flex-direction: column;
+  justify-content: flex-start;
   gap: 10px;
-  padding-top: 80px;
+  padding-top: 120px;
 }
 
 .feedback-overlay.incorrect {
