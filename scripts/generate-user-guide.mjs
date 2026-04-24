@@ -382,11 +382,20 @@ async function captureSessionScreens(page) {
   await page.waitForSelector('.session-screen');
 
   if (await page.locator('.session-intro').count()) {
-    // The DotGrid has a JS-driven row-by-row reveal — wait for the result
-    // ("= N") to become visible before taking the screenshot.
-    await page.waitForSelector('.dot-grid-result.visible', { timeout: 5000 }).catch(() => {
-      log('WARN: DotGrid result did not appear in time');
+    // The DotGrid has a JS-driven row-by-row reveal — wait for the last row
+    // to finish its 0.4s fade-in animation. The result "= N" sits outside the
+    // grid in SessionIntro, but still depends on all rows being visible.
+    await page.waitForFunction(
+      () => {
+        const rows = document.querySelectorAll('.session-intro .dot-grid-row');
+        if (rows.length === 0) return false;
+        return Array.from(rows).every((r) => !r.classList.contains('hidden'));
+      },
+      { timeout: 5000 },
+    ).catch(() => {
+      log('WARN: DotGrid rows did not fully appear in time');
     });
+    await sleep(400);
     await shot(page, '06-session-intro');
 
     // Walk to the strategy step (grid → commute → strategy ; squares skip commute).

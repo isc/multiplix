@@ -4,7 +4,6 @@ import NumPad from '../components/NumPad';
 import VoiceInput from '../components/VoiceInput';
 import DotGrid from '../components/DotGrid';
 import FeedbackOverlay from '../components/FeedbackOverlay';
-import Mascot from '../components/Mascot';
 import StrategyHint from '../components/StrategyHint';
 import { RESPONSE_TIME } from '../types';
 import { getFactKey } from '../lib/facts';
@@ -57,7 +56,6 @@ export default function SessionScreen({
     factBox: BoxLevel;
   } | null>(null);
   const [numpadDisabled, setNumpadDisabled] = useState(false);
-  const [mascotMood, setMascotMood] = useState<'idle' | 'happy'>('idle');
 
   const { isMuted, playCorrect, playIncorrect } = useSound();
   const { speak, stop: stopSpeech, isSpeaking } = useTTS(isMuted);
@@ -67,7 +65,6 @@ export default function SessionScreen({
     (q: SessionQuestion) => speak(`q-${q.displayA}-${q.displayB}`),
     [speak],
   );
-  const mascotMoodTimeout = useRef<ReturnType<typeof setTimeout> | null>(null);
   const questionStartTime = useRef(0);
   const correctCount = useRef(0);
   const totalTimeMs = useRef(0);
@@ -87,13 +84,6 @@ export default function SessionScreen({
     }
     setNumpadDisabled(false);
   }
-
-  // Clean up mascot mood timeout on unmount
-  useEffect(() => {
-    return () => {
-      if (mascotMoodTimeout.current) clearTimeout(mascotMoodTimeout.current);
-    };
-  }, []);
 
   // Side effects when the question changes (TTS, timer, tracking)
   useEffect(() => {
@@ -158,15 +148,6 @@ export default function SessionScreen({
 
       if (correct) playCorrect();
       else playIncorrect();
-
-      // React mascot mood — jamais de moue/déception : seulement content ou neutre
-      if (mascotMoodTimeout.current) clearTimeout(mascotMoodTimeout.current);
-      if (correct) {
-        setMascotMood('happy');
-        mascotMoodTimeout.current = setTimeout(() => setMascotMood('idle'), 1500);
-      } else {
-        setMascotMood('idle');
-      }
 
       // Notify parent (App) to update Leitner state
       onAnswer(currentQuestion.fact, correct, timeMs, value, currentQuestion.isBonusReview);
@@ -277,27 +258,16 @@ export default function SessionScreen({
 
   return (
     <div className="session-screen">
-      {/* Progress bar with mascot */}
-      <div className="session-header">
-        {!showIntro && (
-          <div className="session-mascot">
-            <Mascot mood={mascotMood} size="small" />
-          </div>
-        )}
-        {!showIntro && (
+      {/* Progress bar (centered dots) */}
+      {!showIntro && (
+        <div className="session-header">
           <div className="session-progress">
             {progressDots.map((status, i) => (
-              <div key={i} className={`session-progress-dot ${status}`}>
-                {status === 'correct'
-                  ? '\u2713'
-                  : status === 'incorrect'
-                    ? '\u2717'
-                    : ''}
-              </div>
+              <div key={i} className={`session-progress-dot ${status}`} />
             ))}
           </div>
-        )}
-      </div>
+        </div>
+      )}
 
       {/* Introduction phase */}
       {showIntro && (
@@ -306,12 +276,21 @@ export default function SessionScreen({
 
           {introStep === 'grid' ? (
             <>
+              <div className="session-intro-formula">
+                {currentQuestion.fact.a}
+                <span className="session-intro-operator">{'\u00D7'}</span>
+                {currentQuestion.fact.b}
+              </div>
               <DotGrid
                 a={currentQuestion.fact.a}
                 b={currentQuestion.fact.b}
                 animated
                 size="normal"
+                bare
               />
+              <div className="session-intro-result">
+                = <b>{currentQuestion.fact.product}</b>
+              </div>
               <div className="session-intro-explanation">
                 <strong>
                   {currentQuestion.fact.a} {'\u00D7'}{' '}
@@ -327,7 +306,7 @@ export default function SessionScreen({
                 className="session-intro-btn"
                 onClick={handleIntroNext}
               >
-                Suivant
+                Suivant →
               </button>
             </>
           ) : introStep === 'commute' ? (
@@ -350,7 +329,7 @@ export default function SessionScreen({
                 className="session-intro-btn"
                 onClick={handleIntroNext}
               >
-                Suivant
+                Suivant →
               </button>
             </>
           ) : (

@@ -15,7 +15,12 @@
   align-items: center;
   gap: 4px;
   margin-top: 4px;
+  margin-bottom: 12px;
   text-align: center;
+}
+
+.recap-head .recap-title {
+  margin-top: 36px;
 }
 
 .recap-mascot-wrap {
@@ -249,7 +254,7 @@
 }
 
 .recap-btn {
-  margin-top: 16px;
+  margin-top: auto;
   padding: 18px 28px;
   width: 100%;
   font-family: var(--sans);

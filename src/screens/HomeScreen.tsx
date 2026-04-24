@@ -183,13 +183,15 @@ export default function HomeScreen({
       </div>
 
       <div className="home-body">
-        <div className="home-mascot-wrap">
-          <div className="home-mascot-halo" />
-          <div className="home-mascot-inner">
-            <Mascot mood="idle" size="large" />
-          </div>
-          <div className="home-greeting">
-            Salut <span>{profile.name}</span>&nbsp;!
+        <div className="home-mascot-section">
+          <div className="home-mascot-wrap">
+            <div className="home-mascot-halo" />
+            <div className="home-mascot-inner">
+              <Mascot mood="idle" size="large" />
+            </div>
+            <div className="home-greeting">
+              Salut <span>{profile.name}</span> !
+            </div>
           </div>
         </div>
 

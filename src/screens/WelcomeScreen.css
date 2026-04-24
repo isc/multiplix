@@ -10,6 +10,12 @@
   animation: fadeIn 0.5s ease;
 }
 
+/* Étape test de placement : contenu ancré en haut (pas centré vertic.). */
+.welcome-screen:has(.welcome-test-progress) {
+  justify-content: flex-start;
+  padding: 14px 20px 24px;
+}
+
 .welcome-step {
   display: flex;
   flex-direction: column;
@@ -62,7 +68,6 @@
 .welcome-input::placeholder {
   color: var(--ink-muted);
   font-weight: 500;
-  font-style: italic;
 }
 
 .welcome-btn {
@@ -184,7 +189,7 @@
 }
 
 .welcome-dontknow {
-  display: inline-flex;
+  display: flex;
   align-items: center;
   justify-content: center;
   gap: 8px;
@@ -198,7 +203,6 @@
   color: var(--ink-soft);
   cursor: pointer;
   width: 100%;
-  max-width: 280px;
   margin-top: 6px;
 }
 

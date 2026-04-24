@@ -6,29 +6,20 @@
   animation: fadeIn 0.3s ease;
 }
 
-/* Header : mascotte + progression en barrettes */
+/* Header : barrettes de progression centrées */
 .session-header {
   display: flex;
-  align-items: center;
-  padding: 14px 20px 4px;
-  gap: 10px;
-}
-
-.session-mascot {
-  flex-shrink: 0;
-  width: 36px;
-  height: 36px;
-  display: flex;
-  align-items: center;
   justify-content: center;
+  padding: 14px 20px 4px;
 }
 
 .session-progress {
   display: flex;
   align-items: center;
+  justify-content: center;
   gap: 4px;
-  flex: 1;
   min-width: 0;
+  max-width: 100%;
   overflow: hidden;
 }
 
@@ -84,6 +75,37 @@
   color: var(--indigo);
   letter-spacing: -0.5px;
   margin-top: 4px;
+}
+
+.session-intro-formula {
+  font-family: var(--serif);
+  font-size: 40px;
+  font-weight: 500;
+  color: var(--ink);
+  letter-spacing: -1px;
+  line-height: 1;
+  margin-top: 6px;
+}
+
+.session-intro-operator {
+  color: var(--indigo);
+  font-style: italic;
+  font-weight: 400;
+  margin: 0 8px;
+}
+
+.session-intro-result {
+  font-family: var(--serif);
+  font-size: 30px;
+  font-weight: 500;
+  color: var(--ink);
+  letter-spacing: -0.5px;
+  margin-top: 6px;
+}
+
+.session-intro-result b {
+  color: var(--indigo);
+  font-weight: 600;
 }
 
 .session-intro-explanation {
