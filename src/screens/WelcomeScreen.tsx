@@ -163,6 +163,7 @@ export default function WelcomeScreen({ onComplete }: WelcomeScreenProps) {
             <span className="welcome-test-operator">{'\u00D7'}</span>
             {displayB}
             <span className="welcome-test-equals">=</span>
+            <span className="welcome-test-placeholder">?</span>
           </div>
           {feedback && (
             <div className={`welcome-test-feedback ${feedback}`}>
@@ -173,11 +174,12 @@ export default function WelcomeScreen({ onComplete }: WelcomeScreenProps) {
             <>
               <NumPad onSubmit={handleTestAnswer} disabled={numpadDisabled} />
               <button
-                className="welcome-btn welcome-btn-skip"
+                className="welcome-dontknow"
                 onClick={handleDontKnow}
                 disabled={numpadDisabled}
               >
-                Je ne sais pas
+                <span className="welcome-dontknow-mark">?</span>
+                <span>Je ne sais pas</span>
               </button>
               <div className="welcome-test-hint">
                 Réponds du mieux que tu peux !

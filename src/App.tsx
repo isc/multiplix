@@ -337,6 +337,7 @@ export default function App() {
 
       {screen === 'recap' && profile && sessionResult && (
         <RecapScreen
+          name={profile.name}
           result={sessionResult}
           newBadges={newBadges}
           newlyCompletedTables={newlyCompletedTables}

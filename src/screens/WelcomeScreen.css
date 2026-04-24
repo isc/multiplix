@@ -70,13 +70,13 @@
   font-family: var(--sans);
   font-size: 17px;
   font-weight: 800;
-  color: #fff;
-  background: var(--indigo);
+  color: var(--cream);
+  background: var(--ink);
   border: none;
   border-radius: 999px;
   transition: transform 0.1s ease;
   width: 100%;
-  max-width: 280px;
+  max-width: 320px;
   letter-spacing: 0.2px;
   cursor: pointer;
 }
@@ -91,8 +91,9 @@
 }
 
 .welcome-btn-primary {
-  background: var(--indigo);
-  box-shadow: 0 2px 0 var(--indigo-ink), 0 6px 20px rgba(79, 70, 186, 0.3);
+  background: var(--ink);
+  color: var(--cream);
+  box-shadow: 0 2px 0 #000, 0 6px 20px rgba(30, 26, 46, 0.25);
 }
 
 .welcome-btn-primary:disabled {
@@ -173,6 +174,56 @@
   margin-left: 10px;
   font-style: italic;
   font-weight: 400;
+}
+
+.welcome-test-placeholder {
+  color: var(--ink-muted);
+  margin-left: 10px;
+  font-style: italic;
+  font-weight: 400;
+}
+
+.welcome-dontknow {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 8px 14px;
+  background: var(--paper);
+  border: 1.5px dashed var(--line);
+  border-radius: 12px;
+  font-family: var(--sans);
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--ink-soft);
+  cursor: pointer;
+  width: 100%;
+  max-width: 280px;
+  margin-top: 6px;
+}
+
+.welcome-dontknow:active {
+  background: var(--cream-deep);
+}
+
+.welcome-dontknow:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.welcome-dontknow-mark {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: var(--line-soft);
+  color: var(--ink-soft);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--serif);
+  font-size: 15px;
+  font-weight: 700;
+  font-style: italic;
 }
 
 .welcome-test-feedback {

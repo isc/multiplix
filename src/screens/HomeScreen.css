@@ -72,14 +72,17 @@
   align-items: center;
   justify-content: space-between;
   padding: 0 24px 18px;
-  gap: 18px;
 }
 
 .home-mascot-wrap {
-  margin-top: 28px;
+  margin-top: 24px;
   text-align: center;
   position: relative;
   display: inline-block;
+}
+
+.home-cta-wrap {
+  width: 100%;
 }
 
 .home-mascot-halo {

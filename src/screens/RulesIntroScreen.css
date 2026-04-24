@@ -112,14 +112,14 @@
   font-family: var(--sans);
   font-size: 17px;
   font-weight: 800;
-  color: #fff;
-  background: var(--indigo);
+  color: var(--cream);
+  background: var(--ink);
   border: none;
   border-radius: 999px;
   transition: transform 0.1s ease;
   margin-top: 8px;
   width: 100%;
-  max-width: 280px;
+  max-width: 320px;
   letter-spacing: 0.2px;
   cursor: pointer;
 }
@@ -129,8 +129,9 @@
 }
 
 .rules-intro-btn-primary {
-  background: var(--indigo);
-  box-shadow: 0 2px 0 var(--indigo-ink), 0 6px 20px rgba(79, 70, 186, 0.3);
+  background: var(--ink);
+  color: var(--cream);
+  box-shadow: 0 2px 0 #000, 0 6px 20px rgba(30, 26, 46, 0.25);
 }
 
 .rules-intro-dots {

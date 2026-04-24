@@ -378,6 +378,7 @@ export default function SessionScreen({
             <span className="operator">{'\u00D7'}</span>
             {currentQuestion.displayB}
             <span className="equals">=</span>
+            <span className="placeholder">?</span>
           </div>
           <div className="session-numpad-area">
             {inputMode === 'voice' ? (

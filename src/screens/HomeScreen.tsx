@@ -57,8 +57,10 @@ function IconMic() {
 function IconGear() {
   return (
     <svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-      <circle cx="12" cy="12" r="3" stroke="currentColor" strokeWidth="1.6" />
-      <path d="M12 2v3M12 19v3M4 12H1M23 12h-3M5 5l2 2M19 19l-2-2M5 19l2-2M19 5l-2 2" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
+      <path
+        d="M19.43 12.98c.04-.32.07-.65.07-.98 0-.33-.03-.66-.07-.98l2.11-1.65a.5.5 0 00.12-.64l-2-3.46a.5.5 0 00-.61-.22l-2.49 1a7.03 7.03 0 00-1.69-.98l-.38-2.65A.5.5 0 0014 2h-4a.5.5 0 00-.5.42l-.38 2.65c-.61.25-1.17.58-1.69.98l-2.49-1a.5.5 0 00-.61.22l-2 3.46a.5.5 0 00.12.64l2.11 1.65c-.04.32-.07.65-.07.98 0 .33.03.66.07.98l-2.11 1.65a.5.5 0 00-.12.64l2 3.46c.14.22.39.31.61.22l2.49-1c.52.4 1.08.73 1.69.98l.38 2.65c.05.24.26.42.5.42h4c.24 0 .45-.18.5-.42l.38-2.65c.61-.25 1.17-.58 1.69-.98l2.49 1c.22.09.47 0 .61-.22l2-3.46a.5.5 0 00-.12-.64l-2.11-1.65zM12 15.5A3.5 3.5 0 1115.5 12 3.5 3.5 0 0112 15.5z"
+        fill="currentColor"
+      />
     </svg>
   );
 }
@@ -191,13 +193,15 @@ export default function HomeScreen({
           </div>
         </div>
 
-        {hasSessionAvailable ? (
-          <button className="home-start-btn" onClick={onStart}>
-            ▶ C'est parti&nbsp;!
-          </button>
-        ) : (
-          <div className="home-done-msg">Bravo, c'est fait pour aujourd'hui&nbsp;!</div>
-        )}
+        <div className="home-cta-wrap">
+          {hasSessionAvailable ? (
+            <button className="home-start-btn" onClick={onStart}>
+              {'▶'} C'est parti !
+            </button>
+          ) : (
+            <div className="home-done-msg">Bravo, c'est fait pour aujourd'hui !</div>
+          )}
+        </div>
 
         <div className="home-nav">
           <button className="home-nav-btn" onClick={onShowProgress}>

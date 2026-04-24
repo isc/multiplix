@@ -8,6 +8,7 @@ import { useConfetti } from '../hooks/useConfetti';
 import './RecapScreen.css';
 
 interface RecapScreenProps {
+  name: string;
   result: SessionResult;
   newBadges: BadgeType[];
   newlyCompletedTables: number[];
@@ -39,6 +40,7 @@ function Confetti() {
 }
 
 export default function RecapScreen({
+  name,
   result,
   newBadges,
   newlyCompletedTables,
@@ -92,7 +94,7 @@ export default function RecapScreen({
           <Mascot mood={mascotMood} size="normal" />
         </div>
         <div className="recap-title">Séance terminée&nbsp;!</div>
-        <div className="recap-message">Bravo, tu as bien travaillé.</div>
+        <div className="recap-message">Bravo {name}, tu as bien travaillé.</div>
       </div>
 
       {newlyCompletedTables.length > 0 && (
