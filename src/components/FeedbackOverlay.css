@@ -1,6 +1,8 @@
 .feedback-overlay {
   position: fixed;
-  top: 0;
+  /* 30px ≈ hauteur de .session-header (dots de progression) pour qu'ils
+     restent visibles en haut pendant le feedback. */
+  top: 30px;
   left: 0;
   right: 0;
   bottom: 0;
@@ -10,110 +12,177 @@
   z-index: 200;
   animation: fadeIn 0.2s ease;
   padding: 20px;
+  max-width: 480px;
+  margin: 0 auto;
 }
 
 .feedback-overlay.correct {
-  background: rgba(76, 175, 80, 0.15);
+  background: var(--cream);
+  flex-direction: column;
+  justify-content: flex-start;
+  gap: 10px;
+  padding-top: 120px;
 }
 
 .feedback-overlay.incorrect {
-  background: rgba(255, 107, 107, 0.1);
+  background: var(--cream);
+  padding: 10px 20px 20px;
+  align-items: stretch;
 }
 
 .feedback-card {
-  background: var(--surface);
-  border-radius: 24px;
-  padding: 32px 24px;
+  background: var(--paper);
+  border-radius: 22px;
+  padding: 24px 20px;
   text-align: center;
   max-width: 360px;
   width: 100%;
   animation: scaleIn 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
+  border: 1.5px solid var(--line);
+  box-shadow: var(--shadow-sm);
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  height: 100%;
 }
 
-.feedback-emoji {
-  font-size: 4rem;
-  line-height: 1;
-  margin-bottom: 12px;
+.feedback-overlay.incorrect .feedback-card {
+  text-align: left;
+  padding: 22px 22px 20px;
 }
 
-.feedback-emoji.celebrate {
-  animation: mascotCelebrate 0.6s ease-in-out 2;
+.feedback-star-wrap {
+  position: relative;
+  width: 180px;
+  height: 180px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 20px;
 }
 
-@keyframes mascotCelebrate {
-  0% { transform: scale(1) rotate(0deg); }
-  25% { transform: scale(1.2) rotate(-10deg); }
-  50% { transform: scale(1) rotate(0deg); }
-  75% { transform: scale(1.2) rotate(10deg); }
-  100% { transform: scale(1) rotate(0deg); }
+.feedback-star-rays {
+  position: absolute;
+  inset: 0;
+  animation: scaleIn 0.3s ease;
 }
 
-.feedback-star {
-  font-size: 3rem;
-  line-height: 1;
-  margin-bottom: 8px;
+.feedback-star-shape {
+  position: relative;
   animation: starPop 0.5s ease;
 }
 
 @keyframes starPop {
   0% { transform: scale(0) rotate(-180deg); opacity: 0; }
-  60% { transform: scale(1.3) rotate(10deg); opacity: 1; }
+  60% { transform: scale(1.2) rotate(10deg); opacity: 1; }
   100% { transform: scale(1) rotate(0deg); opacity: 1; }
 }
 
 .feedback-message {
-  font-size: 1.5rem;
-  font-weight: 800;
-  margin-bottom: 8px;
-}
-
-.feedback-message.correct {
-  color: var(--success);
+  font-family: var(--serif);
+  font-size: 34px;
+  font-weight: 600;
+  letter-spacing: -0.5px;
+  line-height: 1.2;
+  margin-top: 10px;
+  color: var(--ink);
+  text-align: center;
 }
 
 .feedback-message.incorrect {
-  color: var(--secondary);
+  font-size: 24px;
+  color: var(--coral);
+  margin: 0 0 10px;
+  text-align: center;
 }
 
 .feedback-sub {
-  font-size: 1rem;
-  color: var(--text-light);
-  margin-bottom: 12px;
+  font-family: var(--sans);
+  font-size: 14px;
+  color: var(--ink-soft);
+  text-align: center;
 }
 
 .feedback-answer {
-  font-size: 1.3rem;
+  font-family: var(--serif);
+  font-size: 30px;
+  font-weight: 600;
+  color: var(--ink);
+  text-align: center;
+  letter-spacing: -0.5px;
+  display: block;
+  margin-bottom: 12px;
+}
+
+.feedback-overlay.correct .feedback-answer {
+  font-size: 15px;
+  font-weight: 400;
+  font-family: var(--sans);
+  color: var(--ink-soft);
+  margin: 0;
+}
+
+.feedback-overlay.correct .feedback-answer b {
+  color: var(--ink);
   font-weight: 700;
-  color: var(--primary);
-  margin-bottom: 16px;
-  background: var(--background);
-  padding: 8px 16px;
-  border-radius: 12px;
-  display: inline-block;
-  max-width: 100%;
-  box-sizing: border-box;
+  font-family: var(--sans);
+}
+
+.feedback-overlay.incorrect .feedback-answer b {
+  color: var(--indigo);
 }
 
 .feedback-dotgrid {
-  margin-top: 8px;
+  margin-top: 16px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  flex: 1;
+  justify-content: center;
+}
+
+.feedback-dotgrid-eyebrow {
+  font-family: var(--sans);
+  font-size: 11px;
+  font-weight: 800;
+  color: var(--ink-muted);
+  letter-spacing: 0.6px;
+  text-transform: uppercase;
+  text-align: center;
+}
+
+/* Strip the DotGrid card when inside the feedback overlay; the mockup shows
+   dots on the plain card background with only an eyebrow label above. Also
+   force 18px dots / 10px gap (the mockup size) regardless of the JS-
+   calculated sizing — !important is needed because DotGrid sets the CSS
+   vars via inline style. */
+.feedback-dotgrid .dot-grid-wrapper {
+  background: transparent;
+  border: none;
+  box-shadow: none;
+  padding: 0;
+  --dot-size: 18px !important;
+  --dot-gap: 10px !important;
 }
 
 .feedback-ok-btn {
-  margin-top: 20px;
-  background: var(--primary);
-  color: white;
+  margin-top: 16px;
+  width: 100%;
+  background: var(--indigo);
+  color: #fff;
   border: none;
-  border-radius: 12px;
-  padding: 12px 40px;
-  font-size: 1.1rem;
-  font-weight: 700;
+  border-radius: 999px;
+  padding: 14px 28px;
+  font-family: var(--sans);
+  font-size: 16px;
+  font-weight: 800;
   cursor: pointer;
-  min-width: 120px;
-  min-height: 48px;
-  transition: transform 0.1s ease, background 0.2s ease;
+  letter-spacing: 0.2px;
+  box-shadow: 0 2px 0 var(--indigo-ink), 0 6px 20px rgba(79, 70, 186, 0.25);
+  transition: transform 0.1s ease;
 }
 
 .feedback-ok-btn:active {
-  transform: scale(0.96);
+  transform: translateY(1px);
 }

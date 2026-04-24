@@ -1,5 +1,6 @@
 import type { Badge as BadgeType } from '../types';
 import BadgeComponent from '../components/Badge';
+import BackChevron from '../components/BackChevron';
 import { ALL_BADGE_DEFINITIONS } from '../lib/badges';
 import './BadgesScreen.css';
 
@@ -15,13 +16,17 @@ export default function BadgesScreen({ earnedBadges, onBack }: BadgesScreenProps
     <div className="badges-screen">
       <div className="badges-header">
         <button className="badges-back-btn" onClick={onBack} aria-label="Retour">
-          {'\u2190'}
+          <BackChevron />
         </button>
         <div className="badges-title">Mes badges</div>
       </div>
 
-      <div className="badges-count">
-        {earnedBadges.length} / {ALL_BADGE_DEFINITIONS.length} badges obtenus
+      <div className="badges-banner">
+        <div className="badges-banner-eyebrow">Collection</div>
+        <div className="badges-banner-count">
+          {earnedBadges.length}
+          <span>/ {ALL_BADGE_DEFINITIONS.length} badges</span>
+        </div>
       </div>
 
       <div className="badges-grid">

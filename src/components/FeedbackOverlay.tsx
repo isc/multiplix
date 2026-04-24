@@ -8,11 +8,10 @@ import './FeedbackOverlay.css';
 
 interface FeedbackOverlayProps {
   correct: boolean;
-  fast: boolean;   // < 3s
-  slow: boolean;   // > 5s
+  fast: boolean;
+  slow: boolean;
   correctAnswer: number;
   fact: { a: number; b: number };
-  /** Niveau Leitner actuel du fait (pour ne montrer la stratégie qu'en phase d'apprentissage). */
   factBox: BoxLevel;
   onDismiss: () => void;
 }
@@ -28,10 +27,8 @@ const CORRECT_MESSAGES = [
 ];
 
 const INCORRECT_MESSAGES = [
-  "C'est pas grave, on réessaie !",
   'Presque ! La bonne réponse est :',
   'Pas tout à fait, regarde :',
-  "T'inquiète, on va y arriver !",
 ];
 
 export default function FeedbackOverlay({
@@ -43,7 +40,6 @@ export default function FeedbackOverlay({
   factBox,
   onDismiss,
 }: FeedbackOverlayProps) {
-  // Pick message once on mount (stable across re-renders)
   const [message] = useState(() =>
     pickRandom(correct ? CORRECT_MESSAGES : INCORRECT_MESSAGES),
   );
@@ -59,18 +55,43 @@ export default function FeedbackOverlay({
 
     return (
       <div className="feedback-overlay correct" onClick={onDismiss}>
-        <div className="feedback-card">
-          {fast && (
-            <div className="feedback-star" aria-label="Étoile dorée">
-              &#11088;
-            </div>
-          )}
-          <div className={`feedback-emoji ${fast ? 'celebrate' : ''}`}>
-            {fast ? '\uD83C\uDF89' : '\uD83D\uDE0A'}
-          </div>
-          <div className="feedback-message correct">{message}</div>
-          {subMessage && <div className="feedback-sub">{subMessage}</div>}
+        <div className="feedback-star-wrap" aria-label={fast ? 'Étoile dorée' : undefined}>
+          <svg width="180" height="180" viewBox="-10 -10 120 120" className="feedback-star-rays">
+            {Array.from({ length: 8 }).map((_, i) => {
+              const a = (i / 8) * Math.PI * 2 - Math.PI / 2;
+              const x1 = 50 + Math.cos(a) * 42;
+              const y1 = 50 + Math.sin(a) * 42;
+              const x2 = 50 + Math.cos(a) * 56;
+              const y2 = 50 + Math.sin(a) * 56;
+              return (
+                <line
+                  key={i}
+                  x1={x1}
+                  y1={y1}
+                  x2={x2}
+                  y2={y2}
+                  stroke="var(--honey)"
+                  strokeWidth="3"
+                  strokeLinecap="round"
+                />
+              );
+            })}
+          </svg>
+          <svg width="86" height="86" viewBox="0 0 24 24" className="feedback-star-shape">
+            <path
+              d="M12 2l2.6 6.3 6.8.6-5.2 4.5 1.6 6.6L12 16.8 6.2 20l1.6-6.6L2.6 8.9l6.8-.6z"
+              fill="var(--honey)"
+              stroke="var(--ink)"
+              strokeWidth="1.4"
+              strokeLinejoin="round"
+            />
+          </svg>
         </div>
+        <div className="feedback-message correct">{message}</div>
+        <div className="feedback-answer">
+          {fact.a} {'×'} {fact.b} = <b>{correctAnswer}</b>
+        </div>
+        {subMessage && <div className="feedback-sub">{subMessage}</div>}
       </div>
     );
   }
@@ -80,17 +101,19 @@ export default function FeedbackOverlay({
   return (
     <div className="feedback-overlay incorrect">
       <div className="feedback-card">
-        <div className="feedback-emoji">{'\uD83E\uDD14'}</div>
         <div className="feedback-message incorrect">{message}</div>
         <div className="feedback-answer">
-          {fact.a} {'\u00D7'} {fact.b} = {correctAnswer}
+          {fact.a} {'×'} {fact.b} = <b>{correctAnswer}</b>
         </div>
         {strategy && <StrategyHint strategy={strategy} variant="feedback" />}
         <div className="feedback-dotgrid">
-          <DotGrid a={fact.a} b={fact.b} animated={false} size="small" />
+          <div className="feedback-dotgrid-eyebrow">
+            {fact.a} {'×'} {fact.b} = {fact.a} rangée{fact.a > 1 ? 's' : ''} de {fact.b}
+          </div>
+          <DotGrid a={fact.a} b={fact.b} animated={false} bare />
         </div>
         <button type="button" className="feedback-ok-btn" onClick={onDismiss}>
-          OK
+          J'ai compris
         </button>
       </div>
     </div>

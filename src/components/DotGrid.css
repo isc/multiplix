@@ -4,22 +4,29 @@
   align-items: center;
   gap: 12px;
   padding: 16px;
+  background: var(--paper);
+  border-radius: 22px;
+  border: 1.5px solid var(--line);
+  box-shadow: var(--shadow-sm);
 }
 
 .dot-grid-label {
-  font-size: 1.3rem;
-  font-weight: 700;
-  color: var(--text);
+  font-family: var(--serif);
+  font-size: 22px;
+  font-weight: 500;
+  color: var(--ink);
+  letter-spacing: -0.5px;
 }
 
 .dot-grid-label span {
-  color: var(--primary);
+  color: var(--indigo);
+  font-style: italic;
 }
 
 .dot-grid {
   display: flex;
   flex-direction: column;
-  gap: var(--dot-gap, 6px);
+  gap: var(--dot-gap, 10px);
   transition: transform 0.8s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
@@ -29,7 +36,7 @@
 
 .dot-grid-row {
   display: flex;
-  gap: var(--dot-gap, 6px);
+  gap: var(--dot-gap, 10px);
   opacity: 0;
   animation: rowAppear 0.4s ease forwards;
 }
@@ -56,33 +63,39 @@
 }
 
 .dot {
-  width: var(--dot-size, 16px);
-  height: var(--dot-size, 16px);
+  width: var(--dot-size, 18px);
+  height: var(--dot-size, 18px);
   border-radius: 50%;
-  background: var(--primary);
+  background: var(--indigo);
   flex-shrink: 0;
 }
 
+.dot-grid-wrapper.small {
+  padding: 12px;
+}
+
 .dot-grid-wrapper.small .dot {
-  width: 10px;
-  height: 10px;
+  width: 12px;
+  height: 12px;
 }
 
 .dot-grid-wrapper.small .dot-grid-row {
-  gap: 4px;
+  gap: 6px;
 }
 
 .dot-grid-wrapper.small .dot-grid {
-  gap: 4px;
+  gap: 6px;
 }
 
 .dot-grid-result {
-  font-size: 1.1rem;
-  font-weight: 600;
-  color: var(--text-light);
+  font-family: var(--serif);
+  font-size: 20px;
+  font-weight: 500;
+  color: var(--ink);
   margin-top: 4px;
   opacity: 0;
   transition: opacity 0.3s ease;
+  letter-spacing: -0.3px;
 }
 
 .dot-grid-result.visible {
@@ -90,6 +103,6 @@
 }
 
 .dot-grid-result strong {
-  color: var(--primary);
-  font-weight: 800;
+  color: var(--indigo);
+  font-weight: 600;
 }

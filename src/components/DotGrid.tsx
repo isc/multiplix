@@ -7,6 +7,9 @@ interface DotGridProps {
   animated?: boolean;
   showRotation?: boolean;
   size?: 'normal' | 'small';
+  /** Omet le libellé "a × b" et le résultat "= p" (ils sont alors rendus
+   *  à côté de la grille par l'appelant, cf. écran d'intro de fait). */
+  bare?: boolean;
 }
 
 export default function DotGrid({
@@ -15,6 +18,7 @@ export default function DotGrid({
   animated = true,
   showRotation = false,
   size = 'normal',
+  bare = false,
 }: DotGridProps) {
   const [visibleRows, setVisibleRows] = useState(animated ? 0 : a);
   const [showResult, setShowResult] = useState(!animated);
@@ -54,8 +58,8 @@ export default function DotGrid({
 
   // Scale dots down for large grids so they don't overflow on mobile
   const maxDim = Math.max(a, b);
-  const dotSize = maxDim >= 8 ? 12 : maxDim >= 6 ? 14 : 16;
-  const dotGap = maxDim >= 8 ? 4 : 6;
+  const dotSize = maxDim >= 8 ? 14 : maxDim >= 6 ? 18 : 22;
+  const dotGap = maxDim >= 8 ? 5 : maxDim >= 6 ? 8 : 10;
 
   // When the grid rotates 90°, its visual height becomes its original width.
   // CSS transforms don't reflow layout, so we add vertical margin to avoid
@@ -68,10 +72,12 @@ export default function DotGrid({
       className={`dot-grid-wrapper ${size}`}
       style={{ '--dot-size': `${dotSize}px`, '--dot-gap': `${dotGap}px` } as React.CSSProperties}
     >
-      <div className="dot-grid-label">
-        <span>{rotated ? b : a}</span> {'\u00D7'}{' '}
-        <span>{rotated ? a : b}</span>
-      </div>
+      {!bare && (
+        <div className="dot-grid-label">
+          <span>{rotated ? b : a}</span> {'\u00D7'}{' '}
+          <span>{rotated ? a : b}</span>
+        </div>
+      )}
       <div
         className={`dot-grid ${rotated ? 'rotating' : ''}`}
         style={rotationMargin ? { margin: `${rotationMargin}px 0` } : undefined}
@@ -90,9 +96,11 @@ export default function DotGrid({
           );
         })}
       </div>
-      <div className={`dot-grid-result ${showResult ? 'visible' : ''}`}>
-        = <strong>{a * b}</strong>
-      </div>
+      {!bare && (
+        <div className={`dot-grid-result ${showResult ? 'visible' : ''}`}>
+          = <strong>{a * b}</strong>
+        </div>
+      )}
     </div>
   );
 }

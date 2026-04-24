@@ -2,13 +2,13 @@ import { useEffect, useRef } from 'react';
 import type { SessionResult, Badge as BadgeType } from '../types';
 import { BADGE_IDS } from '../types';
 import Mascot from '../components/Mascot';
-import Badge from '../components/Badge';
 import { useSound } from '../hooks/useSound';
 import { useTTS } from '../hooks/useTTS';
 import { useConfetti } from '../hooks/useConfetti';
 import './RecapScreen.css';
 
 interface RecapScreenProps {
+  name: string;
   result: SessionResult;
   newBadges: BadgeType[];
   newlyCompletedTables: number[];
@@ -18,7 +18,29 @@ interface RecapScreenProps {
   onShowProgress: () => void;
 }
 
+function ImageCardIcon() {
+  return (
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+      <rect x="3" y="5" width="18" height="14" rx="2.5" stroke="var(--sage)" strokeWidth="1.8" />
+      <circle cx="8.5" cy="10" r="1.6" fill="var(--sage)" />
+      <path d="M4 17 L 10 11 L 14 14 L 20 9" stroke="var(--sage)" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" fill="none" />
+    </svg>
+  );
+}
+
+function Confetti() {
+  return (
+    <svg width="160" height="60" viewBox="0 0 160 60" aria-hidden="true" className="recap-confetti">
+      <path d="M20 35 Q 30 12 40 28 Q 50 6 60 24 Q 70 2 80 22 Q 90 0 100 20 Q 110 -2 120 18 Q 130 0 140 16" stroke="var(--honey)" strokeWidth="2" fill="none" strokeLinecap="round" />
+      <circle cx="20" cy="35" r="2.5" fill="var(--coral)" />
+      <circle cx="60" cy="24" r="2.5" fill="var(--indigo)" />
+      <circle cx="120" cy="18" r="2.5" fill="var(--sage)" />
+    </svg>
+  );
+}
+
 export default function RecapScreen({
+  name,
   result,
   newBadges,
   newlyCompletedTables,
@@ -33,6 +55,7 @@ export default function RecapScreen({
   const hasPlayedRef = useRef(false);
 
   const imageJustCompleted = newBadges.some((b) => b.id === BADGE_IDS.GENIE_MATHS);
+  const imageChanged = result.factsPromoted > 0;
 
   useEffect(() => {
     if (hasPlayedRef.current) return;
@@ -50,9 +73,6 @@ export default function RecapScreen({
     }
   }, [imageJustCompleted, newBadges, newlyCompletedTables, playBadge, playImageComplete, playTableComplete, triggerConfetti]);
 
-  // Speak on every mount (including StrictMode's simulated remount in dev).
-  // The useTTS cleanup on unmount would otherwise silence the audio if speak
-  // were gated behind hasPlayedRef.
   useEffect(() => {
     speak('recap-done');
   }, [speak]);
@@ -64,79 +84,78 @@ export default function RecapScreen({
         ? 'happy'
         : 'idle';
 
+  const progressPct = Math.max(0, Math.min(1, knownFactsCount / Math.max(totalFacts, 1))) * 100;
+
   return (
     <div className="recap-screen">
+      <div className="recap-head">
+        <Confetti />
+        <div className="recap-mascot-wrap">
+          <Mascot mood={mascotMood} />
+        </div>
+        <div className="recap-title">Séance terminée&nbsp;!</div>
+        <div className="recap-message">Bravo {name}, tu as bien travaillé.</div>
+      </div>
+
       {newlyCompletedTables.length > 0 && (
-        <div className="recap-table-complete">
-          <div className="recap-table-complete-icon">
-            {newlyCompletedTables.length === 1 ? '\u2B50' : '\u{1F31F}'}
-          </div>
+        <div className="recap-card recap-table-complete">
           <div className="recap-table-complete-title">
             {newlyCompletedTables.length === 1
-              ? `Tu as maîtrisé la table de ${newlyCompletedTables[0]}\u202F!`
-              : `Tu as maîtrisé les tables de ${newlyCompletedTables.join(' et ')}\u202F!`}
+              ? `Tu as maîtrisé la table de ${newlyCompletedTables[0]} !`
+              : `Tu as maîtrisé les tables de ${newlyCompletedTables.join(' et ')} !`}
           </div>
           <div className="recap-table-complete-subtitle">
-            Tous les faits sont en boîte 5 !
+            Tous les faits sont en boîte 5.
           </div>
         </div>
       )}
 
-      <Mascot mood={mascotMood} size="normal" />
-
-      <div className="recap-title">Séance terminée !</div>
-
-      <div className="recap-message">Bravo, tu as bien travaillé !</div>
-
-      {result.newFactsIntroduced > 0 && (
-        <div className="recap-stat">
-          <div className="recap-stat-value">{result.newFactsIntroduced}</div>
-          <div>nouveau{result.newFactsIntroduced > 1 ? 'x' : ''}</div>
-        </div>
+      {imageChanged && (
+        <button className="recap-card recap-image-link" onClick={onShowProgress}>
+          <div className="recap-image-link-icon">
+            <ImageCardIcon />
+          </div>
+          <div className="recap-image-link-text">
+            <div className="recap-image-link-teaser">Ton image a changé&nbsp;!</div>
+            <div className="recap-image-link-cta">Viens la voir →</div>
+          </div>
+        </button>
       )}
 
-      <button
-        className={`recap-image-link${result.factsPromoted > 0 ? ' has-changed' : ''}`}
-        onClick={onShowProgress}
-      >
-        {result.factsPromoted > 0 ? (
-          <>
-            <span className="recap-image-link-teaser">Ton image a changé !</span>
-            <span className="recap-image-link-cta">Viens la voir →</span>
-          </>
-        ) : (
-          <span className="recap-image-link-cta">Voir mon image →</span>
-        )}
-      </button>
-
-      <div className="recap-progress">
-        <div className="recap-progress-label">
-          Tu connais {knownFactsCount} fait{knownFactsCount > 1 ? 's' : ''} sur {totalFacts}
+      <div className="recap-card recap-progress-card">
+        <div className="recap-progress-row">
+          <span className="recap-progress-eyebrow">Tu connais</span>
+          <span className="recap-progress-count">
+            <b>{knownFactsCount}</b> / {totalFacts} faits
+          </span>
         </div>
         <div className="recap-progress-bar">
-          <div
-            className="recap-progress-fill"
-            style={{ width: `${(knownFactsCount / totalFacts) * 100}%` }}
-          />
+          <div className="recap-progress-fill" style={{ width: `${progressPct}%` }} />
         </div>
       </div>
 
       {newBadges.length > 0 && (
-        <div className="recap-badges">
-          {newBadges.map((badge, i) => (
-            <div
-              key={badge.id}
-              className="recap-new-badge"
-              style={{ animationDelay: `${i * 0.3}s` }}
-            >
-              <Badge badge={badge} earned earnedDate={badge.earnedDate} />
+        <div className="recap-new-badges">
+          {newBadges.map((badge) => (
+            <div key={badge.id} className="recap-card recap-new-badge">
+              <div className="recap-new-badge-medallion">{badge.icon}</div>
+              <div>
+                <div className="recap-new-badge-eyebrow">Nouveau badge</div>
+                <div className="recap-new-badge-name">{badge.name}</div>
+              </div>
             </div>
           ))}
         </div>
       )}
 
+      {!imageChanged && (
+        <button className="recap-image-link-plain" onClick={onShowProgress}>
+          Voir mon image →
+        </button>
+      )}
+
       <button className="recap-btn" onClick={onFinish}>
-        À demain !
+        À demain&nbsp;!
       </button>
     </div>
   );

@@ -2,17 +2,17 @@
   width: 100%;
   max-width: 420px;
   margin: 0 auto;
-  padding: 8px;
+  padding: 0 20px;
 }
 
 .mystery-image {
   position: relative;
   aspect-ratio: 1 / 1;
-  border-radius: 16px;
+  border-radius: 22px;
   overflow: hidden;
-  border: 3px solid var(--border);
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
-  background: #d0d0d6;
+  border: 1.5px solid var(--line);
+  box-shadow: var(--shadow-sm);
+  background: var(--line-soft);
 }
 
 .mystery-cells {
@@ -32,22 +32,19 @@
   -webkit-tap-highlight-color: transparent;
 }
 
-/* Non introduit : case opaque, fragment masqué */
 .mystery-cell.mystery-level-0 {
-  background: linear-gradient(135deg, #c8c8d0 0%, #aeaeb8 100%);
+  background: linear-gradient(135deg, var(--line-soft) 0%, var(--line) 100%);
   cursor: default;
 }
 
-/* Subtil halo sur les cases de la diagonale complètement révélées */
 .mystery-cell.mystery-diagonal.mystery-level-5 {
-  box-shadow: inset 0 0 0 2px rgba(255, 215, 0, 0.6);
+  box-shadow: inset 0 0 0 2px rgba(217, 154, 31, 0.55);
 }
 
-/* Detail overlay (when tapping an introduced cell) */
 .mystery-detail-overlay {
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.5);
+  background: rgba(30, 26, 46, 0.4);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -56,39 +53,51 @@
 }
 
 .mystery-detail-card {
-  background: var(--surface);
-  border-radius: 16px;
+  background: var(--paper);
+  border-radius: 22px;
   padding: 24px;
   max-width: 320px;
   width: 100%;
   text-align: center;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+  border: 1.5px solid var(--line);
+  box-shadow: var(--shadow-md);
 }
 
 .mystery-detail-card h3 {
-  font-size: 1.6rem;
+  font-family: var(--serif);
+  font-size: 24px;
+  font-weight: 600;
+  letter-spacing: -0.3px;
   margin: 0 0 16px 0;
-  color: var(--text);
+  color: var(--ink);
 }
 
 .mystery-detail-box {
   margin: 12px 0 0 0;
-  color: var(--text-light);
-  font-weight: 600;
+  font-family: var(--sans);
+  font-size: 13px;
+  font-weight: 800;
+  letter-spacing: 0.6px;
+  text-transform: uppercase;
+  color: var(--ink-soft);
 }
 
 .mystery-detail-close {
   margin-top: 16px;
-  padding: 10px 24px;
-  background: var(--primary);
+  padding: 12px 28px;
+  background: var(--indigo);
   color: #fff;
   border: none;
-  border-radius: 10px;
-  font-size: 1rem;
-  font-weight: 600;
+  border-radius: 999px;
+  font-family: var(--sans);
+  font-size: 15px;
+  font-weight: 800;
   cursor: pointer;
+  letter-spacing: 0.2px;
+  box-shadow: 0 2px 0 var(--indigo-ink);
 }
 
-.mystery-detail-close:hover {
-  opacity: 0.9;
+.mystery-detail-close:active {
+  transform: translateY(1px);
+  box-shadow: 0 1px 0 var(--indigo-ink);
 }

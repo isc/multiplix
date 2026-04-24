@@ -83,7 +83,7 @@ function playSessionAndDismissRecap(): void {
     }
 
     if (document.querySelector('.session-intro')) {
-      const next = findButton(/^Suivant$/) ?? findButton(/J'ai compris/);
+      const next = findButton(/^Suivant/) ?? findButton(/J'ai compris/);
       if (next) {
         fireEvent.click(next);
         continue;
@@ -126,14 +126,14 @@ describe('Parcours utilisateur de bout en bout (DOM)', () => {
 
       // -- 1. WelcomeScreen affiché (pas de profil en storage) --
       expect(loadProfile()).toBeNull();
-      expect(findButton('Suivant')).not.toBeNull();
+      expect(findButton(/^Suivant/)).not.toBeNull();
 
       // -- 2. Parcours de bienvenue --
-      fireEvent.click(findButton('Suivant')!);
+      fireEvent.click(findButton(/^Suivant/)!);
 
       const nameInput = document.querySelector<HTMLInputElement>('input.welcome-input')!;
       fireEvent.change(nameInput, { target: { value: 'Zoe' } });
-      fireEvent.click(findButton("C'est moi !")!);
+      fireEvent.click(findButton(/^C'est moi !/)!);
 
       fireEvent.click(findButton('Passer le test')!);
 

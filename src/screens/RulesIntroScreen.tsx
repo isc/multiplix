@@ -33,7 +33,7 @@ export default function RulesIntroScreen({ name, onComplete }: RulesIntroScreenP
     <div className="rules-intro-screen">
       {step === 0 && (
         <div className="rules-intro-step" key="intro">
-          <Mascot mood="celebrate" size="large" />
+          <Mascot mood="celebrate" />
           <div className="rules-intro-title">
             Avant de commencer, {name} !
           </div>
@@ -53,7 +53,7 @@ export default function RulesIntroScreen({ name, onComplete }: RulesIntroScreenP
 
       {step === 1 && (
         <div className="rules-intro-step" key="x1">
-          <div className="rules-intro-icon" aria-hidden>{'\u2728'}</div>
+          <div className="rules-intro-badge rules-intro-badge-indigo" aria-hidden>{'\u00d71'}</div>
           <div className="rules-intro-title">Multiplier par 1</div>
           <div className="rules-intro-message">
             Tout nombre multiplié par 1 reste le même !
@@ -77,7 +77,7 @@ export default function RulesIntroScreen({ name, onComplete }: RulesIntroScreenP
 
       {step === 2 && (
         <div className="rules-intro-step" key="x10">
-          <div className="rules-intro-icon" aria-hidden>{'\uD83D\uDE80'}</div>
+          <div className="rules-intro-badge rules-intro-badge-coral" aria-hidden>{'×10'}</div>
           <div className="rules-intro-title">Multiplier par 10</div>
           <div className="rules-intro-message">
             Les chiffres glissent d'une place vers la gauche !

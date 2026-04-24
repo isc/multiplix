@@ -1,33 +1,35 @@
 .numpad-container {
   display: flex;
   flex-direction: column;
-  align-items: center;
-  gap: 12px;
-  padding: 16px;
+  align-items: stretch;
+  gap: 10px;
+  padding: 0;
   width: 100%;
 }
 
 .numpad-display {
-  font-size: 3rem;
-  font-weight: 800;
-  color: var(--primary);
-  min-height: 60px;
+  font-family: var(--serif);
+  font-size: 32px;
+  font-weight: 500;
+  line-height: 1;
+  color: var(--ink);
+  height: 50px;
+  padding: 6px 12px 8px;
   display: flex;
   align-items: center;
   justify-content: center;
-  letter-spacing: 4px;
-  min-width: 120px;
+  border-bottom: 2px solid var(--indigo);
+  letter-spacing: 2px;
   position: relative;
 }
 
 .numpad-display-cursor {
   display: inline-block;
-  width: 3px;
-  height: 40px;
-  background: var(--primary);
+  width: 2px;
+  height: 26px;
+  background: var(--indigo);
   animation: blink 1s infinite;
   margin-left: 2px;
-  border-radius: 2px;
 }
 
 @keyframes blink {
@@ -37,24 +39,26 @@
 
 .numpad-grid {
   display: grid;
-  grid-template-columns: repeat(3, 80px);
-  gap: 10px;
-  justify-content: center;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+  width: 100%;
 }
 
 .numpad-btn {
-  width: 80px;
-  height: 64px;
-  font-size: 1.6rem;
-  font-weight: 700;
-  border-radius: 16px;
-  background: var(--surface);
-  color: var(--text);
-  border: 2px solid var(--border);
+  height: 56px;
+  min-height: 44px;
+  font-family: var(--sans);
+  font-size: 24px;
+  font-weight: 800;
+  border-radius: 14px;
+  background: var(--paper);
+  color: var(--ink);
+  border: 1.5px solid var(--line);
+  box-shadow: 0 2px 0 var(--line);
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: all 0.15s ease;
+  transition: transform 0.1s ease, background 0.1s ease;
   user-select: none;
   -webkit-user-select: none;
   cursor: pointer;
@@ -62,40 +66,50 @@
 }
 
 .numpad-btn:active {
-  transform: scale(0.95);
-  background: var(--primary-light);
-  color: white;
-  border-color: var(--primary);
+  transform: translateY(2px);
+  box-shadow: 0 0 0 var(--line);
+  background: var(--cream-deep);
 }
 
 .numpad-btn-backspace {
-  background: var(--background);
-  color: var(--text-light);
-  font-size: 1.3rem;
+  font-size: 20px;
+  color: var(--ink-soft);
 }
 
 .numpad-btn-backspace:active {
-  background: var(--secondary-light);
-  color: white;
-  border-color: var(--secondary);
+  background: var(--coral-soft);
+  color: var(--coral);
 }
 
 .numpad-btn-ok {
-  background: var(--primary);
-  color: white;
-  border-color: var(--primary);
-  font-size: 1.2rem;
+  font-size: 16px;
   font-weight: 800;
+  letter-spacing: 0.5px;
+  background: var(--line-soft);
+  color: var(--ink-muted);
+  border: 1.5px solid var(--line);
+  box-shadow: none;
+  line-height: 1;
 }
 
-.numpad-btn-ok:active {
-  background: var(--primary-dark);
-  transform: scale(0.95);
+.numpad-btn-ok:not(:disabled) {
+  background: var(--ink);
+  color: var(--cream);
+  border: 1.5px solid var(--ink);
+  box-shadow: 0 2px 0 #000;
+}
+
+.numpad-btn-ok:not(:disabled):active {
+  background: var(--ink);
+  transform: translateY(2px);
+  box-shadow: 0 0 0 #000;
 }
 
 .numpad-btn-ok:disabled {
-  background: var(--box-gray);
-  border-color: var(--box-gray);
   cursor: not-allowed;
-  opacity: 0.5;
+}
+
+.numpad-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
 }

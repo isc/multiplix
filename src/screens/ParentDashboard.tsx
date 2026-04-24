@@ -4,6 +4,7 @@ import { RESPONSE_TIME } from '../types';
 import { factsForTable } from '../lib/badges';
 import { getFactKey } from '../lib/facts';
 import ProgressGrid from '../components/ProgressGrid';
+import BackChevron from '../components/BackChevron';
 import './ParentDashboard.css';
 
 const Y_TICKS = [0, 25, 50, 75, 100];
@@ -122,9 +123,12 @@ export default function ParentDashboard({
     <div className="parent-dashboard">
       <div className="parent-header">
         <button className="parent-back-btn" onClick={onBack} aria-label="Retour">
-          {'\u2190'}
+          <BackChevron />
         </button>
-        <div className="parent-title">Tableau de bord parent</div>
+        <div className="parent-header-titles">
+          <div className="parent-eyebrow">Espace parent</div>
+          <div className="parent-title">{profile.name}{' \u00b7 '}profil</div>
+        </div>
       </div>
 
       {/* General stats */}

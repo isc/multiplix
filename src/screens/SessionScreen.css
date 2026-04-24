@@ -2,146 +2,208 @@
   flex: 1;
   display: flex;
   flex-direction: column;
+  background: var(--cream);
   animation: fadeIn 0.3s ease;
 }
 
-/* Session header: mascot + progress bar */
+/* Header : barrettes de progression centrées */
 .session-header {
   display: flex;
-  align-items: center;
-  padding: 12px 16px 4px;
-  gap: 8px;
+  justify-content: center;
+  padding: 14px 20px 4px;
 }
 
-.session-mascot {
-  flex-shrink: 0;
-}
-
-/* Progress bar */
 .session-progress {
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 4px;
-  flex: 1;
   min-width: 0;
-  padding: 4px 4px 4px 0;
+  max-width: 100%;
   overflow: hidden;
 }
 
 .session-progress-dot {
-  flex: 0 1 24px;
-  min-width: 14px;
-  aspect-ratio: 1;
-  border-radius: 50%;
-  background: var(--border);
+  height: 8px;
+  width: 8px;
+  border-radius: 4px;
+  background: var(--line-soft);
+  flex-shrink: 0;
+  transition: all 0.3s ease;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 0.65rem;
-  transition: all 0.3s ease;
+  color: transparent;
+  font-size: 0;
 }
 
 .session-progress-dot.correct {
-  background: var(--success);
-  color: white;
-  font-size: 0.7rem;
+  background: var(--sage);
 }
 
 .session-progress-dot.incorrect {
-  background: var(--secondary);
-  color: white;
-  font-size: 0.7rem;
+  background: var(--coral);
 }
 
 .session-progress-dot.current {
-  background: var(--primary);
-  transform: scale(1.2);
-  box-shadow: 0 0 8px var(--shadow);
+  width: 18px;
+  background: var(--indigo);
 }
 
-/* Introduction phase */
+/* Phase d'introduction d'un fait nouveau */
 .session-intro {
   flex: 1;
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
-  padding: 20px;
-  gap: 16px;
+  justify-content: flex-start;
+  padding: 16px 24px 20px;
+  gap: 14px;
   animation: slideUp 0.4s ease;
+  text-align: center;
+}
+
+.session-intro > .session-intro-btn {
+  margin-top: auto;
 }
 
 .session-intro-title {
-  font-size: 1.4rem;
-  font-weight: 700;
-  color: var(--primary);
+  font-family: var(--serif);
+  font-size: 28px;
+  font-style: italic;
+  font-weight: 500;
+  color: var(--indigo);
+  letter-spacing: -0.5px;
+  margin-top: 4px;
+}
+
+.session-intro-formula {
+  font-family: var(--serif);
+  font-size: 40px;
+  font-weight: 500;
+  color: var(--ink);
+  letter-spacing: -1px;
+  line-height: 1;
+  margin-top: 6px;
+}
+
+.session-intro-operator {
+  color: var(--indigo);
+  font-style: italic;
+  font-weight: 400;
+  margin: 0 8px;
+}
+
+.session-intro-result {
+  font-family: var(--serif);
+  font-size: 30px;
+  font-weight: 500;
+  color: var(--ink);
+  letter-spacing: -0.5px;
+  margin-top: 6px;
+}
+
+.session-intro-result b {
+  color: var(--indigo);
+  font-weight: 600;
 }
 
 .session-intro-explanation {
-  font-size: 1.1rem;
-  color: var(--text);
+  font-family: var(--sans);
+  font-size: 14px;
+  color: var(--ink-soft);
   text-align: center;
-  line-height: 1.6;
+  line-height: 1.55;
+  max-width: 320px;
 }
 
 .session-intro-explanation strong {
-  color: var(--primary);
+  color: var(--indigo);
   font-weight: 800;
 }
 
 .session-intro-commutativity {
-  font-size: 1rem;
-  color: var(--text-light);
+  font-family: var(--sans);
+  font-size: 14px;
+  color: var(--ink-soft);
   text-align: center;
-  font-style: italic;
+  line-height: 1.55;
+}
+
+.session-intro-commutativity strong {
+  color: var(--indigo);
+  font-weight: 800;
 }
 
 .session-intro-btn {
-  margin-top: 8px;
-  padding: 14px 36px;
-  font-size: 1.1rem;
-  font-weight: 700;
-  color: white;
-  background: var(--primary);
-  border-radius: 16px;
+  width: 100%;
+  max-width: 320px;
+  padding: 18px 28px;
+  font-family: var(--sans);
+  font-size: 18px;
+  font-weight: 800;
+  color: var(--cream);
+  background: var(--ink);
+  border: none;
+  border-radius: 999px;
+  letter-spacing: 0.2px;
+  box-shadow: 0 2px 0 #000, 0 6px 20px rgba(30, 26, 46, 0.25);
+  transition: transform 0.1s ease;
+  cursor: pointer;
 }
 
 .session-intro-btn:active {
-  transform: scale(0.95);
+  transform: translateY(1px);
 }
 
-/* Question phase */
+/* Phase question */
 .session-question {
   flex: 1;
   display: flex;
   flex-direction: column;
   align-items: center;
+  padding: 8px 20px 0;
   animation: slideUp 0.3s ease;
 }
 
 .session-question-text {
-  font-size: 2.8rem;
-  font-weight: 800;
-  color: var(--text);
-  padding: 24px 20px 12px;
-  letter-spacing: 2px;
+  font-family: var(--serif);
+  font-size: 52px;
+  font-weight: 500;
+  color: var(--ink);
+  padding: 12px 0 14px;
+  letter-spacing: -1.5px;
+  line-height: 1;
+  text-align: center;
+  width: 100%;
 }
 
 .session-question-text .operator {
-  color: var(--primary);
-  margin: 0 4px;
+  color: var(--indigo);
+  font-style: italic;
+  font-weight: 400;
+  margin: 0 6px;
 }
 
 .session-question-text .equals {
-  color: var(--text-muted);
-  margin-left: 8px;
+  color: var(--ink-muted);
+  font-style: italic;
+  font-weight: 400;
+  margin-left: 10px;
+}
+
+.session-question-text .placeholder {
+  color: var(--ink-muted);
+  font-style: italic;
+  font-weight: 400;
+  margin-left: 10px;
 }
 
 .session-numpad-area {
   flex: 1;
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   justify-content: center;
   width: 100%;
+  padding-top: 4px;
 }

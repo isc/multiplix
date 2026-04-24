@@ -2,129 +2,235 @@
   flex: 1;
   display: flex;
   flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding: 32px 20px;
-  gap: 24px;
+  background: var(--cream);
   animation: fadeIn 0.4s ease;
+  position: relative;
 }
 
-.home-greeting {
-  font-size: 1.6rem;
-  font-weight: 700;
-  color: var(--text);
+.home-top-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 14px 20px;
+  background: transparent;
+  gap: 12px;
 }
 
-.home-greeting span {
-  color: var(--primary);
-}
-
-.home-streak {
+.home-top-bar-left {
   display: flex;
   align-items: center;
-  gap: 8px;
-  padding: 10px 20px;
-  background: var(--surface);
-  border-radius: 16px;
-  border: 2px solid var(--border);
 }
 
-.home-streak-flame {
-  font-size: 1.5rem;
+.home-top-bar-right {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.home-streak-pill {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  background: var(--paper);
+  border-radius: 999px;
+  border: 1.5px solid var(--line);
+}
+
+.home-streak-pill-flame {
+  font-size: 14px;
+  line-height: 1;
   animation: flame 1s ease-in-out infinite;
   display: inline-block;
 }
 
-.home-streak-count {
-  font-size: 1.2rem;
-  font-weight: 700;
-  color: var(--secondary);
+.home-streak-pill-flame-muted {
+  opacity: 0.4;
 }
 
-.home-streak-label {
-  font-size: 0.9rem;
-  color: var(--text-light);
-}
-
-.home-start-btn {
-  padding: 18px 48px;
-  font-size: 1.4rem;
+.home-streak-pill-count {
+  font-family: var(--sans);
+  font-size: 13px;
   font-weight: 800;
-  color: white;
-  background: linear-gradient(135deg, var(--primary), var(--primary-light));
-  border-radius: 20px;
-  box-shadow: 0 6px 20px var(--shadow);
-  transition: all 0.2s ease;
-  animation: pulse 2s ease-in-out infinite;
+  color: var(--coral);
 }
 
-.home-start-btn:active {
-  transform: scale(0.95);
-  box-shadow: 0 3px 10px var(--shadow);
+.home-streak-pill-label {
+  font-family: var(--sans);
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--ink-soft);
 }
 
-.home-done-msg {
-  padding: 18px 32px;
-  font-size: 1.1rem;
-  font-weight: 700;
-  color: var(--success);
-  background: var(--surface);
-  border-radius: 20px;
-  border: 2px solid var(--success);
+.home-streak-pill-prompt {
+  font-family: var(--sans);
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--ink-soft);
+}
+
+.home-body {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 0 24px 18px;
+}
+
+.home-mascot-section {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  padding-bottom: 20px;
+}
+
+.home-cta-wrap + .home-nav {
+  margin-top: 40px;
+}
+
+.home-mascot-wrap {
+  text-align: center;
+  position: relative;
+  display: inline-block;
+}
+
+.home-cta-wrap {
+  width: 100%;
+  margin-bottom: 14px;
+}
+
+.home-mascot-halo {
+  position: absolute;
+  top: -15px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 220px;
+  height: 220px;
+  border-radius: 50%;
+  background: radial-gradient(circle, var(--honey-soft) 0%, transparent 70%);
+  z-index: 0;
+  pointer-events: none;
+}
+
+.home-mascot-wrap > .mascot {
+  position: relative;
+  z-index: 1;
+}
+
+.home-greeting {
+  font-family: var(--serif);
+  font-size: 34px;
+  font-weight: 600;
+  color: var(--ink);
+  margin-top: 18px;
+  letter-spacing: -0.5px;
   text-align: center;
 }
 
+.home-greeting span {
+  color: var(--indigo);
+  font-style: italic;
+}
+
+.home-start-btn {
+  width: 100%;
+  padding: 18px 28px;
+  font-family: var(--sans);
+  font-size: 18px;
+  font-weight: 800;
+  color: #fff;
+  background: var(--indigo);
+  border: none;
+  border-radius: 999px;
+  box-shadow: 0 2px 0 var(--indigo-ink), 0 6px 20px rgba(79, 70, 186, 0.3);
+  transition: transform 0.1s ease;
+  letter-spacing: 0.2px;
+  cursor: pointer;
+}
+
+.home-start-btn:active {
+  transform: translateY(1px);
+  box-shadow: 0 1px 0 var(--indigo-ink), 0 3px 10px rgba(79, 70, 186, 0.25);
+}
+
+.home-done-msg {
+  padding: 18px 24px;
+  font-family: var(--serif);
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--sage);
+  background: var(--sage-soft);
+  border-radius: 18px;
+  border: 1.5px solid var(--sage);
+  text-align: center;
+  width: 100%;
+}
+
 .home-nav {
-  display: flex;
-  gap: 12px;
-  margin-top: 8px;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+  width: 100%;
 }
 
 .home-nav-btn {
-  padding: 12px 20px;
-  font-size: 0.95rem;
-  font-weight: 700;
-  color: var(--primary);
-  background: var(--surface);
-  border-radius: 14px;
-  border: 2px solid var(--primary);
-  transition: all 0.2s ease;
+  background: var(--paper);
+  border: 1.5px solid var(--line);
+  border-radius: 18px;
+  padding: 14px 6px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  transition: transform 0.1s ease, background 0.1s ease;
+  color: var(--ink);
 }
 
 .home-nav-btn:active {
-  background: var(--primary);
-  color: white;
-  transform: scale(0.95);
+  transform: translateY(1px);
+  background: var(--cream-deep);
 }
 
-.home-top-bar {
-  position: absolute;
-  top: 12px;
-  right: 12px;
+.home-nav-btn-icon {
   display: flex;
-  gap: 4px;
   align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
 }
 
-.home-parent-btn {
+.home-nav-btn-label {
+  font-family: var(--sans);
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--ink);
+}
+
+.home-chrome-btn {
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  border: none;
+  color: var(--ink-soft);
+  cursor: pointer;
+  border-radius: 50%;
+  padding: 0;
   -webkit-touch-callout: none;
   user-select: none;
 }
 
-.home-mute-btn,
-.home-parent-btn {
-  width: 36px;
-  height: 36px;
-  font-size: 1.1rem;
-  color: var(--text-muted);
-  background: transparent;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+.home-chrome-btn:active {
+  background: var(--cream-deep);
 }
 
-.home-mute-btn.home-mode-active {
-  background: var(--primary-light);
-  color: white;
+.home-chrome-btn.home-mode-active {
+  background: var(--indigo-soft);
+  color: var(--indigo);
 }
