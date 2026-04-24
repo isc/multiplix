@@ -152,12 +152,17 @@
 }
 
 /* Strip the DotGrid card when inside the feedback overlay; the mockup shows
-   dots on the plain card background with only an eyebrow label above. */
+   dots on the plain card background with only an eyebrow label above. Also
+   force 18px dots / 10px gap (the mockup size) regardless of the JS-
+   calculated sizing — !important is needed because DotGrid sets the CSS
+   vars via inline style. */
 .feedback-dotgrid .dot-grid-wrapper {
   background: transparent;
   border: none;
   box-shadow: none;
   padding: 0;
+  --dot-size: 18px !important;
+  --dot-gap: 10px !important;
 }
 
 .feedback-ok-btn {

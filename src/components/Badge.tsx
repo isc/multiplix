@@ -1,3 +1,4 @@
+import { BADGE_IDS } from '../types';
 import './Badge.css';
 
 interface BadgeProps {
@@ -20,10 +21,33 @@ function LockIcon() {
   );
 }
 
+// Couleur propre à chaque badge, cohérente avec la maquette :
+// sage pour les jalons « démarrage », honey pour la performance, sky pour
+// l'exploration, indigo pour les tables, coral pour tout ce qui touche à
+// la régularité / vitesse.
+function medallionColorFor(id: string): string {
+  if (id === BADGE_IDS.PREMIER_PAS) return 'var(--sage)';
+  if (id === BADGE_IDS.REGULIER) return 'var(--coral)';
+  if (id === BADGE_IDS.MACHINE) return 'var(--honey)';
+  if (id === BADGE_IDS.EXPLORATION) return 'var(--sky)';
+  if (id.startsWith(BADGE_IDS.TABLE_PREFIX)) return 'var(--indigo)';
+  if (id === BADGE_IDS.GENIE_MATHS) return 'var(--honey)';
+  if (id === BADGE_IDS.VELOCE) return 'var(--coral)';
+  if (id === BADGE_IDS.PERSEVERANCE) return 'var(--sage)';
+  if (id === BADGE_IDS.FLAMME_ETERNELLE) return 'var(--coral)';
+  return 'var(--honey)';
+}
+
 export default function Badge({ badge, earned, earnedDate }: BadgeProps) {
+  const color = earned ? medallionColorFor(badge.id) : 'var(--ink-muted)';
   return (
     <div className={`badge ${earned ? 'earned' : 'locked'}`}>
-      <div className="badge-medallion">{badge.icon}</div>
+      <div
+        className="badge-medallion"
+        style={{ '--medallion-color': color } as React.CSSProperties}
+      >
+        {badge.icon}
+      </div>
       <div className="badge-name">{badge.name}</div>
       <div className="badge-date">
         {earned && earnedDate
