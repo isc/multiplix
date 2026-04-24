@@ -395,6 +395,14 @@ export default function ParentDashboard({
       </div>
 
       <div className="parent-actions">
+        <a
+          className="parent-action-btn"
+          href={`${import.meta.env.BASE_URL}guide/`}
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          Guide utilisateur
+        </a>
         <button
           className="parent-action-btn"
           onClick={() => setShowFeedback(true)}

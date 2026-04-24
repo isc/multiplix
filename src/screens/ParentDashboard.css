@@ -375,6 +375,9 @@
   cursor: pointer;
   transition: transform 0.1s ease;
   letter-spacing: 0.2px;
+  text-align: center;
+  text-decoration: none;
+  box-sizing: border-box;
 }
 
 .parent-action-btn:active {
