@@ -17,6 +17,7 @@ interface ParentDashboardProps {
   onImport: (json: string) => void;
   onResetFact: (a: number, b: number) => void;
   onResetTable: (table: number) => void;
+  onShowPrivacy: () => void;
 }
 
 export default function ParentDashboard({
@@ -26,6 +27,7 @@ export default function ParentDashboard({
   onImport,
   onResetFact,
   onResetTable,
+  onShowPrivacy,
 }: ParentDashboardProps) {
   const [showImport, setShowImport] = useState(false);
   const [importJson, setImportJson] = useState('');
@@ -408,6 +410,15 @@ export default function ParentDashboard({
           onClick={() => setShowFeedback(true)}
         >
           Envoyer un avis
+        </button>
+      </div>
+
+      <div className="parent-actions">
+        <button
+          className="parent-action-btn parent-action-secondary"
+          onClick={onShowPrivacy}
+        >
+          Confidentialité
         </button>
       </div>
 

@@ -17,6 +17,7 @@ import BadgesScreen from './screens/BadgesScreen';
 import RulesScreen from './screens/RulesScreen';
 import RulesIntroScreen from './screens/RulesIntroScreen';
 import ParentDashboard from './screens/ParentDashboard';
+import PrivacyScreen from './screens/PrivacyScreen';
 import './App.css';
 
 type Screen =
@@ -28,7 +29,8 @@ type Screen =
   | 'progress'
   | 'badges'
   | 'rules'
-  | 'parent';
+  | 'parent'
+  | 'privacy';
 
 function initialScreen(profile: UserProfile | null): Screen {
   if (!profile) return 'welcome';
@@ -371,7 +373,12 @@ export default function App() {
           onImport={handleImport}
           onResetFact={handleResetFact}
           onResetTable={handleResetTable}
+          onShowPrivacy={() => setScreen('privacy')}
         />
+      )}
+
+      {screen === 'privacy' && (
+        <PrivacyScreen onBack={() => setScreen('parent')} />
       )}
     </div>
   );
