@@ -21,19 +21,28 @@
   width: 100%;
 }
 
-.rules-intro-icon {
-  width: 48px;
-  height: 48px;
+.rules-intro-badge {
+  width: 56px;
+  height: 56px;
   border-radius: 14px;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 1.8rem;
-  line-height: 1;
+  font-family: var(--serif);
+  font-size: 26px;
+  font-weight: 700;
+  letter-spacing: -0.5px;
   animation: scaleIn 0.4s ease;
-  background: var(--honey-soft);
-  color: var(--honey);
-  border: 1.5px solid var(--honey);
+}
+
+.rules-intro-badge-indigo {
+  background: var(--indigo-soft);
+  color: var(--indigo);
+}
+
+.rules-intro-badge-coral {
+  background: var(--coral-soft);
+  color: var(--coral);
 }
 
 .rules-intro-title {
