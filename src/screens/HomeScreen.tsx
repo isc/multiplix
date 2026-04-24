@@ -166,7 +166,7 @@ export default function HomeScreen({
             </button>
           )}
           <button
-            className="home-chrome-btn"
+            className="home-chrome-btn home-parent-btn"
             onMouseDown={handleParentPressStart}
             onMouseUp={handleParentPressEnd}
             onMouseLeave={handleParentPressEnd}
