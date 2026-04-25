@@ -3,11 +3,12 @@
   inset: 0;
   background: rgba(20, 18, 14, 0.45);
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   justify-content: center;
-  padding: 20px;
+  padding: 40px 20px 20px;
   z-index: 1000;
   animation: parent-gate-fade-in 0.15s ease;
+  overflow-y: auto;
 }
 
 @keyframes parent-gate-fade-in {
