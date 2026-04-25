@@ -96,13 +96,6 @@
   text-align: center;
 }
 
-.feedback-sub {
-  font-family: var(--sans);
-  font-size: 14px;
-  color: var(--ink-soft);
-  text-align: center;
-}
-
 .feedback-answer {
   font-family: var(--serif);
   font-size: 30px;

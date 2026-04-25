@@ -193,7 +193,7 @@ La stratégie des faits ×9 étant « n × 9 = n × 10 − n » (voir §4 et `li
 4. **Feedback immédiat :**
    - **Correct + rapide (< 3s) :** Animation joyeuse, son positif, +1 étoile dorée, montée de boîte
    - **Correct + normal (3-5s) :** "Bravo !", montée de boîte
-   - **Correct + lent (> 5s) :** "Bien ! Essaie d'aller un peu plus vite la prochaine fois", pas de montée de boîte
+   - **Correct + lent (> 5s) :** "Bravo !", pas de montée de boîte (le retour est positif côté enfant ; la lenteur n'est jamais verbalisée — cf. §7.2 sur le feedback orienté progrès et l'absence de chrono visible)
    - **Incorrect :** Pas de son négatif, la bonne réponse s'affiche avec la grille de points, puis re-pose la question 2-3 questions plus tard dans la même séance
 
    *Note sur les seuils :* ces seuils tiennent compte du surcoût moteur du pavé numérique (~1-1,5s) par rapport à une réponse orale. Dans la littérature, le rappel automatique est typiquement mesuré sous 1-2s à l'oral. Nos 5s correspondent à environ 3-4s de réflexion + 1-1,5s de manipulation tactile. Si l'application évolue vers une interface vocale (voir audit), les seuils devront être abaissés pour s'aligner avec les mesures de la recherche.

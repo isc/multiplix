@@ -14,10 +14,9 @@ import { useTTS } from '../hooks/useTTS';
 import { useInputMode } from '../hooks/useInputMode';
 import './SessionScreen.css';
 
-// Voice mode: lower UI-feedback thresholds since oral recall is faster than typing.
-// Leitner promotion still uses RESPONSE_TIME.SLOW (5000 ms) — see audit §5.
+// Voice mode: lower threshold for the "fast" reward (étoile dorée) since oral
+// recall is faster than typing. Leitner promotion still uses RESPONSE_TIME.SLOW.
 const VOICE_FEEDBACK_FAST = 2000;
-const VOICE_FEEDBACK_SLOW = 3000;
 
 interface SessionScreenProps {
   questions: SessionQuestion[];
@@ -50,7 +49,6 @@ export default function SessionScreen({
   const [feedback, setFeedback] = useState<{
     correct: boolean;
     fast: boolean;
-    slow: boolean;
     correctAnswer: number;
     fact: { a: number; b: number };
     factBox: BoxLevel;
@@ -148,9 +146,7 @@ export default function SessionScreen({
       const timeMs = Date.now() - questionStartTime.current;
       const correct = value === currentQuestion.fact.product;
       const fastThreshold = inputMode === 'voice' ? VOICE_FEEDBACK_FAST : RESPONSE_TIME.FAST;
-      const slowThreshold = inputMode === 'voice' ? VOICE_FEEDBACK_SLOW : RESPONSE_TIME.SLOW;
       const fast = correct && timeMs < fastThreshold;
-      const slow = correct && timeMs >= slowThreshold;
 
       totalTimeMs.current += timeMs;
       if (correct) correctCount.current++;
@@ -185,7 +181,6 @@ export default function SessionScreen({
       setFeedback({
         correct,
         fast,
-        slow,
         correctAnswer: currentQuestion.fact.product,
         fact: {
           a: currentQuestion.displayA,
@@ -389,7 +384,6 @@ export default function SessionScreen({
         <FeedbackOverlay
           correct={feedback.correct}
           fast={feedback.fast}
-          slow={feedback.slow}
           correctAnswer={feedback.correctAnswer}
           fact={feedback.fact}
           factBox={feedback.factBox}

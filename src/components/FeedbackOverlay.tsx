@@ -9,7 +9,6 @@ import './FeedbackOverlay.css';
 interface FeedbackOverlayProps {
   correct: boolean;
   fast: boolean;
-  slow: boolean;
   correctAnswer: number;
   fact: { a: number; b: number };
   factBox: BoxLevel;
@@ -34,7 +33,6 @@ const INCORRECT_MESSAGES = [
 export default function FeedbackOverlay({
   correct,
   fast,
-  slow,
   correctAnswer,
   fact,
   factBox,
@@ -51,8 +49,6 @@ export default function FeedbackOverlay({
   }, [correct, onDismiss]);
 
   if (correct) {
-    const subMessage = slow ? 'Essaie un peu plus vite la prochaine fois !' : '';
-
     return (
       <div className="feedback-overlay correct" onClick={onDismiss}>
         <div className="feedback-star-wrap" aria-label={fast ? 'Étoile dorée' : undefined}>
@@ -91,7 +87,6 @@ export default function FeedbackOverlay({
         <div className="feedback-answer">
           {fact.a} {'×'} {fact.b} = <b>{correctAnswer}</b>
         </div>
-        {subMessage && <div className="feedback-sub">{subMessage}</div>}
       </div>
     );
   }
