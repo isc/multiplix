@@ -6,9 +6,6 @@ interface PrivacyScreenProps {
   onBack: () => void;
 }
 
-// Page « Confidentialité » volontairement courte et concrète — ciblée parents.
-// Référencée depuis ParentDashboard. Base de conformité RGPD pour une PWA
-// kids-oriented sans compte, sans backend, sans tracking.
 export default function PrivacyScreen({ onBack }: PrivacyScreenProps) {
   // Sans ça, on hérite du scroll de ParentDashboard et on arrive en bas de page.
   useEffect(() => {

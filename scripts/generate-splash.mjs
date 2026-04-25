@@ -28,21 +28,22 @@ const targets = [
 
 const svg = await readFile(masterPath);
 
-for (const { name, w, h } of targets) {
-  const logoSize = Math.round(Math.min(w, h) * LOGO_RATIO);
-  const logo = await sharp(svg, { density: 384 })
-    .resize(logoSize, logoSize, { fit: 'contain', background: { r: 0, g: 0, b: 0, alpha: 0 } })
-    .png()
-    .toBuffer();
+await Promise.all(
+  targets.map(async ({ name, w, h }) => {
+    const logoSize = Math.round(Math.min(w, h) * LOGO_RATIO);
+    const logo = await sharp(svg, { density: 384 })
+      .resize(logoSize, logoSize, { fit: 'contain', background: { r: 0, g: 0, b: 0, alpha: 0 } })
+      .png()
+      .toBuffer();
 
-  const out = join(splashDir, name);
-  await sharp({
-    create: { width: w, height: h, channels: 4, background: BG },
-  })
-    .composite([{ input: logo, gravity: 'center' }])
-    .png({ compressionLevel: 9 })
-    .toFile(out);
+    const out = join(splashDir, name);
+    const { size } = await sharp({
+      create: { width: w, height: h, channels: 4, background: BG },
+    })
+      .composite([{ input: logo, gravity: 'center' }])
+      .png({ compressionLevel: 9 })
+      .toFile(out);
 
-  const buf = await readFile(out);
-  console.log(`✓ ${name} (${w}×${h}, ${(buf.length / 1024).toFixed(1)} KB)`);
-}
+    console.log(`✓ ${name} (${w}×${h}, ${(size / 1024).toFixed(1)} KB)`);
+  }),
+);

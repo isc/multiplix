@@ -1,4 +1,5 @@
 import { Component, type ReactNode } from 'react';
+import { STORAGE_KEY } from '../lib/storage';
 import './ErrorBoundary.css';
 
 interface ErrorBoundaryProps {
@@ -10,10 +11,6 @@ interface ErrorBoundaryState {
   message: string;
 }
 
-// Filet de sécurité : un bug de rendu ne doit pas laisser l'enfant devant un
-// écran blanc. La progression reste en localStorage, donc un simple reload
-// suffit à reprendre. Offre aussi un téléchargement de sauvegarde brute pour
-// les cas où le bug est causé par un profil corrompu.
 export default class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundaryState> {
   state: ErrorBoundaryState = { hasError: false, message: '' };
 
@@ -23,7 +20,6 @@ export default class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBo
   }
 
   componentDidCatch(err: unknown): void {
-    // Console uniquement — pas d'intégration tierce de tracking.
     console.error('[ErrorBoundary]', err);
   }
 
@@ -33,7 +29,7 @@ export default class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBo
 
   handleDownloadBackup = (): void => {
     try {
-      const raw = localStorage.getItem('multiplix-profile');
+      const raw = localStorage.getItem(STORAGE_KEY);
       if (!raw) return;
       const blob = new Blob([raw], { type: 'application/json' });
       const url = URL.createObjectURL(blob);
@@ -43,9 +39,10 @@ export default class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBo
       document.body.appendChild(a);
       a.click();
       document.body.removeChild(a);
-      URL.revokeObjectURL(url);
+      // Defer revoke so Safari has time to start the download.
+      setTimeout(() => URL.revokeObjectURL(url), 0);
     } catch {
-      // Si même le téléchargement échoue, on laisse le parent recharger.
+      /* pas de fallback — le bouton Recharger reste disponible */
     }
   };
 

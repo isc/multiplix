@@ -415,7 +415,7 @@ export default function ParentDashboard({
 
       <div className="parent-actions">
         <button
-          className="parent-action-btn parent-action-secondary"
+          className="parent-action-btn"
           onClick={onShowPrivacy}
         >
           Confidentialité

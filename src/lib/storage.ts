@@ -3,7 +3,7 @@ import { MYSTERY_POOL } from '../types';
 import { createInitialFacts } from './facts';
 import { pickRandom, todayISO } from './utils';
 
-const STORAGE_KEY = 'multiplix-profile';
+export const STORAGE_KEY = 'multiplix-profile';
 
 /**
  * Loads the user profile from localStorage.
