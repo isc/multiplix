@@ -195,6 +195,9 @@ async function seedProfile(page, profile) {
     }
     // Mute sounds to avoid anything weird in headless.
     localStorage.setItem('multiplix-muted', 'true');
+    // Bypass the install landing : on est en headless, l'install PWA n'a
+    // aucun sens, on capture les écrans de l'app directement.
+    localStorage.setItem('multiplix-skip-install', '1');
   }, { p: profile, mockTodayIso: SEED_TODAY });
 }
 

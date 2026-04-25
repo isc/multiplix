@@ -108,6 +108,11 @@ function playSessionAndDismissRecap(): void {
 describe('Parcours utilisateur de bout en bout (DOM)', () => {
   beforeEach(() => {
     localStorage.clear();
+    // La landing PWA s'intercale avant WelcomeScreen sur une fresh install.
+    // Ce test cible le parcours d'apprentissage, pas l'install ; on saute
+    // directement comme le ferait un parent qui clique « Essayer dans le
+    // navigateur ».
+    localStorage.setItem('multiplix-skip-install', '1');
     vi.useFakeTimers({
       toFake: ['setTimeout', 'clearTimeout', 'setInterval', 'clearInterval', 'Date'],
     });
