@@ -88,11 +88,13 @@ export default function SessionScreen({
       setShowIntro(false);
     }
     setNumpadDisabled(false);
-    submittingRef.current = false;
   }
 
-  // Side effects when the question changes (TTS, timer, tracking)
+  // Side effects when the question changes (TTS, timer, tracking).
+  // Reset du double-submit guard ici (et pas dans le bloc render-time
+  // ci-dessus) pour respecter react-hooks/refs.
   useEffect(() => {
+    submittingRef.current = false;
     if (!currentQuestion) return;
 
     if (currentQuestion.isIntroduction) {
