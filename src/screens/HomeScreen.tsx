@@ -181,7 +181,7 @@ export default function HomeScreen({
               {'▶'} C'est parti !
             </button>
           ) : (
-            <div className="home-done-msg">Bravo, c'est fait pour aujourd'hui !</div>
+            <div className="home-done-msg">Bravo, c'est fait pour aujourd'hui&nbsp;!</div>
           )}
         </div>
 
