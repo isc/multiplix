@@ -16,6 +16,25 @@
   padding: 14px 20px 24px;
 }
 
+/* Étape prénom : ancrer en haut pour que le clavier mobile ne masque pas
+   le titre/input/bouton. Combiné à `interactive-widget=resizes-content`
+   dans la viewport meta, iOS 17+ réduit la zone visible quand le clavier
+   apparaît, donc tout reste visible. */
+.welcome-screen:has(.welcome-step-name) {
+  justify-content: flex-start;
+  padding-top: 32px;
+}
+
+/* Sur écran court (petits téléphones, ou clavier ouvert sur navigateurs
+   plus anciens qui n'honorent pas interactive-widget), réduire la
+   mascotte pour garder titre + input + bouton visibles. */
+@media (max-height: 640px) {
+  .welcome-step-name .mascot {
+    width: 90px;
+    height: 90px;
+  }
+}
+
 .welcome-step {
   display: flex;
   flex-direction: column;

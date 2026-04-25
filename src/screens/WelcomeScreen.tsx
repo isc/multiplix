@@ -209,7 +209,7 @@ export default function WelcomeScreen({ onComplete }: WelcomeScreenProps) {
       )}
 
       {step === 1 && (
-        <div className="welcome-step" key="step1">
+        <div className="welcome-step welcome-step-name" key="step1">
           <Mascot mood="happy" />
           <div className="welcome-title">Comment tu t'appelles&nbsp;?</div>
           <input
