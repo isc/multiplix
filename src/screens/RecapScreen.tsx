@@ -105,7 +105,7 @@ export default function RecapScreen({
               : `Tu as maîtrisé les tables de ${newlyCompletedTables.join(' et ')} !`}
           </div>
           <div className="recap-table-complete-subtitle">
-            Tous les faits sont en boîte 5.
+            Toutes les multiplications sont en boîte 5.
           </div>
         </div>
       )}
@@ -126,7 +126,7 @@ export default function RecapScreen({
         <div className="recap-progress-row">
           <span className="recap-progress-eyebrow">Tu connais</span>
           <span className="recap-progress-count">
-            <b>{knownFactsCount}</b> / {totalFacts} faits
+            <b>{knownFactsCount}</b> / {totalFacts} multiplications
           </span>
         </div>
         <div className="recap-progress-bar">
