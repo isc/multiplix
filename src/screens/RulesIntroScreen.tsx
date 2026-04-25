@@ -35,7 +35,7 @@ export default function RulesIntroScreen({ name, onComplete }: RulesIntroScreenP
         <div className="rules-intro-step" key="intro">
           <Mascot mood="celebrate" />
           <div className="rules-intro-title">
-            Avant de commencer, {name} !
+            Avant de commencer, {name}&nbsp;!
           </div>
           <div className="rules-intro-subtitle">
             Je vais te montrer deux règles toutes simples
@@ -43,10 +43,10 @@ export default function RulesIntroScreen({ name, onComplete }: RulesIntroScreenP
             pour multiplier par <strong>1</strong> et par <strong>10</strong>.
             <br />
             <br />
-            Pas besoin de les apprendre par cœur : tu vas comprendre comment elles marchent !
+            Pas besoin de les apprendre par cœur : tu vas comprendre comment elles marchent&nbsp;!
           </div>
           <button className="rules-intro-btn rules-intro-btn-primary" onClick={handleNext}>
-            C'est parti !
+            C'est parti&nbsp;!
           </button>
         </div>
       )}
@@ -56,7 +56,7 @@ export default function RulesIntroScreen({ name, onComplete }: RulesIntroScreenP
           <div className="rules-intro-badge rules-intro-badge-indigo" aria-hidden>{'\u00d71'}</div>
           <div className="rules-intro-title">Multiplier par 1</div>
           <div className="rules-intro-message">
-            Tout nombre multiplié par 1 reste le même !
+            Tout nombre multiplié par 1 reste le même&nbsp;!
           </div>
           <div className="rules-intro-examples">
             <div className="rules-intro-example">
@@ -67,7 +67,7 @@ export default function RulesIntroScreen({ name, onComplete }: RulesIntroScreenP
             </div>
           </div>
           <div className="rules-intro-tip">
-            Facile, non ?
+            Facile, non&nbsp;?
           </div>
           <button className="rules-intro-btn rules-intro-btn-primary" onClick={handleNext}>
             Suivant
@@ -80,7 +80,7 @@ export default function RulesIntroScreen({ name, onComplete }: RulesIntroScreenP
           <div className="rules-intro-badge rules-intro-badge-coral" aria-hidden>{'×10'}</div>
           <div className="rules-intro-title">Multiplier par 10</div>
           <div className="rules-intro-message">
-            Les chiffres glissent d'une place vers la gauche !
+            Les chiffres glissent d'une place vers la gauche&nbsp;!
             <br />
             Un <strong>0</strong> vient prendre la place des unités.
           </div>
@@ -125,10 +125,10 @@ export default function RulesIntroScreen({ name, onComplete }: RulesIntroScreenP
             </div>
           </div>
           <div className="rules-intro-tip">
-            Astuce : tous les résultats de la table de 10 se terminent par 0 !
+            Astuce : tous les résultats de la table de 10 se terminent par 0&nbsp;!
           </div>
           <button className="rules-intro-btn rules-intro-btn-primary" onClick={handleNext}>
-            J'ai compris !
+            J'ai compris&nbsp;!
           </button>
         </div>
       )}

@@ -60,7 +60,7 @@ export default function FeedbackModal({ profile, onClose }: FeedbackModalProps) 
 
         {status === 'success' ? (
           <div className="feedback-success">
-            <p className="feedback-success-text">Merci, c'est bien reçu !</p>
+            <p className="feedback-success-text">Merci, c'est bien reçu&nbsp;!</p>
             <button type="button" className="feedback-close-btn" onClick={onClose}>Fermer</button>
           </div>
         ) : (

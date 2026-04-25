@@ -17,7 +17,7 @@ export default function RulesScreen({ onBack }: RulesScreenProps) {
 
       <div className="rules-content">
         <div className="rules-intro">
-          Deux raccourcis à connaître par cœur. Après, ce sera facile !
+          Deux raccourcis à connaître par cœur. Après, ce sera facile&nbsp;!
         </div>
 
         {/* Règle ×1 */}
@@ -30,7 +30,7 @@ export default function RulesScreen({ onBack }: RulesScreenProps) {
             </div>
           </div>
           <div className="rule-card-message">
-            Tout nombre multiplié par 1 <b>reste le même</b> !
+            Tout nombre multiplié par 1 <b>reste le même</b>&nbsp;!
           </div>
           <div className="rule-examples">
             <div className="rule-example">
@@ -47,7 +47,7 @@ export default function RulesScreen({ onBack }: RulesScreenProps) {
             </div>
           </div>
           <div className="rule-card-tip">
-            Ça marche avec tous les nombres, même les très grands !
+            Ça marche avec tous les nombres, même les très grands&nbsp;!
           </div>
         </div>
 
@@ -61,7 +61,7 @@ export default function RulesScreen({ onBack }: RulesScreenProps) {
             </div>
           </div>
           <div className="rule-card-message">
-            Les chiffres glissent d'une place vers la gauche : un <b>0</b> vient prendre la place des unités !
+            Les chiffres glissent d'une place vers la gauche : un <b>0</b> vient prendre la place des unités&nbsp;!
           </div>
           <div className="rule-glisse">
             <div className="rule-glisse-row">
@@ -80,7 +80,7 @@ export default function RulesScreen({ onBack }: RulesScreenProps) {
             <div className="rule-example">25 {'×'} 10 = <span className="rule-example-highlight">250</span></div>
           </div>
           <div className="rule-card-tip">
-            Astuce : tous les résultats de la table de 10 se terminent par 0 !
+            Astuce : tous les résultats de la table de 10 se terminent par 0&nbsp;!
           </div>
         </div>
       </div>

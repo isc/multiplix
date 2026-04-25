@@ -170,7 +170,7 @@ export default function HomeScreen({
             <div className="home-mascot-halo" />
             <Mascot mood="idle" />
             <div className="home-greeting">
-              Salut <span>{profile.name}</span> !
+              Salut <span>{profile.name}</span>&nbsp;!
             </div>
           </div>
         </div>
@@ -178,7 +178,7 @@ export default function HomeScreen({
         <div className="home-cta-wrap">
           {hasSessionAvailable ? (
             <button className="home-start-btn" onClick={onStart}>
-              {'▶'} C'est parti !
+              {'▶'} C'est parti&nbsp;!
             </button>
           ) : (
             <div className="home-done-msg">Bravo, c'est fait pour aujourd'hui&nbsp;!</div>

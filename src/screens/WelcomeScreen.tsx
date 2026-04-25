@@ -182,7 +182,7 @@ export default function WelcomeScreen({ onComplete }: WelcomeScreenProps) {
                 <span>Je ne sais pas</span>
               </button>
               <div className="welcome-test-hint">
-                Réponds du mieux que tu peux !
+                Réponds du mieux que tu peux&nbsp;!
               </div>
             </>
           )}
@@ -196,11 +196,11 @@ export default function WelcomeScreen({ onComplete }: WelcomeScreenProps) {
       {step === 0 && (
         <div className="welcome-step" key="step0">
           <Mascot mood="idle" />
-          <div className="welcome-title">Bonjour !</div>
+          <div className="welcome-title">Bonjour&nbsp;!</div>
           <div className="welcome-subtitle">
             Je suis Piou, ton petit copain d'apprentissage.
             <br />
-            On va apprendre les tables de multiplication ensemble !
+            On va apprendre les tables de multiplication ensemble&nbsp;!
           </div>
           <button className="welcome-btn welcome-btn-primary" onClick={handleNext}>
             Suivant →
@@ -211,7 +211,7 @@ export default function WelcomeScreen({ onComplete }: WelcomeScreenProps) {
       {step === 1 && (
         <div className="welcome-step" key="step1">
           <Mascot mood="happy" />
-          <div className="welcome-title">Comment tu t'appelles ?</div>
+          <div className="welcome-title">Comment tu t'appelles&nbsp;?</div>
           <input
             className="welcome-input"
             type="text"
@@ -227,7 +227,7 @@ export default function WelcomeScreen({ onComplete }: WelcomeScreenProps) {
             onClick={handleNext}
             disabled={!name.trim()}
           >
-            C'est moi ! →
+            C'est moi&nbsp;! →
           </button>
         </div>
       )}
@@ -236,17 +236,17 @@ export default function WelcomeScreen({ onComplete }: WelcomeScreenProps) {
         <div className="welcome-step" key="step2">
           <Mascot mood="celebrate" />
           <div className="welcome-title">
-            Salut {name} !
+            Salut {name}&nbsp;!
           </div>
           <div className="welcome-subtitle">
             Avant de commencer, je vais te poser quelques questions
             pour voir ce que tu connais déjà.
             <br />
             <br />
-            Pas de stress : si tu ne sais pas, tape sur « Je ne sais pas ».
+            Pas de stress : si tu ne sais pas, tape sur «&nbsp;Je ne sais pas&nbsp;».
           </div>
           <button className="welcome-btn welcome-btn-primary" onClick={handleNext}>
-            C'est parti ! →
+            C'est parti&nbsp;! →
           </button>
           <button className="welcome-btn welcome-btn-skip" onClick={handleSkipTest}>
             Passer le test

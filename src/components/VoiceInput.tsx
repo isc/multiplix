@@ -144,7 +144,7 @@ export default function VoiceInput({
     return (
       <div className="voice-fallback">
         <div className="voice-fallback-msg">
-          Je t'entends mal. Tape ta réponse !
+          Je t'entends mal. Tape ta réponse&nbsp;!
         </div>
         <NumPad onSubmit={onSubmit} disabled={disabled} />
         <button

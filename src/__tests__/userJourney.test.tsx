@@ -133,7 +133,7 @@ describe('Parcours utilisateur de bout en bout (DOM)', () => {
 
       const nameInput = document.querySelector<HTMLInputElement>('input.welcome-input')!;
       fireEvent.change(nameInput, { target: { value: 'Zoe' } });
-      fireEvent.click(findButton(/^C'est moi !/)!);
+      fireEvent.click(findButton(/^C'est moi/)!);
 
       fireEvent.click(findButton('Passer le test')!);
 

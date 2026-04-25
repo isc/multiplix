@@ -41,7 +41,7 @@ export default function ProgressScreen({ profile, onBack }: ProgressScreenProps)
 
       <div className="progress-legend">
         Chaque fait que tu connais mieux fait apparaître un peu plus de l'image.
-        Quand tous les faits sont maîtrisés, l'image est complète !
+        Quand tous les faits sont maîtrisés, l'image est complète&nbsp;!
       </div>
     </div>
   );

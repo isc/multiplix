@@ -279,7 +279,7 @@ export default function SessionScreen({
       {/* Introduction phase */}
       {showIntro && (
         <div className="session-intro">
-          <div className="session-intro-title">Nouveau !</div>
+          <div className="session-intro-title">Nouveau&nbsp;!</div>
 
           {introStep === 'grid' ? (
             <>
@@ -327,7 +327,7 @@ export default function SessionScreen({
               />
               <div className="session-intro-commutativity">
                 {currentQuestion.fact.b} {'\u00D7'}{' '}
-                {currentQuestion.fact.a}, c'est pareil !
+                {currentQuestion.fact.a}, c'est pareil&nbsp;!
                 <br />
                 C'est aussi{' '}
                 <strong>{currentQuestion.fact.product}</strong>
@@ -343,13 +343,13 @@ export default function SessionScreen({
             <>
               {introStrategy && <StrategyHint strategy={introStrategy} variant="intro" />}
               <div className="session-intro-explanation">
-                Une petite astuce pour s'en souvenir !
+                Une petite astuce pour s'en souvenir&nbsp;!
               </div>
               <button
                 className="session-intro-btn"
                 onClick={handleIntroNext}
               >
-                J'ai compris !
+                J'ai compris&nbsp;!
               </button>
             </>
           )}

@@ -42,7 +42,7 @@ export default function PrivacyScreen({ onBack }: PrivacyScreenProps) {
         <section className="privacy-section">
           <h2>Ce qui est envoyé en cas d'avis</h2>
           <p>
-            Si vous utilisez le bouton <strong>« Envoyer un avis »</strong> du
+            Si vous utilisez le bouton <strong>«&nbsp;Envoyer un avis&nbsp;»</strong> du
             dashboard parent, les éléments suivants sortent de l'appareil :
           </p>
           <ul>
@@ -84,7 +84,7 @@ export default function PrivacyScreen({ onBack }: PrivacyScreenProps) {
           <p>
             Pour supprimer l'intégralité des données, videz les données du site
             dans les réglages de votre navigateur. Pour les avis déjà envoyés,
-            demandez la suppression via un nouveau formulaire « Envoyer un avis ».
+            demandez la suppression via un nouveau formulaire «&nbsp;Envoyer un avis&nbsp;».
           </p>
         </section>
 
@@ -92,7 +92,7 @@ export default function PrivacyScreen({ onBack }: PrivacyScreenProps) {
           <h2>Contact</h2>
           <p>
             Pour toute question ou demande de suppression, utilisez le
-            formulaire <strong>« Envoyer un avis »</strong> du dashboard parent.
+            formulaire <strong>«&nbsp;Envoyer un avis&nbsp;»</strong> du dashboard parent.
           </p>
         </section>
 

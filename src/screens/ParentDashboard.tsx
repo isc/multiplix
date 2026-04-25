@@ -376,7 +376,7 @@ export default function ParentDashboard({
                   }
                 }}
               >
-                {confirming ? `Confirmer \u00D7${t} ?` : `\u00D7${t}`}
+                {confirming ? `Confirmer \u00D7${t}\u00A0?` : `\u00D7${t}`}
               </button>
             );
           })}
