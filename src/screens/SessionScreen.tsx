@@ -18,6 +18,12 @@ import './SessionScreen.css';
 // recall is faster than typing. Leitner promotion still uses RESPONSE_TIME.SLOW.
 const VOICE_FEEDBACK_FAST = 2000;
 
+// Borne dure sur la longueur d'une session : composeSession vise 12-15 questions,
+// chaque erreur peut insérer une retry. Sans cap, des erreurs en chaîne (surtout
+// en mode vocal où la reconnaissance rate plus souvent) rendent la session
+// interminable alors que les points de progression sont déjà tous remplis.
+const MAX_SESSION_LENGTH = 20;
+
 interface SessionScreenProps {
   questions: SessionQuestion[];
   onComplete: (result: Omit<SessionResult, 'factsPromoted'>) => void;
@@ -157,8 +163,9 @@ export default function SessionScreen({
       // Notify parent (App) to update Leitner state
       onAnswer(currentQuestion.fact, correct, timeMs, value, currentQuestion.isBonusReview);
 
-      // If incorrect, insert a retry 2-3 questions later
-      if (!correct) {
+      // If incorrect, insert a retry 2-3 questions later (capped to keep
+      // sessions from running away when answers chain wrong — see MAX_SESSION_LENGTH).
+      if (!correct && questions.length < MAX_SESSION_LENGTH) {
         const retryPosition = Math.min(
           currentIndex + 3,
           questions.length,
@@ -250,8 +257,9 @@ export default function SessionScreen({
       ? getStrategy(currentQuestion.fact.a, currentQuestion.fact.b)
       : null;
 
-  // Progress dots: show at most 15 dots to keep it manageable
-  const maxDots = Math.min(questions.length, 15);
+  // Progress dots: aligné sur MAX_SESSION_LENGTH pour que la barre reflète
+  // bien la progression réelle, retries inclus.
+  const maxDots = Math.min(questions.length, MAX_SESSION_LENGTH);
   const progressDots = Array.from({ length: maxDots }, (_, i) => {
     if (i < results.length) {
       return results[i].correct ? 'correct' : 'incorrect';
