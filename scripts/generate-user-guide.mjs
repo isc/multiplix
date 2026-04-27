@@ -304,7 +304,6 @@ async function captureHome(page) {
 
 const NAV_SCREENS = [
   { navText: 'Mon image', screenSel: '.progress-screen', backSel: '.progress-back-btn', shot: '10-progress' },
-  { navText: 'Badges',  screenSel: '.badges-screen',   backSel: '.badges-back-btn',   shot: '11-badges'   },
   { navText: 'Règles',  screenSel: '.rules-screen',    backSel: '.rules-back-btn',    shot: '12-rules'    },
 ];
 
@@ -313,6 +312,23 @@ async function captureNavScreen(page, { navText, screenSel, backSel, shot: shotN
   await page.waitForSelector(screenSel);
   await shot(page, shotName);
   await page.click(backSel);
+  await page.waitForSelector('.home-screen');
+}
+
+async function captureBadgesScreen(page) {
+  await page.click('.home-nav-btn:has-text("Badges")');
+  await page.waitForSelector('.badges-screen');
+  await shot(page, '11-badges');
+
+  // Open the detail modal on a locked badge with progression (Régularité —
+  // streak 5/7) so the guide can showcase the explanation + progress bar.
+  await page.click('.badges-grid .badge:has-text("Régularité")');
+  await page.waitForSelector('.badge-detail-modal');
+  await shot(page, '11-badges-detail');
+  await page.click('.badge-detail-close-btn');
+  await page.waitForSelector('.badge-detail-modal', { state: 'detached' });
+
+  await page.click('.badges-back-btn');
   await page.waitForSelector('.home-screen');
 }
 
@@ -661,12 +677,17 @@ const SECTIONS = [
   {
     id: 'badges',
     title: 'Les badges',
-    description: `18 badges au total, répartis en trois familles : jalons
+    description: `16 badges au total, répartis en trois familles : jalons
       (première séance, 7 jours, 30 jours), performance (10 réponses de suite,
       5 réponses < 2 s), et maîtrise (un badge par table + un badge « génie des
-      maths » quand tout est en boîte 5).`,
+      maths » quand tout est en boîte 5). Chaque vignette est cliquable et
+      ouvre une fiche qui explique la condition de déblocage. Pour les badges
+      verrouillés, une barre de progression montre où en est l'enfant — les
+      icônes seules ne sont pas auto-portantes pour qui découvre la
+      gamification.`,
     shots: [
       { file: '11-badges', caption: 'Collection de badges — obtenus et à débloquer.' },
+      { file: '11-badges-detail', caption: 'En cliquant sur un badge verrouillé, on découvre la condition et la progression.' },
     ],
   },
   {
@@ -1071,7 +1092,9 @@ async function main() {
 
     await captureWelcomeScreens(page);
     await captureHome(page);
-    for (const spec of NAV_SCREENS) await captureNavScreen(page, spec);
+    await captureNavScreen(page, NAV_SCREENS[0]); // Mon image
+    await captureBadgesScreen(page);
+    await captureNavScreen(page, NAV_SCREENS[1]); // Règles
     await captureParentDashboard(page);
     await captureSessionScreens(page);
     await captureRecap(page);
