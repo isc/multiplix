@@ -156,7 +156,7 @@ export default function VoiceInput({
           disabled={disabled}
           aria-label="Réessayer avec la voix"
         >
-          {'\uD83C\uDFA4'} Réessayer avec la voix
+          {'🎤'} Réessayer avec la voix
         </button>
       </div>
     );
@@ -164,6 +164,7 @@ export default function VoiceInput({
 
   const permissionBlocked = error === 'not-allowed' || error === 'service-not-allowed';
   const networkError = error === 'network';
+  const transcriptNumber = displayTranscript(interim);
 
   return (
     <div className="voice-input">
@@ -179,12 +180,16 @@ export default function VoiceInput({
         aria-pressed={isListening}
         disabled={disabled}
       >
-        <span className="voice-mic-icon">{'\uD83C\uDFA4'}</span>
+        <span className="voice-mic-icon">{'🎤'}</span>
         {isListening && <span className="voice-mic-ring" aria-hidden="true" />}
       </button>
 
       <div className="voice-transcript" aria-live="polite">
-        {displayTranscript(interim) || (isListening ? 'Je t\'\u00E9coute\u2026' : 'Appuie pour parler')}
+        {transcriptNumber ? (
+          <span className="voice-transcript-number">{transcriptNumber}</span>
+        ) : (
+          isListening ? 'Je t\'écoute…' : 'Appuie pour parler'
+        )}
       </div>
 
       {permissionBlocked && (
