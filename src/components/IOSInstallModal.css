@@ -1,25 +1,3 @@
-.ios-install-backdrop {
-  position: fixed;
-  inset: 0;
-  background: rgba(30, 26, 46, 0.55);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 20px;
-  z-index: 100;
-  animation: fadeIn 0.2s ease;
-}
-
-.ios-install-modal {
-  background: var(--paper);
-  border-radius: 20px;
-  padding: 24px 22px 18px;
-  width: 100%;
-  max-width: 420px;
-  max-height: 90vh;
-  overflow-y: auto;
-  box-shadow: 0 20px 60px rgba(30, 26, 46, 0.25);
-}
 
 .ios-install-title {
   font-family: var(--serif);

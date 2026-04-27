@@ -1,29 +1,15 @@
-.parent-gate-overlay {
-  position: fixed;
-  inset: 0;
-  background: rgba(20, 18, 14, 0.45);
-  display: flex;
+/* Le parent-gate veut être en haut de l'écran (le clavier mobile mange
+   la moitié basse). On surcharge l'alignement de l'overlay et la
+   max-width du card par rapport au défaut Modal. */
+.modal-overlay.parent-gate-overlay {
   align-items: flex-start;
-  justify-content: center;
   padding: 40px 20px 20px;
-  z-index: 1000;
-  animation: parent-gate-fade-in 0.15s ease;
   overflow-y: auto;
 }
 
-@keyframes parent-gate-fade-in {
-  from { opacity: 0; }
-  to { opacity: 1; }
-}
-
-.parent-gate-modal {
-  background: var(--paper);
-  border: 1.5px solid var(--line);
-  border-radius: 18px;
-  padding: 24px 22px;
-  width: 100%;
+.modal-card.parent-gate-modal {
   max-width: 380px;
-  box-shadow: 0 12px 40px rgba(20, 18, 14, 0.18);
+  padding: 24px 22px;
 }
 
 .parent-gate-title {

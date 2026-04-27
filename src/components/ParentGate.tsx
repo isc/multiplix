@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
+import Modal from './Modal';
 import './ParentGate.css';
 
 interface ParentGateProps {
@@ -21,12 +22,7 @@ export default function ParentGate({ onSuccess, onClose }: ParentGateProps) {
 
   useEffect(() => {
     inputRef.current?.focus();
-    const onKey = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') onClose();
-    };
-    window.addEventListener('keydown', onKey);
-    return () => window.removeEventListener('keydown', onKey);
-  }, [onClose]);
+  }, []);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -42,15 +38,13 @@ export default function ParentGate({ onSuccess, onClose }: ParentGateProps) {
   };
 
   return (
-    <div className="parent-gate-overlay" onClick={onClose}>
-      <div
-        className="parent-gate-modal"
-        onClick={(e) => e.stopPropagation()}
-        role="dialog"
-        aria-modal="true"
-        aria-labelledby="parent-gate-title"
-      >
-        <h2 id="parent-gate-title" className="parent-gate-title">Espace parent</h2>
+    <Modal
+      onClose={onClose}
+      labelledBy="parent-gate-title"
+      className="parent-gate-modal"
+      overlayClassName="parent-gate-overlay"
+    >
+      <h2 id="parent-gate-title" className="parent-gate-title">Espace parent</h2>
         <p className="parent-gate-subtitle">
           Une petite multiplication pour confirmer que vous êtes un adulte.
         </p>
@@ -91,7 +85,6 @@ export default function ParentGate({ onSuccess, onClose }: ParentGateProps) {
             </button>
           </div>
         </form>
-      </div>
-    </div>
+    </Modal>
   );
 }

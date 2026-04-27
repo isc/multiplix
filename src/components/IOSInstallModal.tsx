@@ -1,5 +1,6 @@
 import type { ReactNode } from 'react';
 import { getIOSMajorVersion } from '../lib/install';
+import Modal from './Modal';
 import './IOSInstallModal.css';
 
 interface IOSInstallModalProps {
@@ -118,39 +119,32 @@ export default function IOSInstallModal({ onClose }: IOSInstallModalProps) {
   const steps = isModern ? modernSteps() : classicSteps();
 
   return (
-    <div className="ios-install-backdrop" onClick={onClose}>
-      <div
-        className="ios-install-modal"
-        role="dialog"
-        aria-labelledby="ios-install-title"
-        onClick={(e) => e.stopPropagation()}
-      >
-        <h2 id="ios-install-title" className="ios-install-title">
-          Installer Multiplix sur iPhone / iPad
-        </h2>
-        <p className="ios-install-intro">
-          Sur Safari, ajoute l'app à ton écran d'accueil pour la lancer comme
-          n'importe quelle autre application&nbsp;:
-        </p>
+    <Modal onClose={onClose} labelledBy="ios-install-title" className="ios-install-modal">
+      <h2 id="ios-install-title" className="ios-install-title">
+        Installer Multiplix sur iPhone / iPad
+      </h2>
+      <p className="ios-install-intro">
+        Sur Safari, ajoute l'app à ton écran d'accueil pour la lancer comme
+        n'importe quelle autre application&nbsp;:
+      </p>
 
-        <ol className="ios-install-steps">
-          {steps.map((step, i) => (
-            <li key={i}>
-              <span className="ios-install-step-num">{i + 1}</span>
-              <span className="ios-install-step-text">{step}</span>
-            </li>
-          ))}
-        </ol>
+      <ol className="ios-install-steps">
+        {steps.map((step, i) => (
+          <li key={i}>
+            <span className="ios-install-step-num">{i + 1}</span>
+            <span className="ios-install-step-text">{step}</span>
+          </li>
+        ))}
+      </ol>
 
-        <p className="ios-install-note">
-          Astuce&nbsp;: dans Chrome ou Firefox sur iOS, l'ajout à l'écran
-          d'accueil n'est pas disponible — ouvre cette page dans Safari.
-        </p>
+      <p className="ios-install-note">
+        Astuce&nbsp;: dans Chrome ou Firefox sur iOS, l'ajout à l'écran
+        d'accueil n'est pas disponible — ouvre cette page dans Safari.
+      </p>
 
-        <button type="button" className="ios-install-close" onClick={onClose}>
-          J'ai compris
-        </button>
-      </div>
-    </div>
+      <button type="button" className="ios-install-close" onClick={onClose}>
+        J'ai compris
+      </button>
+    </Modal>
   );
 }
