@@ -343,6 +343,12 @@ Un petit personnage **stable** qui accompagne l'enfant tout au long du parcours.
 | Persévérance | Revenir après 3+ jours d'absence | 💪 |
 | Flamme éternelle | 30 jours consécutifs | 🌟 |
 
+Sur l'écran *Badges*, **chaque vignette est cliquable** et ouvre une modale qui explicite le badge :
+- pour un badge **verrouillé** : la condition complète, et — quand c'est applicable — une **barre de progression** (jours consécutifs, faits découverts, faits dans la table en boîte 4+, etc.) avec un encouragement contextuel (« Plus que 3 ! Tu y es presque. »).
+- pour un badge **débloqué** : la condition rappelée, et la **date d'obtention**.
+
+Cette modale est essentielle pour un enfant qui découvre la gamification : sans elle, l'icône et le nom seuls ne permettent pas de comprendre comment décrocher le badge.
+
 ### 4.3 Streak (série de jours)
 
 - Compteur de jours consécutifs affiché sur l'écran d'accueil

@@ -1,16 +1,24 @@
-import type { Badge as BadgeType } from '../types';
+import { useState } from 'react';
+import type { UserProfile } from '../types';
 import BadgeComponent from '../components/Badge';
+import BadgeDetailModal from '../components/BadgeDetailModal';
 import BackChevron from '../components/BackChevron';
 import { ALL_BADGE_DEFINITIONS } from '../lib/badges';
 import './BadgesScreen.css';
 
 interface BadgesScreenProps {
-  earnedBadges: BadgeType[];
+  profile: UserProfile;
   onBack: () => void;
 }
 
-export default function BadgesScreen({ earnedBadges, onBack }: BadgesScreenProps) {
-  const earnedMap = new Map(earnedBadges.map((b) => [b.id, b]));
+export default function BadgesScreen({ profile, onBack }: BadgesScreenProps) {
+  const earnedMap = new Map(profile.badges.map((b) => [b.id, b]));
+  const [selectedId, setSelectedId] = useState<string | null>(null);
+
+  const selectedDef = selectedId
+    ? ALL_BADGE_DEFINITIONS.find((d) => d.id === selectedId) ?? null
+    : null;
+  const selectedEarned = selectedId ? earnedMap.get(selectedId) : undefined;
 
   return (
     <div className="badges-screen">
@@ -24,7 +32,7 @@ export default function BadgesScreen({ earnedBadges, onBack }: BadgesScreenProps
       <div className="badges-banner">
         <div className="badges-banner-eyebrow">Collection</div>
         <div className="badges-banner-count">
-          {earnedBadges.length}
+          {profile.badges.length}
           <span>/ {ALL_BADGE_DEFINITIONS.length} badges</span>
         </div>
       </div>
@@ -38,10 +46,21 @@ export default function BadgesScreen({ earnedBadges, onBack }: BadgesScreenProps
               badge={def}
               earned={!!earned}
               earnedDate={earned?.earnedDate}
+              onClick={() => setSelectedId(def.id)}
             />
           );
         })}
       </div>
+
+      {selectedDef && (
+        <BadgeDetailModal
+          badge={selectedDef}
+          earned={!!selectedEarned}
+          earnedDate={selectedEarned?.earnedDate}
+          profile={profile}
+          onClose={() => setSelectedId(null)}
+        />
+      )}
     </div>
   );
 }
