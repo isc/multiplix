@@ -87,7 +87,8 @@ function modernSteps(): ReactNode[] {
       <span className="ios-install-icon" aria-hidden="true">
         <DotsIcon />
       </span>
-      en bas à droite de Safari.
+      en bas à droite de Safari (en mode compact, c'est lui qui cache le
+      partage).
     </>,
     <>
       Choisis « Partager »
@@ -97,16 +98,16 @@ function modernSteps(): ReactNode[] {
       dans le menu qui s'ouvre.
     </>,
     <>
-      Touche « Plus » (« More ») en bas à droite du menu de partage pour
-      afficher toutes les actions.
+      Touche « Plus » en bas à droite du menu de partage (ou fais défiler vers
+      le bas) pour afficher toutes les actions.
     </>,
     <>
       Choisis « Sur l'écran d'accueil »
       <span className="ios-install-icon" aria-hidden="true">
         <PlusSquareIcon />
       </span>
-      , puis touche « Ajouter ». L'icône Multiplix apparaît sur ton écran
-      d'accueil.
+      , puis touche « Ajouter » en haut à droite. L'icône Multiplix apparaît
+      sur ton écran d'accueil.
     </>,
   ];
 }
