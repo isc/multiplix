@@ -108,16 +108,16 @@
 }
 
 .feedback-overlay.correct .feedback-answer {
-  font-size: 15px;
-  font-weight: 400;
+  font-size: 22px;
+  font-weight: 500;
   font-family: var(--sans);
-  color: var(--ink-soft);
+  color: var(--ink);
   margin: 0;
 }
 
 .feedback-overlay.correct .feedback-answer b {
   color: var(--ink);
-  font-weight: 700;
+  font-weight: 800;
   font-family: var(--sans);
 }
 
