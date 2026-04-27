@@ -714,9 +714,12 @@ function buildHtml({ generatedAt }) {
     }
     const shots = s.shots
       .map(
+        // width/height attributes match the capture viewport (CSS pixels).
+        // The browser uses them to reserve space before the image loads,
+        // preventing layout shift while scrolling through the guide.
         (sh) => `
           <figure class="shot">
-            <img src="screenshots/${sh.file}.png" alt="${sh.caption.replace(/"/g, '&quot;')}" loading="lazy" />
+            <img src="screenshots/${sh.file}.png" alt="${sh.caption.replace(/"/g, '&quot;')}" width="${VIEWPORT.width}" height="${VIEWPORT.height}" loading="lazy" />
             <figcaption>${sh.caption}</figcaption>
           </figure>`,
       )
