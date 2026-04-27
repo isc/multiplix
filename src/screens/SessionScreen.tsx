@@ -12,6 +12,7 @@ import { todayISO } from '../lib/utils';
 import { useSound } from '../hooks/useSound';
 import { useTTS } from '../hooks/useTTS';
 import { useInputMode } from '../hooks/useInputMode';
+import { isSpeechRecognitionSupported } from '../hooks/useSpeechRecognition';
 import { useWakeLock } from '../hooks/useWakeLock';
 import './SessionScreen.css';
 
@@ -24,6 +25,8 @@ const VOICE_FEEDBACK_FAST = 2000;
 // en mode vocal où la reconnaissance rate plus souvent) rendent la session
 // interminable alors que les points de progression sont déjà tous remplis.
 const MAX_SESSION_LENGTH = 20;
+
+const STT_SUPPORTED = isSpeechRecognitionSupported();
 
 interface SessionScreenProps {
   questions: SessionQuestion[];
@@ -69,7 +72,7 @@ export default function SessionScreen({
 
   const { isMuted, playCorrect, playIncorrect } = useSound();
   const { speak, stop: stopSpeech, isSpeaking } = useTTS(isMuted);
-  const { inputMode } = useInputMode();
+  const { inputMode, setInputMode } = useInputMode();
   useWakeLock(true);
 
   const speakQuestion = useCallback(
@@ -383,7 +386,19 @@ export default function SessionScreen({
                 expectedValue={currentQuestion.fact.product}
               />
             ) : (
-              <NumPad onSubmit={handleAnswer} disabled={numpadDisabled} />
+              <>
+                <NumPad onSubmit={handleAnswer} disabled={numpadDisabled} />
+                {STT_SUPPORTED && (
+                  <button
+                    type="button"
+                    className="session-input-switch"
+                    onClick={() => setInputMode('voice')}
+                    disabled={numpadDisabled}
+                  >
+                    {'🎤'} Utiliser le micro
+                  </button>
+                )}
+              </>
             )}
           </div>
         </div>

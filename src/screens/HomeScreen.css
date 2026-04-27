@@ -237,8 +237,3 @@
 .home-chrome-btn:active {
   background: var(--cream-deep);
 }
-
-.home-chrome-btn.home-mode-active {
-  background: var(--indigo-soft);
-  color: var(--indigo);
-}

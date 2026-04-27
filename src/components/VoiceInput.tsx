@@ -2,6 +2,7 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import NumPad from './NumPad';
 import { parseFrenchAnswer, parseFrenchNumber } from '../lib/parseFrenchNumber';
 import { useSpeechRecognition } from '../hooks/useSpeechRecognition';
+import { useInputMode } from '../hooks/useInputMode';
 import './VoiceInput.css';
 
 interface VoiceInputProps {
@@ -52,6 +53,7 @@ export default function VoiceInput({
   const [interim, setInterim] = useState('');
   const [showKeypad, setShowKeypad] = useState(false);
   const [, setParseFails] = useState(0);
+  const { setInputMode } = useInputMode();
   const [prevQuestionToken, setPrevQuestionToken] = useState(questionToken);
   const disabledRef = useRef(disabled);
   const expectedRef = useRef(expectedValue);
@@ -206,7 +208,7 @@ export default function VoiceInput({
       <button
         type="button"
         className="voice-keypad-link"
-        onClick={() => setShowKeypad(true)}
+        onClick={() => setInputMode('keypad')}
         disabled={disabled}
       >
         Utiliser le clavier

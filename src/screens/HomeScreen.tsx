@@ -5,11 +5,7 @@ import ParentGate from '../components/ParentGate';
 import StreakDetailModal from '../components/StreakDetailModal';
 import FlameIcon from '../components/FlameIcon';
 import { useSound } from '../hooks/useSound';
-import { useInputMode } from '../hooks/useInputMode';
-import { isSpeechRecognitionSupported } from '../hooks/useSpeechRecognition';
 import './HomeScreen.css';
-
-const STT_SUPPORTED = isSpeechRecognitionSupported();
 
 interface HomeScreenProps {
   profile: UserProfile;
@@ -35,24 +31,6 @@ function IconSoundOff() {
     <svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true">
       <path d="M4 10v4h3l5 4V6L7 10H4z" fill="currentColor" />
       <path d="M16 9l5 6M21 9l-5 6" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
-    </svg>
-  );
-}
-
-function IconKeyboard() {
-  return (
-    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-      <rect x="3" y="7" width="18" height="12" rx="2" stroke="currentColor" strokeWidth="1.6" />
-      <path d="M7 11h.01M11 11h.01M15 11h.01M7 15h10" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
-    </svg>
-  );
-}
-
-function IconMic() {
-  return (
-    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-      <rect x="9" y="3" width="6" height="11" rx="3" stroke="currentColor" strokeWidth="1.6" />
-      <path d="M5 11a7 7 0 0014 0M12 18v3" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
     </svg>
   );
 }
@@ -108,7 +86,6 @@ export default function HomeScreen({
   onShowParent,
 }: HomeScreenProps) {
   const { isMuted, toggleMute } = useSound();
-  const { inputMode, toggleInputMode } = useInputMode();
   const [showParentGate, setShowParentGate] = useState(false);
   const [showStreakDetail, setShowStreakDetail] = useState(false);
 
@@ -151,16 +128,6 @@ export default function HomeScreen({
           >
             {isMuted ? <IconSoundOff /> : <IconSoundOn />}
           </button>
-          {STT_SUPPORTED && (
-            <button
-              className={`home-chrome-btn${inputMode === 'voice' ? ' home-mode-active' : ''}`}
-              onClick={toggleInputMode}
-              aria-label={inputMode === 'voice' ? 'Passer en mode clavier' : 'Passer en mode vocal'}
-              aria-pressed={inputMode === 'voice'}
-            >
-              {inputMode === 'voice' ? <IconMic /> : <IconKeyboard />}
-            </button>
-          )}
           <button
             className="home-chrome-btn home-parent-btn"
             onClick={() => setShowParentGate(true)}

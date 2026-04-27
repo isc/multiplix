@@ -16,7 +16,6 @@ function getInitialMode(): InputMode {
 export function useInputMode(): {
   inputMode: InputMode;
   setInputMode: (mode: InputMode) => void;
-  toggleInputMode: () => void;
 } {
   const [inputMode, setInputModeState] = useState<InputMode>(getInitialMode);
 
@@ -29,17 +28,5 @@ export function useInputMode(): {
     }
   }, []);
 
-  const toggleInputMode = useCallback(() => {
-    setInputModeState((prev) => {
-      const next: InputMode = prev === 'voice' ? 'keypad' : 'voice';
-      try {
-        localStorage.setItem(STORAGE_KEY, next);
-      } catch {
-        // ignore
-      }
-      return next;
-    });
-  }, []);
-
-  return { inputMode, setInputMode, toggleInputMode };
+  return { inputMode, setInputMode };
 }
