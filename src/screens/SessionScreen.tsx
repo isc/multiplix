@@ -12,6 +12,7 @@ import { todayISO } from '../lib/utils';
 import { useSound } from '../hooks/useSound';
 import { useTTS } from '../hooks/useTTS';
 import { useInputMode } from '../hooks/useInputMode';
+import { useWakeLock } from '../hooks/useWakeLock';
 import './SessionScreen.css';
 
 // Voice mode: lower threshold for the "fast" reward (étoile dorée) since oral
@@ -69,6 +70,7 @@ export default function SessionScreen({
   const { isMuted, playCorrect, playIncorrect } = useSound();
   const { speak, stop: stopSpeech, isSpeaking } = useTTS(isMuted);
   const { inputMode } = useInputMode();
+  useWakeLock(true);
 
   const speakQuestion = useCallback(
     (q: SessionQuestion) => speak(`q-${q.displayA}-${q.displayB}`),
