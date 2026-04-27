@@ -115,3 +115,98 @@ function hasConsecutiveFastAnswers(times: number[], count: number, thresholdMs: 
   return false;
 }
 
+// Couleur propre à chaque badge, cohérente avec la maquette :
+// sage pour les jalons « démarrage », honey pour la performance, sky pour
+// l'exploration, indigo pour les tables, coral pour tout ce qui touche à
+// la régularité / vitesse.
+export function medallionColorFor(id: string): string {
+  if (id === BADGE_IDS.PREMIER_PAS) return 'var(--sage)';
+  if (id === BADGE_IDS.REGULIER) return 'var(--coral)';
+  if (id === BADGE_IDS.MACHINE) return 'var(--honey)';
+  if (id === BADGE_IDS.EXPLORATION) return 'var(--sky)';
+  if (id.startsWith(BADGE_IDS.TABLE_PREFIX)) return 'var(--indigo)';
+  if (id === BADGE_IDS.GENIE_MATHS) return 'var(--honey)';
+  if (id === BADGE_IDS.VELOCE) return 'var(--coral)';
+  if (id === BADGE_IDS.PERSEVERANCE) return 'var(--sage)';
+  if (id === BADGE_IDS.FLAMME_ETERNELLE) return 'var(--coral)';
+  return 'var(--honey)';
+}
+
+// === Détail / progression d'un badge (affiché dans la modale) ===
+
+export interface BadgeDetail {
+  conditionText: string;
+  progress?: { current: number; target: number; unitLabel: string };
+}
+
+export function getBadgeDetail(badgeId: string, profile: UserProfile): BadgeDetail {
+  if (badgeId === BADGE_IDS.PREMIER_PAS) {
+    return {
+      conditionText: 'Termine ta toute première séance.',
+      progress: { current: Math.min(profile.totalSessions, 1), target: 1, unitLabel: 'séance' },
+    };
+  }
+
+  if (badgeId === BADGE_IDS.REGULIER) {
+    return {
+      conditionText: 'Joue 7 jours d’affilée sans en sauter un seul.',
+      progress: { current: Math.min(profile.currentStreak, 7), target: 7, unitLabel: 'jours' },
+    };
+  }
+
+  if (badgeId === BADGE_IDS.FLAMME_ETERNELLE) {
+    return {
+      conditionText: 'Joue 30 jours d’affilée. La grande flamme !',
+      progress: { current: Math.min(profile.currentStreak, 30), target: 30, unitLabel: 'jours' },
+    };
+  }
+
+  if (badgeId === BADGE_IDS.EXPLORATION) {
+    const total = profile.facts.length;
+    const seen = profile.facts.filter((f) => f.introduced).length;
+    return {
+      conditionText: 'Découvre toutes les multiplications du jeu.',
+      progress: { current: seen, target: total, unitLabel: 'découvertes' },
+    };
+  }
+
+  if (badgeId === BADGE_IDS.GENIE_MATHS) {
+    const total = profile.facts.length;
+    const mastered = profile.facts.filter((f) => f.box === 5).length;
+    return {
+      conditionText: 'Place toutes les multiplications dans la boîte 5 (le top niveau !).',
+      progress: { current: mastered, target: total, unitLabel: 'en boîte 5' },
+    };
+  }
+
+  if (badgeId === BADGE_IDS.MACHINE) {
+    return {
+      conditionText: 'Enchaîne 10 bonnes réponses de suite, sans aucune faute, dans une même séance.',
+    };
+  }
+
+  if (badgeId === BADGE_IDS.VELOCE) {
+    return {
+      conditionText: 'Réponds correctement 5 fois de suite en moins de 2 secondes à chaque fois.',
+    };
+  }
+
+  if (badgeId === BADGE_IDS.PERSEVERANCE) {
+    return {
+      conditionText: 'Reviens jouer après une pause de 3 jours ou plus. Le retour du champion !',
+    };
+  }
+
+  if (badgeId.startsWith(BADGE_IDS.TABLE_PREFIX)) {
+    const n = parseInt(badgeId.slice(BADGE_IDS.TABLE_PREFIX.length), 10);
+    const tableFacts = factsForTable(profile.facts, n);
+    const ready = tableFacts.filter((f) => f.box >= 4).length;
+    return {
+      conditionText: `Place toutes les multiplications de la table de ${n} dans la boîte 4 ou 5.`,
+      progress: { current: ready, target: tableFacts.length, unitLabel: 'en boîte 4+' },
+    };
+  }
+
+  return { conditionText: '' };
+}
+

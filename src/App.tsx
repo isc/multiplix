@@ -378,7 +378,7 @@ export default function App() {
 
       {screen === 'badges' && profile && (
         <BadgesScreen
-          earnedBadges={profile.badges}
+          profile={profile}
           onBack={() => setScreen('home')}
         />
       )}
