@@ -183,6 +183,8 @@ La stratégie des faits ×9 étant « n × 9 = n × 10 − n » (voir §4 et `li
 
 **Durée cible :** 4-6 minutes. L'application ne coupe pas en plein milieu d'une question mais affiche un indicateur de progression (barre ou étoiles à remplir).
 
+**Justification du choix de durée.** La littérature ne fixe pas de minute optimale unique : ce qui est étayé empiriquement, c'est la *forme* (séances courtes, fréquentes, distribuées), pas un chiffre précis. Les études d'intervention sur la fluence des faits arithmétiques s'étalent typiquement entre **5 et 20 min/séance**, avec un cluster autour de **10-15 min** dans les contextes scolaires de remédiation (Codding, Burns & Lukito 2011 ; Burns, Kanive & DeGrande 2012). La méta-analyse de Codding et al. (2011) traite d'ailleurs la dose comme un produit `sessions × semaines` plutôt qu'en minutes/séance — autrement dit, **la régularité quotidienne pèse plus que la longueur de chaque séance**. Notre cible de 4-6 minutes est donc volontairement au bas de la fourchette evidence-based : elle privilégie la consistance quotidienne (compatible avec un usage à la maison, sans supervision) plutôt que la dose par séance, et reste dans la zone confortable d'attention pour des enfants de 7-9 ans avant l'apparition de fatigue cognitive sur ce type de tâche répétitive.
+
 ### 3.3 Déroulement d'une question
 
 1. Affichage de la question : "6 × 7 = ?"
@@ -536,9 +538,13 @@ L'application est considérée comme ayant atteint son objectif quand :
 
 - Brendefur, J., Strother, S., Thiede, K., & Appleton, S. (2015). Developing multiplication fact fluency. *Advances in Social Sciences Research Journal, 2*(8). [doi:10.14738/assrj.28.1396](https://doi.org/10.14738/assrj.28.1396)
 
+- Burns, M. K., Kanive, R., & DeGrande, M. (2012). Effect of a computer-delivered math fact intervention as a supplemental intervention for math in third and fourth grades. *Remedial and Special Education, 33*(3), 184–191. [doi:10.1177/0741932510381652](https://doi.org/10.1177/0741932510381652)
+
 - Butler, R. (1988). Enhancing and undermining intrinsic motivation: The effects of task-involving and ego-involving evaluation on interest and performance. *British Journal of Educational Psychology, 58*(1), 1–14. [doi:10.1111/j.2044-8279.1988.tb00874.x](https://doi.org/10.1111/j.2044-8279.1988.tb00874.x)
 
 - Cepeda, N. J., Vul, E., Rohrer, D., Wixted, J. T., & Pashler, H. (2008). Spacing effects in learning: A temporal ridgeline of optimal retention. *Psychological Science, 19*(11), 1095–1102. [doi:10.1111/j.1467-9280.2008.02209.x](https://doi.org/10.1111/j.1467-9280.2008.02209.x)
+
+- Codding, R. S., Burns, M. K., & Lukito, G. (2011). Meta-analysis of mathematic basic-fact fluency interventions: A component analysis. *Learning Disabilities Research & Practice, 26*(1), 36–47. [doi:10.1111/j.1540-5826.2010.00323.x](https://doi.org/10.1111/j.1540-5826.2010.00323.x)
 
 - Cowan, R., Donlan, C., Shepherd, D.-L., Cole-Fletcher, R., Saxton, M., & Hurry, J. (2011). Basic calculation proficiency and mathematics achievement in elementary school children. *Journal of Educational Psychology, 103*(4), 786–803. [doi:10.1037/a0024556](https://doi.org/10.1037/a0024556)
 
