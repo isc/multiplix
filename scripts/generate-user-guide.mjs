@@ -325,7 +325,7 @@ async function captureBadgesScreen(page) {
   await page.click('.badges-grid .badge:has-text("Régularité")');
   await page.waitForSelector('.badge-detail-modal');
   await shot(page, '11-badges-detail');
-  await page.click('.badge-detail-close-btn');
+  await page.click('.badge-detail-modal .modal-close-btn');
   await page.waitForSelector('.badge-detail-modal', { state: 'detached' });
 
   await page.click('.badges-back-btn');
