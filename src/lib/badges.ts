@@ -115,10 +115,6 @@ function hasConsecutiveFastAnswers(times: number[], count: number, thresholdMs: 
   return false;
 }
 
-// Couleur propre à chaque badge, cohérente avec la maquette :
-// sage pour les jalons « démarrage », honey pour la performance, sky pour
-// l'exploration, indigo pour les tables, coral pour tout ce qui touche à
-// la régularité / vitesse.
 export function medallionColorFor(id: string): string {
   if (id === BADGE_IDS.PREMIER_PAS) return 'var(--sage)';
   if (id === BADGE_IDS.REGULIER) return 'var(--coral)';
@@ -131,8 +127,6 @@ export function medallionColorFor(id: string): string {
   if (id === BADGE_IDS.FLAMME_ETERNELLE) return 'var(--coral)';
   return 'var(--honey)';
 }
-
-// === Détail / progression d'un badge (affiché dans la modale) ===
 
 export interface BadgeDetail {
   conditionText: string;

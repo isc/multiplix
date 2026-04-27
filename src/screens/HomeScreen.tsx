@@ -112,34 +112,36 @@ export default function HomeScreen({
   const [showParentGate, setShowParentGate] = useState(false);
   const [showStreakDetail, setShowStreakDetail] = useState(false);
 
+  const streakActive = profile.currentStreak > 0;
+  const showStreakPill = streakActive || profile.totalSessions > 0;
+  const streakLabel = streakActive
+    ? `Série de ${profile.currentStreak} ${profile.currentStreak === 1 ? 'jour' : 'jours'} — voir les détails`
+    : 'Série interrompue — voir les détails';
+
   return (
     <div className="home-screen">
       <div className="home-top-bar">
         <div className="home-top-bar-left">
-          {profile.currentStreak > 0 ? (
+          {showStreakPill && (
             <button
               type="button"
               className="home-streak-pill"
               onClick={() => setShowStreakDetail(true)}
-              aria-label={`Série de ${profile.currentStreak} ${profile.currentStreak === 1 ? 'jour' : 'jours'} — voir les détails`}
+              aria-label={streakLabel}
             >
-              <span className="home-streak-pill-flame"><FlameIcon size={14} /></span>
-              <span className="home-streak-pill-count">{profile.currentStreak}</span>
-              <span className="home-streak-pill-label">
-                {profile.currentStreak === 1 ? 'jour' : 'jours'}
-              </span>
+              <span className="home-streak-pill-flame"><FlameIcon size={14} muted={!streakActive} /></span>
+              {streakActive ? (
+                <>
+                  <span className="home-streak-pill-count">{profile.currentStreak}</span>
+                  <span className="home-streak-pill-label">
+                    {profile.currentStreak === 1 ? 'jour' : 'jours'}
+                  </span>
+                </>
+              ) : (
+                <span className="home-streak-pill-prompt">On s'y remet&nbsp;?</span>
+              )}
             </button>
-          ) : profile.totalSessions > 0 ? (
-            <button
-              type="button"
-              className="home-streak-pill"
-              onClick={() => setShowStreakDetail(true)}
-              aria-label="Série interrompue — voir les détails"
-            >
-              <span className="home-streak-pill-flame"><FlameIcon size={14} muted /></span>
-              <span className="home-streak-pill-prompt">On s'y remet&nbsp;?</span>
-            </button>
-          ) : null}
+          )}
         </div>
         <div className="home-top-bar-right">
           <button

@@ -1,37 +1,5 @@
-.badge-detail-overlay {
-  position: fixed;
-  inset: 0;
-  background: rgba(20, 18, 14, 0.45);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 20px;
-  z-index: 1000;
-  animation: badge-detail-fade-in 0.15s ease;
-}
-
-@keyframes badge-detail-fade-in {
-  from { opacity: 0; }
-  to { opacity: 1; }
-}
-
 .badge-detail-modal {
-  background: var(--paper);
-  border: 1.5px solid var(--line);
-  border-radius: 18px;
-  padding: 24px 22px 18px;
-  width: 100%;
-  max-width: 420px;
-  max-height: calc(100vh - 40px);
-  overflow-y: auto;
-  box-shadow: 0 12px 40px rgba(20, 18, 14, 0.18);
   text-align: center;
-  animation: badge-detail-pop 0.18s ease;
-}
-
-@keyframes badge-detail-pop {
-  from { transform: scale(0.92); opacity: 0; }
-  to { transform: scale(1); opacity: 1; }
 }
 
 .badge-detail-medallion {
@@ -126,23 +94,4 @@
 .badge-detail-earned-check {
   font-size: 18px;
   font-weight: 800;
-}
-
-.badge-detail-close-btn {
-  width: 100%;
-  padding: 12px 16px;
-  font-family: var(--sans);
-  font-size: 14px;
-  font-weight: 800;
-  border-radius: 999px;
-  border: 1.5px solid var(--line);
-  background: var(--paper);
-  color: var(--ink);
-  cursor: pointer;
-  letter-spacing: 0.2px;
-  transition: transform 0.1s ease;
-}
-
-.badge-detail-close-btn:active {
-  transform: translateY(1px);
 }

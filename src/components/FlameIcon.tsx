@@ -4,8 +4,6 @@ interface FlameIconProps {
   className?: string;
 }
 
-// Définition partagée entre la pill streak (14×14) et la modale streak
-// (~56×56). `muted` baisse l'opacité quand la série est interrompue.
 export default function FlameIcon({ size = 14, muted = false, className }: FlameIconProps) {
   return (
     <svg
