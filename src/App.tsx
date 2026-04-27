@@ -7,7 +7,9 @@ import { checkBadges, getCompletedTables } from './lib/badges';
 import { loadProfile, saveProfile, createNewProfile, exportProfile, importProfile } from './lib/storage';
 import { getFactKey } from './lib/facts';
 import { todayISO, daysBetween } from './lib/utils';
+import { isStandalone, hasSkippedInstall, clearInstallSkipped } from './lib/install';
 import type { PlacementResult } from './screens/WelcomeScreen';
+import LandingScreen from './screens/LandingScreen';
 import WelcomeScreen from './screens/WelcomeScreen';
 import HomeScreen from './screens/HomeScreen';
 import SessionScreen from './screens/SessionScreen';
@@ -21,6 +23,7 @@ import PrivacyScreen from './screens/PrivacyScreen';
 import './App.css';
 
 type Screen =
+  | 'landing'
   | 'welcome'
   | 'rulesIntro'
   | 'home'
@@ -33,6 +36,10 @@ type Screen =
   | 'privacy';
 
 function initialScreen(profile: UserProfile | null): Screen {
+  // Si l'app tourne en mode standalone (PWA installée), pas besoin de landing.
+  // Sinon, on montre la landing tant que l'utilisateur n'a pas dit "essayer
+  // dans le navigateur". Une fois standalone, on n'a plus rien à pousser.
+  if (!isStandalone() && !hasSkippedInstall() && !profile) return 'landing';
   if (!profile) return 'welcome';
   if (!profile.hasSeenRulesIntro) return 'rulesIntro';
   return 'home';
@@ -71,6 +78,17 @@ export default function App() {
     if (profile) {
       saveProfile(profile);
     }
+  }, [profile]);
+
+  // Si on tourne en standalone (PWA installée), le flag "skip" du navigateur
+  // n'a plus d'utilité. On nettoie pour qu'un éventuel retour navigateur
+  // (uninstall) reparte sur la landing.
+  useEffect(() => {
+    if (isStandalone()) clearInstallSkipped();
+  }, []);
+
+  const handleLandingSkip = useCallback(() => {
+    setScreen(profile ? 'home' : 'welcome');
   }, [profile]);
 
   // Welcome: create new profile with optional placement test results
@@ -309,6 +327,10 @@ export default function App() {
 
   return (
     <div className="app">
+      {screen === 'landing' && (
+        <LandingScreen onSkip={handleLandingSkip} />
+      )}
+
       {screen === 'welcome' && (
         <WelcomeScreen onComplete={handleWelcomeComplete} />
       )}
