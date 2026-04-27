@@ -35,17 +35,25 @@
   background: var(--paper);
   border-radius: 999px;
   border: 1.5px solid var(--line);
+  font-family: inherit;
+  color: inherit;
+  cursor: pointer;
+  transition: transform 0.15s ease;
+}
+
+.home-streak-pill:focus-visible {
+  outline: 2px solid var(--coral);
+  outline-offset: 2px;
+}
+
+.home-streak-pill:active {
+  transform: translateY(1px);
 }
 
 .home-streak-pill-flame {
-  font-size: 14px;
   line-height: 1;
   animation: flame 1s ease-in-out infinite;
-  display: inline-block;
-}
-
-.home-streak-pill-flame-muted {
-  opacity: 0.4;
+  display: inline-flex;
 }
 
 .home-streak-pill-count {

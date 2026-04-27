@@ -2,6 +2,8 @@ import { useState } from 'react';
 import type { UserProfile } from '../types';
 import Mascot from '../components/Mascot';
 import ParentGate from '../components/ParentGate';
+import StreakDetailModal from '../components/StreakDetailModal';
+import FlameIcon from '../components/FlameIcon';
 import { useSound } from '../hooks/useSound';
 import { useInputMode } from '../hooks/useInputMode';
 import { isSpeechRecognitionSupported } from '../hooks/useSpeechRecognition';
@@ -96,14 +98,6 @@ function IconRuler() {
   );
 }
 
-function IconFlame() {
-  return (
-    <svg width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden="true">
-      <path d="M8 1c1 2 3 3 3 6 0 1-.5 2-1.5 2.5C10 8 9.5 7 9 6.5c.5 2-.5 3-1 3.5C7 9 6.5 7.5 6.5 7c-1.5 1-2 2-2 3.5C4.5 13 6 15 8 15s3.5-2 3.5-4.5S10 7 8 1z" fill="var(--coral)" stroke="var(--ink)" strokeWidth="1.2" strokeLinejoin="round" />
-    </svg>
-  );
-}
-
 export default function HomeScreen({
   profile,
   hasSessionAvailable,
@@ -116,24 +110,35 @@ export default function HomeScreen({
   const { isMuted, toggleMute } = useSound();
   const { inputMode, toggleInputMode } = useInputMode();
   const [showParentGate, setShowParentGate] = useState(false);
+  const [showStreakDetail, setShowStreakDetail] = useState(false);
 
   return (
     <div className="home-screen">
       <div className="home-top-bar">
         <div className="home-top-bar-left">
           {profile.currentStreak > 0 ? (
-            <div className="home-streak-pill">
-              <span className="home-streak-pill-flame"><IconFlame /></span>
+            <button
+              type="button"
+              className="home-streak-pill"
+              onClick={() => setShowStreakDetail(true)}
+              aria-label={`Série de ${profile.currentStreak} ${profile.currentStreak === 1 ? 'jour' : 'jours'} — voir les détails`}
+            >
+              <span className="home-streak-pill-flame"><FlameIcon size={14} /></span>
               <span className="home-streak-pill-count">{profile.currentStreak}</span>
               <span className="home-streak-pill-label">
                 {profile.currentStreak === 1 ? 'jour' : 'jours'}
               </span>
-            </div>
+            </button>
           ) : profile.totalSessions > 0 ? (
-            <div className="home-streak-pill">
-              <span className="home-streak-pill-flame home-streak-pill-flame-muted"><IconFlame /></span>
+            <button
+              type="button"
+              className="home-streak-pill"
+              onClick={() => setShowStreakDetail(true)}
+              aria-label="Série interrompue — voir les détails"
+            >
+              <span className="home-streak-pill-flame"><FlameIcon size={14} muted /></span>
               <span className="home-streak-pill-prompt">On s'y remet&nbsp;?</span>
-            </div>
+            </button>
           ) : null}
         </div>
         <div className="home-top-bar-right">
@@ -205,6 +210,13 @@ export default function HomeScreen({
         <ParentGate
           onSuccess={() => { setShowParentGate(false); onShowParent(); }}
           onClose={() => setShowParentGate(false)}
+        />
+      )}
+
+      {showStreakDetail && (
+        <StreakDetailModal
+          profile={profile}
+          onClose={() => setShowStreakDetail(false)}
         />
       )}
     </div>
