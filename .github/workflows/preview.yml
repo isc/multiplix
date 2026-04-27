@@ -48,6 +48,13 @@ jobs:
           # assets, and so the user-guide script navigates to the right URL.
           VITE_BASE_PATH: ${{ steps.slug.outputs.base }}
 
+      # Marker poll-able from GitHub Pages once it's actually serving the
+      # fresh build. Used by the wait step below — without it, the PR
+      # comment lands before Pages has finished propagating, and clicking
+      # the link gives a 404 (or stale content on subsequent pushes).
+      - name: Write deployment marker
+        run: echo "${{ github.event.pull_request.head.sha }}" > dist/.preview-sha
+
       - name: Publish to gh-pages (previews/${{ steps.slug.outputs.slug }})
         uses: peaceiris/actions-gh-pages@v4
         with:
@@ -57,6 +64,23 @@ jobs:
           destination_dir: previews/${{ steps.slug.outputs.slug }}
           keep_files: true
           commit_message: 'preview: ${{ steps.slug.outputs.slug }} @ ${{ github.event.pull_request.head.sha }}'
+
+      - name: Wait for GitHub Pages to serve fresh preview
+        env:
+          EXPECTED_SHA: ${{ github.event.pull_request.head.sha }}
+          SLUG: ${{ steps.slug.outputs.slug }}
+        run: |
+          url="https://isc.github.io/multiplix/previews/$SLUG/.preview-sha"
+          for i in $(seq 1 60); do
+            actual=$(curl -fsSL "$url" 2>/dev/null | tr -d '[:space:]' || true)
+            if [ "$actual" = "$EXPECTED_SHA" ]; then
+              echo "Preview live with $EXPECTED_SHA after ${i}×5s"
+              exit 0
+            fi
+            echo "Attempt $i/60: got '$actual', want '$EXPECTED_SHA'"
+            sleep 5
+          done
+          echo "::warning::Preview did not become live with the expected SHA in 5 minutes — comment posted anyway"
 
       # Wrapped in wretry parce que l'API GitHub issues renvoie parfois un
       # 504 transitoire sur ce step (cf. run 24829541258). 3 tentatives
