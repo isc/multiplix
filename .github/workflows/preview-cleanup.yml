@@ -24,7 +24,7 @@ jobs:
           echo "slug=$slug" >> "$GITHUB_OUTPUT"
 
       - name: Checkout gh-pages
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           ref: gh-pages
           fetch-depth: 1
