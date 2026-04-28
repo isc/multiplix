@@ -26,12 +26,21 @@ const targets = [
   { name: 'ipad-1668x2388.png', w: 1668, h: 2388 },       // iPad Pro 11"
 ];
 
-const svg = await readFile(masterPath);
+// On part de l'icône maskable mais on l'adapte pour le splash : pas de
+// fond indigo full-bleed (sinon ça fait un carré avec des bords droits
+// posé sur le canvas cream), et on inverse les couleurs du médaillon
+// pour qu'il ressorte (indigo) sur le cream du splash.
+const iconSvg = await readFile(masterPath, 'utf8');
+const splashSvg = Buffer.from(
+  iconSvg
+    .replace(/<rect width="1024" height="1024" fill="#4F46BA"\/>/, '')
+    .replace('fill="#FBF6EC"', 'fill="#4F46BA"'),
+);
 
 await Promise.all(
   targets.map(async ({ name, w, h }) => {
     const logoSize = Math.round(Math.min(w, h) * LOGO_RATIO);
-    const logo = await sharp(svg, { density: 384 })
+    const logo = await sharp(splashSvg, { density: 384 })
       .resize(logoSize, logoSize, { fit: 'contain', background: { r: 0, g: 0, b: 0, alpha: 0 } })
       .png()
       .toBuffer();
