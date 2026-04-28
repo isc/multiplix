@@ -52,6 +52,9 @@ export default function App() {
   const [sessionResult, setSessionResult] = useState<SessionResult | null>(null);
   const [newBadges, setNewBadges] = useState<Badge[]>([]);
   const [newlyCompletedTables, setNewlyCompletedTables] = useState<number[]>([]);
+  // Tracked in state so a date rollover (app left open past minuit) re-déclenche
+  // les memos qui dépendent du jour courant (ex: disponibilité de la séance).
+  const [today, setToday] = useState<string>(() => todayISO());
 
   // Track session stats for badge checking
   const sessionConsecutiveCorrect = useRef(0);
@@ -85,6 +88,22 @@ export default function App() {
   // (uninstall) reparte sur la landing.
   useEffect(() => {
     if (isStandalone()) clearInstallSkipped();
+  }, []);
+
+  // Rafraîchir `today` quand l'app revient au premier plan : sans ça, un user
+  // qui laisse l'app ouverte la nuit voit toujours "c'est fait pour aujourd'hui"
+  // le lendemain car le memo ne se recalcule pas.
+  useEffect(() => {
+    const refresh = () => setToday((prev) => {
+      const next = todayISO();
+      return next === prev ? prev : next;
+    });
+    document.addEventListener('visibilitychange', refresh);
+    window.addEventListener('focus', refresh);
+    return () => {
+      document.removeEventListener('visibilitychange', refresh);
+      window.removeEventListener('focus', refresh);
+    };
   }, []);
 
   const handleLandingSkip = useCallback(() => {
@@ -135,10 +154,9 @@ export default function App() {
   // composeSession on every render, and reuse it when the user clicks "start".
   const pendingSession = useMemo(() => {
     if (!profile) return [];
-    const today = todayISO();
     if (profile.lastSessionDate === today) return [];
     return composeSession(profile, today);
-  }, [profile]);
+  }, [profile, today]);
 
   // Start session
   const handleStartSession = useCallback(() => {

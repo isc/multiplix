@@ -49,6 +49,8 @@
 .feedback-overlay.incorrect .feedback-card {
   text-align: left;
   padding: 22px 22px 20px;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
 }
 
 .feedback-star-wrap {
