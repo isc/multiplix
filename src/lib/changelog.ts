@@ -15,6 +15,7 @@ export const CHANGELOG: ChangelogEntry[] = [
       "Page « Nouveautés » accessible depuis l'espace parent (la voici).",
       "Le test de placement reconnaît maintenant les faits faciles déjà connus à partir des plus durs : 2×2, 2×3, etc. ne restent plus comme « non introduits » quand l'enfant a réussi des multiplications difficiles.",
       "Si le mode vocal est activé, la permission micro est demandée dès le premier tap après le lancement de l'app, plutôt qu'en pleine séance.",
+      "Les pages Confidentialité et Nouveautés ouvrent désormais en haut de page (avant ça, elles pouvaient apparaître scrollées tout en bas).",
     ],
   },
   {
