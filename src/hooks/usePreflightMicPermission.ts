@@ -1,6 +1,5 @@
 import { useEffect } from 'react';
-
-const INPUT_MODE_KEY = 'multiplix-input-mode';
+import { INPUT_MODE_STORAGE_KEY } from './useInputMode';
 
 // Décale l'enregistrement du listener de geste pour laisser le temps au
 // service worker (autoUpdate de vite-plugin-pwa) de finir un éventuel cycle
@@ -18,18 +17,15 @@ export function usePreflightMicPermission(): void {
   useEffect(() => {
     let mode: string | null = null;
     try {
-      mode = localStorage.getItem(INPUT_MODE_KEY);
+      mode = localStorage.getItem(INPUT_MODE_STORAGE_KEY);
     } catch {
       return;
     }
     if (mode !== 'voice') return;
     if (!navigator.mediaDevices?.getUserMedia) return;
 
-    let done = false;
+    const ac = new AbortController();
     const requestMic = async () => {
-      if (done) return;
-      done = true;
-      document.removeEventListener('pointerdown', requestMic);
       try {
         const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
         stream.getTracks().forEach((t) => t.stop());
@@ -41,15 +37,15 @@ export function usePreflightMicPermission(): void {
     };
 
     const timer = setTimeout(() => {
-      if (!done) {
-        document.addEventListener('pointerdown', requestMic, { once: true });
-      }
+      document.addEventListener('pointerdown', requestMic, {
+        once: true,
+        signal: ac.signal,
+      });
     }, SW_SETTLE_DELAY_MS);
 
     return () => {
-      done = true;
       clearTimeout(timer);
-      document.removeEventListener('pointerdown', requestMic);
+      ac.abort();
     };
   }, []);
 }
