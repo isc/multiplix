@@ -9,6 +9,7 @@ import { seedFromPlacement } from './lib/placement';
 import type { PlacementResult } from './lib/placement';
 import { todayISO, daysBetween } from './lib/utils';
 import { isStandalone, hasSkippedInstall, clearInstallSkipped } from './lib/install';
+import { usePreflightMicPermission } from './hooks/usePreflightMicPermission';
 import LandingScreen from './screens/LandingScreen';
 import WelcomeScreen from './screens/WelcomeScreen';
 import HomeScreen from './screens/HomeScreen';
@@ -46,6 +47,7 @@ function initialScreen(profile: UserProfile | null): Screen {
 }
 
 export default function App() {
+  usePreflightMicPermission();
   const [profile, setProfile] = useState<UserProfile | null>(() => loadProfile());
   const [screen, setScreen] = useState<Screen>(() => initialScreen(profile));
   const [sessionQuestions, setSessionQuestions] = useState<SessionQuestion[]>([]);
