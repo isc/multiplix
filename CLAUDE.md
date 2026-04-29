@@ -25,7 +25,7 @@ Un guide HTML avec captures d'écran est généré par `npm run user-guide` (scr
 
 ## Changelog in-app
 
-`src/lib/changelog.ts` alimente la page « Nouveautés » de l'espace parent. Quand un commit apporte un changement visible côté enfant ou parent (nouveau fonctionnement, fix d'un bug que l'utilisateur pouvait observer, nouvelle UI, etc.), ajouter une entrée — soit en créant un nouvel objet pour la date du jour, soit en complétant l'entrée du jour si elle existe déjà. Ne pas y mettre les refactos, le CI, le lint, ou les changements purement techniques invisibles.
+`src/lib/changelog.ts` alimente la page « Nouveautés » de l'espace parent. Le seuil est élevé : une entrée doit valoir le coup pour le parent qui ouvre la page. On y met les **vraies nouveautés fonctionnelles** (nouvelle feature, changement de comportement notable, bug fixe que le parent avait remarqué). On n'y met PAS les fixes d'UX mineurs (polish, scroll, espacement, typo), les refactos, le CI, le lint, ni les changements purement techniques. Au moindre doute : ne pas ajouter.
 
 ## Génération des MP3 TTS
 
