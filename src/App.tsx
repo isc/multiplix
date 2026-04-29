@@ -99,8 +99,14 @@ export default function App() {
   // brièvement le nouvel écran avec l'ancien scroll, et si la nouvelle page
   // est plus courte que la précédente le navigateur clampe et on atterrit
   // tout en bas.
+  //
+  // On reset body ET documentElement : avec `html, body { height: 100% }` et
+  // body en `overflow: auto`, c'est body qui scroll (pas window), donc
+  // window.scrollTo n'a aucun effet — vérifié au Playwright. On garde aussi
+  // documentElement par sécurité au cas où le contexte change.
   useLayoutEffect(() => {
-    window.scrollTo(0, 0);
+    document.body.scrollTop = 0;
+    document.documentElement.scrollTop = 0;
   }, [screen]);
 
   // Rafraîchir `today` quand l'app revient au premier plan : sans ça, un user
