@@ -15,7 +15,7 @@ function readMode(): InputMode {
   }
 }
 
-let cached: InputMode = readMode();
+let currentMode: InputMode = readMode();
 const listeners = new Set<() => void>();
 
 function subscribe(callback: () => void): () => void {
@@ -26,7 +26,7 @@ function subscribe(callback: () => void): () => void {
 }
 
 function getSnapshot(): InputMode {
-  return cached;
+  return currentMode;
 }
 
 export function useInputMode(): {
@@ -36,14 +36,17 @@ export function useInputMode(): {
   const inputMode = useSyncExternalStore(subscribe, getSnapshot);
 
   const setInputMode = useCallback((mode: InputMode) => {
-    if (cached === mode) return;
-    cached = mode;
+    if (currentMode === mode) return;
+    currentMode = mode;
     try {
       localStorage.setItem(INPUT_MODE_STORAGE_KEY, mode);
     } catch {
       // ignore
     }
-    for (const listener of listeners) listener();
+    // Snapshot pour ne pas itérer sur le set en cours de mutation si un
+    // listener déclenche un unsubscribe synchrone (ex: composant qui
+    // s'unmount à cause du nouveau mode).
+    for (const listener of [...listeners]) listener();
   }, []);
 
   return { inputMode, setInputMode };
