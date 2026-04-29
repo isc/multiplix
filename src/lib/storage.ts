@@ -1,6 +1,7 @@
 import type { UserProfile } from '../types';
 import { MYSTERY_POOL } from '../types';
 import { createInitialFacts } from './facts';
+import { inferIntroductionsFromKnowns } from './placement';
 import { pickRandom, todayISO } from './utils';
 
 export const STORAGE_KEY = 'multiplix-profile';
@@ -89,6 +90,10 @@ function migrateProfile(profile: UserProfile): UserProfile {
   }
   // Strip deprecated mascotLevel field from older profiles
   delete (profile as UserProfile & { mascotLevel?: number }).mascotLevel;
+  // Fix les profils créés avant l'ajout de l'inférence par dominance lors
+  // du test de placement : si des faits restent non introduits alors qu'on
+  // a une preuve de réussite sur des faits plus durs, on les introduit.
+  inferIntroductionsFromKnowns(profile.facts, todayISO());
   return profile;
 }
 

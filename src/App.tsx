@@ -1,14 +1,14 @@
 import { useState, useEffect, useCallback, useRef, useMemo } from 'react';
 import type { UserProfile, SessionQuestion, SessionResult, MultiFact, Badge, BoxLevel } from './types';
-import { BOX_INTERVALS, RESPONSE_TIME } from './types';
 import { composeSession } from './lib/sessionComposer';
-import { processAnswer, addDays, resetFact } from './lib/leitner';
+import { processAnswer, resetFact } from './lib/leitner';
 import { checkBadges, getCompletedTables } from './lib/badges';
 import { loadProfile, saveProfile, createNewProfile, exportProfile, importProfile } from './lib/storage';
 import { getFactKey } from './lib/facts';
+import { seedFromPlacement } from './lib/placement';
+import type { PlacementResult } from './lib/placement';
 import { todayISO, daysBetween } from './lib/utils';
 import { isStandalone, hasSkippedInstall, clearInstallSkipped } from './lib/install';
-import type { PlacementResult } from './screens/WelcomeScreen';
 import LandingScreen from './screens/LandingScreen';
 import WelcomeScreen from './screens/WelcomeScreen';
 import HomeScreen from './screens/HomeScreen';
@@ -113,34 +113,7 @@ export default function App() {
   // Welcome: create new profile with optional placement test results
   const handleWelcomeComplete = useCallback((name: string, placementResults: PlacementResult[]) => {
     const newProfile = createNewProfile(name);
-    const today = todayISO();
-
-    if (placementResults.length > 0) {
-      for (const result of placementResults) {
-        const fact = newProfile.facts.find((f) => getFactKey(f.a, f.b) === result.factKey);
-        if (!fact) continue;
-
-        fact.introduced = true;
-        fact.lastSeen = today;
-
-        if (result.correct && result.timeMs < RESPONSE_TIME.FAST) {
-          fact.box = 3;
-        } else if (result.correct && result.timeMs < RESPONSE_TIME.SLOW) {
-          fact.box = 2;
-        } else {
-          fact.box = 1;
-        }
-
-        fact.nextDue = addDays(today, BOX_INTERVALS[fact.box]);
-        fact.history = [{
-          date: today,
-          correct: result.correct,
-          responseTimeMs: result.timeMs,
-          answeredWith: null,
-        }];
-      }
-    }
-
+    seedFromPlacement(newProfile.facts, placementResults, todayISO());
     setProfile(newProfile);
     setScreen('rulesIntro');
   }, []);

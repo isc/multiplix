@@ -1,0 +1,181 @@
+// @vitest-environment node
+import { describe, it, expect } from 'vitest';
+import { seedFromPlacement, inferIntroductionsFromKnowns, type PlacementResult } from '../lib/placement';
+import { createInitialFacts, getFactKey } from '../lib/facts';
+import type { MultiFact } from '../types';
+
+const TODAY = '2026-04-29';
+
+function findFact(facts: MultiFact[], a: number, b: number): MultiFact {
+  const f = facts.find((x) => getFactKey(x.a, x.b) === getFactKey(a, b));
+  if (!f) throw new Error(`fact ${a}×${b} not found`);
+  return f;
+}
+
+describe('seedFromPlacement', () => {
+  it('laisse les faits intacts si aucun résultat', () => {
+    const facts = createInitialFacts();
+    seedFromPlacement(facts, [], TODAY);
+    for (const f of facts) {
+      expect(f.introduced).toBe(false);
+      expect(f.box).toBe(1);
+    }
+  });
+
+  it('place un fait correctement résolu rapidement en boîte 3', () => {
+    const facts = createInitialFacts();
+    const results: PlacementResult[] = [
+      { factKey: '3x4', correct: true, timeMs: 1500 },
+    ];
+    seedFromPlacement(facts, results, TODAY);
+    const f = findFact(facts, 3, 4);
+    expect(f.introduced).toBe(true);
+    expect(f.box).toBe(3);
+    expect(f.lastSeen).toBe(TODAY);
+  });
+
+  it('place un fait correct mais lent (3-5s) en boîte 2', () => {
+    const facts = createInitialFacts();
+    const results: PlacementResult[] = [
+      { factKey: '6x9', correct: true, timeMs: 4200 },
+    ];
+    seedFromPlacement(facts, results, TODAY);
+    expect(findFact(facts, 6, 9).box).toBe(2);
+  });
+
+  it('place un fait raté en boîte 1 (introduit quand même)', () => {
+    const facts = createInitialFacts();
+    const results: PlacementResult[] = [
+      { factKey: '7x8', correct: false, timeMs: 6000 },
+    ];
+    seedFromPlacement(facts, results, TODAY);
+    const f = findFact(facts, 7, 8);
+    expect(f.introduced).toBe(true);
+    expect(f.box).toBe(1);
+  });
+
+  it('infère 2×3 comme connu si 6×9 est correct (dominance)', () => {
+    const facts = createInitialFacts();
+    const results: PlacementResult[] = [
+      { factKey: '6x9', correct: true, timeMs: 2000 },
+    ];
+    seedFromPlacement(facts, results, TODAY);
+    const f = findFact(facts, 2, 3);
+    expect(f.introduced).toBe(true);
+    expect(f.box).toBe(2);
+  });
+
+  it('n\'infère PAS un fait non dominé (9×9 ne peut être inféré par rien)', () => {
+    const facts = createInitialFacts();
+    // Tous les faits du placement réel, tous corrects et rapides.
+    const allPlacement: [number, number][] = [
+      [2, 5], [3, 4], [5, 5], [2, 8], [3, 6],
+      [4, 7], [6, 6], [5, 8], [3, 9], [7, 7],
+      [4, 9], [6, 8], [7, 9], [8, 8], [6, 9],
+    ];
+    const results: PlacementResult[] = allPlacement.map(([a, b]) => ({
+      factKey: getFactKey(a, b),
+      correct: true,
+      timeMs: 1500,
+    }));
+    seedFromPlacement(facts, results, TODAY);
+    expect(findFact(facts, 9, 9).introduced).toBe(false);
+    expect(findFact(facts, 8, 9).introduced).toBe(false);
+    // Mais tous les autres doivent être introduits
+    const stillNotIntroduced = facts.filter((f) => !f.introduced);
+    expect(stillNotIntroduced.map((f) => getFactKey(f.a, f.b))).toEqual(['8x9', '9x9']);
+  });
+
+  it('n\'infère PAS à partir d\'un test raté', () => {
+    const facts = createInitialFacts();
+    const results: PlacementResult[] = [
+      { factKey: '6x9', correct: false, timeMs: 8000 },
+    ];
+    seedFromPlacement(facts, results, TODAY);
+    expect(findFact(facts, 2, 3).introduced).toBe(false);
+  });
+
+  it('un test direct domine un test inféré (priorité au direct)', () => {
+    const facts = createInitialFacts();
+    // 6×9 correct rapide → infère 5×8 en boîte 2.
+    // Mais 5×8 est aussi testé directement, lentement → boîte 2 directement.
+    // Le test direct doit gagner (et écraser l'inférence).
+    const results: PlacementResult[] = [
+      { factKey: '5x8', correct: true, timeMs: 4500 }, // direct: box 2
+      { factKey: '6x9', correct: true, timeMs: 1500 }, // pourrait inférer box 2
+    ];
+    seedFromPlacement(facts, results, TODAY);
+    const f = findFact(facts, 5, 8);
+    expect(f.box).toBe(2);
+    expect(f.history).toHaveLength(1); // a un historique → directement testé
+    expect(f.history[0].responseTimeMs).toBe(4500);
+  });
+
+  it('le placement complet d\'un enfant qui aces tout introduit 34 faits sur 36', () => {
+    const facts = createInitialFacts();
+    const allPlacement: [number, number][] = [
+      [2, 5], [3, 4], [5, 5], [2, 8], [3, 6],
+      [4, 7], [6, 6], [5, 8], [3, 9], [7, 7],
+      [4, 9], [6, 8], [7, 9], [8, 8], [6, 9],
+    ];
+    const results: PlacementResult[] = allPlacement.map(([a, b]) => ({
+      factKey: getFactKey(a, b),
+      correct: true,
+      timeMs: 1500,
+    }));
+    seedFromPlacement(facts, results, TODAY);
+    const introduced = facts.filter((f) => f.introduced);
+    expect(introduced).toHaveLength(34);
+  });
+});
+
+describe('inferIntroductionsFromKnowns (migration)', () => {
+  it('infère les faits manquants à partir des faits déjà connus', () => {
+    // Simule un profil créé avant le fix : 6×9 testé correctement au
+    // placement, mais 2×3 jamais introduit.
+    const facts = createInitialFacts();
+    const f69 = findFact(facts, 6, 9);
+    f69.introduced = true;
+    f69.box = 3;
+    f69.history = [{ date: '2026-04-20', correct: true, responseTimeMs: 1500, answeredWith: 54 }];
+
+    inferIntroductionsFromKnowns(facts, TODAY);
+
+    const f23 = findFact(facts, 2, 3);
+    expect(f23.introduced).toBe(true);
+    expect(f23.box).toBe(2);
+  });
+
+  it('idempotent : un second appel ne change rien', () => {
+    const facts = createInitialFacts();
+    const f88 = findFact(facts, 8, 8);
+    f88.introduced = true;
+    f88.box = 4;
+    f88.history = [{ date: '2026-04-20', correct: true, responseTimeMs: 2000, answeredWith: 64 }];
+
+    inferIntroductionsFromKnowns(facts, TODAY);
+    const introducedAfterFirst = facts.filter((f) => f.introduced).map((f) => getFactKey(f.a, f.b)).sort();
+    inferIntroductionsFromKnowns(facts, TODAY);
+    const introducedAfterSecond = facts.filter((f) => f.introduced).map((f) => getFactKey(f.a, f.b)).sort();
+
+    expect(introducedAfterSecond).toEqual(introducedAfterFirst);
+  });
+
+  it('n\'infère rien sur un profil neuf sans aucun fait introduit', () => {
+    const facts = createInitialFacts();
+    inferIntroductionsFromKnowns(facts, TODAY);
+    expect(facts.every((f) => !f.introduced)).toBe(true);
+  });
+
+  it('exige une bonne réponse : un fait introduit mais jamais réussi n\'est pas une preuve', () => {
+    const facts = createInitialFacts();
+    const f69 = findFact(facts, 6, 9);
+    f69.introduced = true;
+    f69.box = 1;
+    f69.history = [{ date: '2026-04-20', correct: false, responseTimeMs: 8000, answeredWith: 50 }];
+
+    inferIntroductionsFromKnowns(facts, TODAY);
+
+    expect(findFact(facts, 2, 3).introduced).toBe(false);
+  });
+});

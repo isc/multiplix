@@ -3,15 +3,12 @@ import Mascot from '../components/Mascot';
 import NumPad from '../components/NumPad';
 import { shuffle } from '../lib/utils';
 import { getFactKey } from '../lib/facts';
+import type { PlacementResult } from '../lib/placement';
 import { useSound } from '../hooks/useSound';
 import { useTTS } from '../hooks/useTTS';
 import './WelcomeScreen.css';
 
-export interface PlacementResult {
-  factKey: string; // e.g. "3x7"
-  correct: boolean;
-  timeMs: number;
-}
+export type { PlacementResult };
 
 interface WelcomeScreenProps {
   onComplete: (name: string, placementResults: PlacementResult[]) => void;
