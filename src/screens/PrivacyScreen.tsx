@@ -1,4 +1,3 @@
-import { useEffect } from 'react';
 import BackChevron from '../components/BackChevron';
 import './PrivacyScreen.css';
 
@@ -7,11 +6,6 @@ interface PrivacyScreenProps {
 }
 
 export default function PrivacyScreen({ onBack }: PrivacyScreenProps) {
-  // Sans ça, on hérite du scroll de ParentDashboard et on arrive en bas de page.
-  useEffect(() => {
-    window.scrollTo(0, 0);
-  }, []);
-
   return (
     <div className="privacy-screen">
       <button className="privacy-back-btn" onClick={onBack} aria-label="Retour">

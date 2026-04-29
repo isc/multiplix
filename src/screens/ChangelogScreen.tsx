@@ -1,4 +1,3 @@
-import { useEffect } from 'react';
 import BackChevron from '../components/BackChevron';
 import { CHANGELOG } from '../lib/changelog';
 import './ChangelogScreen.css';
@@ -19,10 +18,6 @@ function formatDate(iso: string): string {
 }
 
 export default function ChangelogScreen({ onBack }: ChangelogScreenProps) {
-  useEffect(() => {
-    window.scrollTo(0, 0);
-  }, []);
-
   return (
     <div className="changelog-screen">
       <button className="changelog-back-btn" onClick={onBack} aria-label="Retour">

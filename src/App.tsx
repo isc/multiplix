@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback, useRef, useMemo } from 'react';
+import { useState, useEffect, useLayoutEffect, useCallback, useRef, useMemo } from 'react';
 import type { UserProfile, SessionQuestion, SessionResult, MultiFact, Badge, BoxLevel } from './types';
 import { composeSession } from './lib/sessionComposer';
 import { processAnswer, resetFact } from './lib/leitner';
@@ -93,6 +93,15 @@ export default function App() {
   useEffect(() => {
     if (isStandalone()) clearInstallSkipped();
   }, []);
+
+  // Reset le scroll à chaque changement d'écran. useLayoutEffect (synchrone,
+  // pré-paint) plutôt que useEffect : avec useEffect, l'utilisateur voit
+  // brièvement le nouvel écran avec l'ancien scroll, et si la nouvelle page
+  // est plus courte que la précédente le navigateur clampe et on atterrit
+  // tout en bas.
+  useLayoutEffect(() => {
+    window.scrollTo(0, 0);
+  }, [screen]);
 
   // Rafraîchir `today` quand l'app revient au premier plan : sans ça, un user
   // qui laisse l'app ouverte la nuit voit toujours "c'est fait pour aujourd'hui"
