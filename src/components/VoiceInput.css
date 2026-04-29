@@ -100,25 +100,6 @@
   line-height: 1.4;
 }
 
-.voice-keypad-link {
-  background: transparent;
-  color: var(--text-light);
-  font-size: 0.95rem;
-  font-weight: 600;
-  padding: 8px 14px;
-  border-radius: 10px;
-  text-decoration: underline;
-}
-
-.voice-keypad-link:active {
-  color: var(--primary);
-}
-
-.voice-keypad-link:disabled {
-  opacity: 0.4;
-  cursor: not-allowed;
-}
-
 .voice-fallback {
   display: flex;
   flex-direction: column;

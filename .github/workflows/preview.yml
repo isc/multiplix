@@ -14,6 +14,10 @@ concurrency:
   group: gh-pages
   cancel-in-progress: false
 
+# Voir le commentaire dans deploy.yml — opt-in Node 24 pour peaceiris@v4.
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest

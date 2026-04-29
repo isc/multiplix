@@ -207,7 +207,7 @@ export default function VoiceInput({
 
       <button
         type="button"
-        className="voice-keypad-link"
+        className="session-input-switch"
         onClick={() => setInputMode('keypad')}
         disabled={disabled}
       >
