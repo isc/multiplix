@@ -211,7 +211,7 @@ export default function VoiceInput({
         onClick={() => setInputMode('keypad')}
         disabled={disabled}
       >
-        Utiliser le clavier
+        {'⌨️'} Utiliser le clavier
       </button>
     </div>
   );
