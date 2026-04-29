@@ -2,7 +2,6 @@ import { useState, useRef, useCallback, useEffect } from 'react';
 import Mascot from '../components/Mascot';
 import NumPad from '../components/NumPad';
 import { shuffle } from '../lib/utils';
-import { getFactKey } from '../lib/facts';
 import type { PlacementResult } from '../lib/placement';
 import { useSound } from '../hooks/useSound';
 import { useTTS } from '../hooks/useTTS';
@@ -74,7 +73,8 @@ export default function WelcomeScreen({ onComplete }: WelcomeScreenProps) {
       const timeMs = Date.now() - questionStartTime.current;
 
       const result: PlacementResult = {
-        factKey: getFactKey(a, b),
+        a: Math.min(a, b),
+        b: Math.max(a, b),
         correct,
         timeMs,
       };

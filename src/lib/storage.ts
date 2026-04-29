@@ -118,6 +118,8 @@ function isValidProfile(obj: unknown): boolean {
     if (typeof fact !== 'object' || fact === null) return false;
     const f = fact as Record<string, unknown>;
     if (typeof f.a !== 'number' || typeof f.b !== 'number') return false;
+    // a ≤ b est garanti par createInitialFacts ; la dominance s'appuie dessus.
+    if (f.a > f.b) return false;
     if (typeof f.product !== 'number') return false;
     if (typeof f.box !== 'number' || f.box < 1 || f.box > 5) return false;
     if (typeof f.introduced !== 'boolean') return false;

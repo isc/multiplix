@@ -25,7 +25,7 @@ describe('seedFromPlacement', () => {
   it('place un fait correctement résolu rapidement en boîte 3', () => {
     const facts = createInitialFacts();
     const results: PlacementResult[] = [
-      { factKey: '3x4', correct: true, timeMs: 1500 },
+      { a: 3, b: 4, correct: true, timeMs: 1500 },
     ];
     seedFromPlacement(facts, results, TODAY);
     const f = findFact(facts, 3, 4);
@@ -37,7 +37,7 @@ describe('seedFromPlacement', () => {
   it('place un fait correct mais lent (3-5s) en boîte 2', () => {
     const facts = createInitialFacts();
     const results: PlacementResult[] = [
-      { factKey: '6x9', correct: true, timeMs: 4200 },
+      { a: 6, b: 9, correct: true, timeMs: 4200 },
     ];
     seedFromPlacement(facts, results, TODAY);
     expect(findFact(facts, 6, 9).box).toBe(2);
@@ -46,7 +46,7 @@ describe('seedFromPlacement', () => {
   it('place un fait raté en boîte 1 (introduit quand même)', () => {
     const facts = createInitialFacts();
     const results: PlacementResult[] = [
-      { factKey: '7x8', correct: false, timeMs: 6000 },
+      { a: 7, b: 8, correct: false, timeMs: 6000 },
     ];
     seedFromPlacement(facts, results, TODAY);
     const f = findFact(facts, 7, 8);
@@ -57,7 +57,7 @@ describe('seedFromPlacement', () => {
   it('infère 2×3 comme connu si 6×9 est correct (dominance)', () => {
     const facts = createInitialFacts();
     const results: PlacementResult[] = [
-      { factKey: '6x9', correct: true, timeMs: 2000 },
+      { a: 6, b: 9, correct: true, timeMs: 2000 },
     ];
     seedFromPlacement(facts, results, TODAY);
     const f = findFact(facts, 2, 3);
@@ -67,21 +67,17 @@ describe('seedFromPlacement', () => {
 
   it('n\'infère PAS un fait non dominé (9×9 ne peut être inféré par rien)', () => {
     const facts = createInitialFacts();
-    // Tous les faits du placement réel, tous corrects et rapides.
     const allPlacement: [number, number][] = [
       [2, 5], [3, 4], [5, 5], [2, 8], [3, 6],
       [4, 7], [6, 6], [5, 8], [3, 9], [7, 7],
       [4, 9], [6, 8], [7, 9], [8, 8], [6, 9],
     ];
     const results: PlacementResult[] = allPlacement.map(([a, b]) => ({
-      factKey: getFactKey(a, b),
-      correct: true,
-      timeMs: 1500,
+      a, b, correct: true, timeMs: 1500,
     }));
     seedFromPlacement(facts, results, TODAY);
     expect(findFact(facts, 9, 9).introduced).toBe(false);
     expect(findFact(facts, 8, 9).introduced).toBe(false);
-    // Mais tous les autres doivent être introduits
     const stillNotIntroduced = facts.filter((f) => !f.introduced);
     expect(stillNotIntroduced.map((f) => getFactKey(f.a, f.b))).toEqual(['8x9', '9x9']);
   });
@@ -89,7 +85,7 @@ describe('seedFromPlacement', () => {
   it('n\'infère PAS à partir d\'un test raté', () => {
     const facts = createInitialFacts();
     const results: PlacementResult[] = [
-      { factKey: '6x9', correct: false, timeMs: 8000 },
+      { a: 6, b: 9, correct: false, timeMs: 8000 },
     ];
     seedFromPlacement(facts, results, TODAY);
     expect(findFact(facts, 2, 3).introduced).toBe(false);
@@ -97,17 +93,14 @@ describe('seedFromPlacement', () => {
 
   it('un test direct domine un test inféré (priorité au direct)', () => {
     const facts = createInitialFacts();
-    // 6×9 correct rapide → infère 5×8 en boîte 2.
-    // Mais 5×8 est aussi testé directement, lentement → boîte 2 directement.
-    // Le test direct doit gagner (et écraser l'inférence).
     const results: PlacementResult[] = [
-      { factKey: '5x8', correct: true, timeMs: 4500 }, // direct: box 2
-      { factKey: '6x9', correct: true, timeMs: 1500 }, // pourrait inférer box 2
+      { a: 5, b: 8, correct: true, timeMs: 4500 },
+      { a: 6, b: 9, correct: true, timeMs: 1500 },
     ];
     seedFromPlacement(facts, results, TODAY);
     const f = findFact(facts, 5, 8);
     expect(f.box).toBe(2);
-    expect(f.history).toHaveLength(1); // a un historique → directement testé
+    expect(f.history).toHaveLength(1);
     expect(f.history[0].responseTimeMs).toBe(4500);
   });
 
@@ -119,9 +112,7 @@ describe('seedFromPlacement', () => {
       [4, 9], [6, 8], [7, 9], [8, 8], [6, 9],
     ];
     const results: PlacementResult[] = allPlacement.map(([a, b]) => ({
-      factKey: getFactKey(a, b),
-      correct: true,
-      timeMs: 1500,
+      a, b, correct: true, timeMs: 1500,
     }));
     seedFromPlacement(facts, results, TODAY);
     const introduced = facts.filter((f) => f.introduced);
@@ -131,8 +122,6 @@ describe('seedFromPlacement', () => {
 
 describe('inferIntroductionsFromKnowns (migration)', () => {
   it('infère les faits manquants à partir des faits déjà connus', () => {
-    // Simule un profil créé avant le fix : 6×9 testé correctement au
-    // placement, mais 2×3 jamais introduit.
     const facts = createInitialFacts();
     const f69 = findFact(facts, 6, 9);
     f69.introduced = true;
