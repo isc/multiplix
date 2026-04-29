@@ -1,0 +1,47 @@
+export interface ChangelogEntry {
+  date: string; // ISO YYYY-MM-DD
+  items: string[];
+}
+
+// Ordre antéchronologique (plus récent en haut). Les entrées sont écrites
+// pour un parent qui consulte la page de temps en temps : on regroupe par
+// jour de publication, on ne mentionne pas les détails techniques (refactos,
+// CI, lint), seulement ce qui change l'expérience visible côté enfant ou
+// parent. Garder court et concret.
+export const CHANGELOG: ChangelogEntry[] = [
+  {
+    date: '2026-04-29',
+    items: [
+      "Page « Nouveautés » accessible depuis l'espace parent (la voici).",
+      "Le test de placement reconnaît maintenant les faits faciles déjà connus à partir des plus durs : 2×2, 2×3, etc. ne restent plus comme « non introduits » quand l'enfant a réussi des multiplications difficiles.",
+      "Si le mode vocal est activé, la permission micro est demandée dès le premier tap après le lancement de l'app, plutôt qu'en pleine séance.",
+    ],
+  },
+  {
+    date: '2026-04-28',
+    items: [
+      "Le splash screen iOS n'affiche plus un carré indigo aux bords droits — un médaillon circulaire à la place.",
+      "La séance redevient disponible automatiquement après minuit sans avoir à fermer l'app.",
+      "Le feedback de fin de question peut maintenant scroller en mode paysage.",
+    ],
+  },
+  {
+    date: '2026-04-27',
+    items: [
+      "Possibilité de basculer entre clavier et micro pendant une séance, sans quitter.",
+      "Modale détaillée au tap sur la pill de streak (jours d'affilée).",
+      "Modale détaillée pour les badges, avec conditions et progression.",
+      "L'écran ne s'éteint plus pendant une séance.",
+      "Animation des règles d'introduction (×10) calée sur la voix.",
+    ],
+  },
+  {
+    date: '2026-04-25',
+    items: [
+      "Splash screens iOS pour iPhone et iPad.",
+      "Landing marketing pour faciliter l'installation PWA depuis Safari.",
+      "Page Confidentialité accessible depuis l'espace parent.",
+      "Sous-titres explicatifs et liens « ? » vers le guide dans le dashboard parent.",
+    ],
+  },
+];

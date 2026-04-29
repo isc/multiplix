@@ -21,6 +21,7 @@ import RulesScreen from './screens/RulesScreen';
 import RulesIntroScreen from './screens/RulesIntroScreen';
 import ParentDashboard from './screens/ParentDashboard';
 import PrivacyScreen from './screens/PrivacyScreen';
+import ChangelogScreen from './screens/ChangelogScreen';
 import './App.css';
 
 type Screen =
@@ -34,7 +35,8 @@ type Screen =
   | 'badges'
   | 'rules'
   | 'parent'
-  | 'privacy';
+  | 'privacy'
+  | 'changelog';
 
 function initialScreen(profile: UserProfile | null): Screen {
   // Si l'app tourne en mode standalone (PWA installée), pas besoin de landing.
@@ -389,11 +391,16 @@ export default function App() {
           onResetFact={handleResetFact}
           onResetTable={handleResetTable}
           onShowPrivacy={() => setScreen('privacy')}
+          onShowChangelog={() => setScreen('changelog')}
         />
       )}
 
       {screen === 'privacy' && (
         <PrivacyScreen onBack={() => setScreen('parent')} />
+      )}
+
+      {screen === 'changelog' && (
+        <ChangelogScreen onBack={() => setScreen('parent')} />
       )}
     </div>
   );

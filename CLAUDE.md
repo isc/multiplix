@@ -23,6 +23,10 @@ App d'apprentissage des tables de multiplication (PWA React + TypeScript).
 
 Un guide HTML avec captures d'écran est généré par `npm run user-guide` (script `scripts/generate-user-guide.mjs`) et déployé à `/multiplix/guide/`.
 
+## Changelog in-app
+
+`src/lib/changelog.ts` alimente la page « Nouveautés » de l'espace parent. Quand un commit apporte un changement visible côté enfant ou parent (nouveau fonctionnement, fix d'un bug que l'utilisateur pouvait observer, nouvelle UI, etc.), ajouter une entrée — soit en créant un nouvel objet pour la date du jour, soit en complétant l'entrée du jour si elle existe déjà. Ne pas y mettre les refactos, le CI, le lint, ou les changements purement techniques invisibles.
+
 ## Génération des MP3 TTS
 
 Les voix sont pré-générées via `scripts/generate-tts.mjs` (Mistral Voxtral) et checked-in dans `public/audio/tts/`. Le script est idempotent : il ne régénère que les fichiers manquants.

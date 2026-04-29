@@ -18,6 +18,7 @@ interface ParentDashboardProps {
   onResetFact: (a: number, b: number) => void;
   onResetTable: (table: number) => void;
   onShowPrivacy: () => void;
+  onShowChangelog: () => void;
 }
 
 export default function ParentDashboard({
@@ -28,6 +29,7 @@ export default function ParentDashboard({
   onResetFact,
   onResetTable,
   onShowPrivacy,
+  onShowChangelog,
 }: ParentDashboardProps) {
   const [showImport, setShowImport] = useState(false);
   const [importJson, setImportJson] = useState('');
@@ -440,6 +442,12 @@ export default function ParentDashboard({
       </div>
 
       <div className="parent-actions">
+        <button
+          className="parent-action-btn"
+          onClick={onShowChangelog}
+        >
+          Nouveautés
+        </button>
         <button
           className="parent-action-btn"
           onClick={onShowPrivacy}
