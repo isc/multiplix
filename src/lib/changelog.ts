@@ -10,6 +10,13 @@ export interface ChangelogEntry {
 // parent. Garder court et concret.
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    date: '2026-04-30',
+    items: [
+      "Les deux derniers faits (8×9 et 9×9) sont désormais bien introduits en fin de parcours, même si certains autres faits sont retombés en boîte 1.",
+      "La pill « série » de l'écran d'accueil affiche maintenant l'état réel : si plusieurs jours sans séance complète, elle passe à « On s'y remet ? » au lieu de garder figée la dernière valeur.",
+    ],
+  },
+  {
     date: '2026-04-29',
     items: [
       "Page « Nouveautés » accessible depuis l'espace parent (la voici).",

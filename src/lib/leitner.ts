@@ -94,15 +94,22 @@ export function resetFact(fact: MultiFact, today: string): MultiFact {
   return { ...fact, box: 1 as BoxLevel, history: [], nextDue: today, lastSeen: today };
 }
 
+// Phase finale : seuil sous lequel on introduit les derniers faits restants
+// même si certains faits sont en boîte 1. Sans ça, un seul fait raté en
+// boîte 1 bloque indéfiniment l'intro des derniers faits (typiquement 8×9
+// et 9×9 après le seeding par dominance du test de placement, qui ne peuvent
+// être inférés par aucun fait du set placement). À ce stade, l'enfant
+// maîtrise déjà la quasi-totalité ; la règle protectrice du début n'a plus
+// d'utilité.
+const TAIL_INTRO_THRESHOLD = 2;
+
 /**
  * Returns true if a new fact should be introduced.
  * Condition: all previously introduced facts are at box 2 or above.
  */
 export function shouldIntroduceNew(facts: MultiFact[]): boolean {
   const introduced = facts.filter((f) => f.introduced);
-
-  // If no facts have been introduced yet, we should introduce new ones
   if (introduced.length === 0) return true;
-
+  if (facts.length - introduced.length <= TAIL_INTRO_THRESHOLD) return true;
   return introduced.every((f) => f.box >= 2);
 }
