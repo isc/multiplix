@@ -11,17 +11,25 @@ interface StreakDetailModalProps {
 }
 
 export default function StreakDetailModal({ profile, onClose }: StreakDetailModalProps) {
-  const streak = getActiveStreak(profile, todayISO());
+  const today = todayISO();
+  const streak = getActiveStreak(profile, today);
   const record = profile.longestStreak;
   const active = streak > 0;
+  const doneToday = profile.lastSessionDate === today;
   const showRecord = record > streak;
 
   const title = active
     ? `${streak} ${streak === 1 ? 'jour' : 'jours'} d’affilée`
     : 'Lance une nouvelle série !';
-  const explanation = active
-    ? 'Reviens jouer demain pour faire +1. Si tu sautes un jour, la série repart à zéro — mais tu gardes tous tes progrès sur les multiplications.'
-    : 'Ta série de jours d’affilée est à zéro. Tes progrès sur les multiplications sont conservés : joue aujourd’hui pour repartir.';
+
+  let explanation: string;
+  if (!active) {
+    explanation = 'Ta série de jours d’affilée est à zéro. Tes progrès sur les multiplications sont conservés : joue aujourd’hui pour repartir.';
+  } else if (doneToday) {
+    explanation = 'Bravo, ta séance d’aujourd’hui est faite ! Reviens demain pour faire +1.';
+  } else {
+    explanation = 'Ta série est encore active. N’oublie pas de faire ta séance aujourd’hui pour la prolonger — sinon elle repartira à zéro demain.';
+  }
 
   return (
     <Modal onClose={onClose} labelledBy="streak-detail-title" className="streak-detail-modal">
