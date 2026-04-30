@@ -1,6 +1,8 @@
 import type { UserProfile } from '../types';
 import FlameIcon from './FlameIcon';
 import Modal from './Modal';
+import { getActiveStreak } from '../lib/streak';
+import { todayISO } from '../lib/utils';
 import './StreakDetailModal.css';
 
 interface StreakDetailModalProps {
@@ -9,7 +11,7 @@ interface StreakDetailModalProps {
 }
 
 export default function StreakDetailModal({ profile, onClose }: StreakDetailModalProps) {
-  const streak = profile.currentStreak;
+  const streak = getActiveStreak(profile, todayISO());
   const record = profile.longestStreak;
   const active = streak > 0;
   const showRecord = record > streak;

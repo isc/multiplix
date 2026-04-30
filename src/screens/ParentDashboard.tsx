@@ -3,6 +3,8 @@ import type { UserProfile } from '../types';
 import { RESPONSE_TIME } from '../types';
 import { factsForTable } from '../lib/badges';
 import { getFactKey } from '../lib/facts';
+import { getActiveStreak } from '../lib/streak';
+import { todayISO } from '../lib/utils';
 import ProgressGrid from '../components/ProgressGrid';
 import BackChevron from '../components/BackChevron';
 import FeedbackModal from '../components/FeedbackModal';
@@ -146,7 +148,7 @@ export default function ParentDashboard({
             <div className="parent-stat-label">Séances</div>
           </div>
           <div className="parent-stat-card">
-            <div className="parent-stat-value">{profile.currentStreak}</div>
+            <div className="parent-stat-value">{getActiveStreak(profile, todayISO())}</div>
             <div className="parent-stat-label">Série actuelle</div>
           </div>
           <div className="parent-stat-card">

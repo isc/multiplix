@@ -5,6 +5,8 @@ import ParentGate from '../components/ParentGate';
 import StreakDetailModal from '../components/StreakDetailModal';
 import FlameIcon from '../components/FlameIcon';
 import { useSound } from '../hooks/useSound';
+import { getActiveStreak } from '../lib/streak';
+import { todayISO } from '../lib/utils';
 import './HomeScreen.css';
 
 interface HomeScreenProps {
@@ -89,10 +91,11 @@ export default function HomeScreen({
   const [showParentGate, setShowParentGate] = useState(false);
   const [showStreakDetail, setShowStreakDetail] = useState(false);
 
-  const streakActive = profile.currentStreak > 0;
+  const activeStreak = getActiveStreak(profile, todayISO());
+  const streakActive = activeStreak > 0;
   const showStreakPill = streakActive || profile.totalSessions > 0;
   const streakLabel = streakActive
-    ? `Série de ${profile.currentStreak} ${profile.currentStreak === 1 ? 'jour' : 'jours'} — voir les détails`
+    ? `Série de ${activeStreak} ${activeStreak === 1 ? 'jour' : 'jours'} — voir les détails`
     : 'Série interrompue — voir les détails';
 
   return (
@@ -109,9 +112,9 @@ export default function HomeScreen({
               <span className="home-streak-pill-flame"><FlameIcon size={14} muted={!streakActive} /></span>
               {streakActive ? (
                 <>
-                  <span className="home-streak-pill-count">{profile.currentStreak}</span>
+                  <span className="home-streak-pill-count">{activeStreak}</span>
                   <span className="home-streak-pill-label">
-                    {profile.currentStreak === 1 ? 'jour' : 'jours'}
+                    {activeStreak === 1 ? 'jour' : 'jours'}
                   </span>
                 </>
               ) : (
