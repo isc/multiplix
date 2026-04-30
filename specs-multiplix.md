@@ -150,6 +150,8 @@ La formulation classique « on ajoute un zéro » est volontairement évitée : 
 2. Saisie du prénom → "Salut Zoé !"
 3. Explication ludique : "Je suis [Mascotte]. On va apprendre les multiplications ensemble, 5 minutes par jour !"
 4. Test de positionnement rapide (optionnel) : 15 faits mélangés, pas de timer visible → détermine quels faits sont déjà connus pour démarrer à la bonne boîte. Un bouton **« Je ne sais pas »** permet de passer une question sans forcer une réponse au hasard ; c'est traité comme une erreur (placement en boîte 1), ce qui évite de polluer le diagnostic avec des bonnes réponses devinées. Une voix d'intro (`placement-intro`) annonce l'option au démarrage du test.
+
+   **Inférence par dominance** : les 21 faits non testés sont ensuite inférés à partir des résultats du placement. Un fait `(a, b)` est marqué introduit en boîte 2 s'il existe un fait testé `(a', b')` correctement résolu avec `a' ≥ a ET b' ≥ b` (avec normalisation min/max) — l'idée étant qu'un enfant qui sait `6×9` sait aussi `2×3`. Sans ça, l'image mystère cacherait les cases « faciles » et la règle boîte≥2 (§3.4bis) bloquerait l'introduction de 2×2 et 2×3. Les faits non dominés (typiquement 8×9, 9×9) restent à introduire via le rythme normal.
 5. Introduction des règles ×1 et ×10 (écran `RulesIntroScreen`) — affiché une fois, juste après le test de positionnement. Trois étapes : accueil (« Deux règles toutes simples »), règle ×1 avec exemples, règle ×10 avec visuel du « glisse-nombre » (animation : un chiffre glisse de la colonne des unités vers celle des dizaines, un 0 apparaît aux unités). Le passage est persisté via `UserProfile.hasSeenRulesIntro` pour ne pas le rejouer.
 6. Première séance avec les 2 premiers faits (les plus simples : 2×2 et 2×3). Le plafond de 2 nouveaux faits par séance (§3.4bis) s'applique dès la première séance — 2×4 et 2×5 sont introduits aux séances suivantes quand 2×2 et 2×3 sont en boîte 2+.
 
@@ -259,6 +261,8 @@ Implémenté dans `factStage()` (`src/lib/sessionComposer.ts`).
 Faits de base sans stratégie (grille + addition répétée suffisent) : table de 2, 3 × 3.
 
 **Rythme d'introduction :** Maximum 2 nouveaux faits par séance. Un nouveau fait n'est introduit que si les faits précédemment introduits sont au moins en boîte 2.
+
+**Exception phase finale :** quand il ne reste que ≤ 2 faits à introduire (typiquement 8×9 et 9×9 après le seeding par dominance du placement, qui ne peuvent être inférés par aucun fait du set placement), la règle boîte≥2 est levée. Sinon un seul fait raté en boîte 1 bloquerait indéfiniment l'introduction des derniers faits — alors que l'enfant maîtrise déjà la quasi-totalité, la règle protectrice n'a plus d'utilité.
 
 ### 3.5 Récap de séance
 

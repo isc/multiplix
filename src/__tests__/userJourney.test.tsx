@@ -1,4 +1,4 @@
-import { cleanup, fireEvent, render } from '@testing-library/react';
+import { act, cleanup, fireEvent, render } from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import App from '../App';
@@ -42,43 +42,84 @@ function readCurrentQuestion(): [number, number] | null {
   return [parseInt(match[1], 10), parseInt(match[2], 10)];
 }
 
+function readPlacementQuestion(): [number, number] | null {
+  const el = document.querySelector('.welcome-test-question');
+  if (!el) return null;
+  const text = el.textContent ?? '';
+  const match = text.match(QUESTION_RE);
+  if (!match) return null;
+  return [parseInt(match[1], 10), parseInt(match[2], 10)];
+}
+
+function typeAnswer(value: number): void {
+  const digits = value.toString();
+  for (const d of digits) {
+    const btn = document.querySelector<HTMLButtonElement>(
+      `.numpad-btn[aria-label="${d}"]`,
+    );
+    if (!btn) throw new Error(`NumPad button ${d} introuvable`);
+    fireEvent.click(btn);
+  }
+  if (digits.length === 1) {
+    const okBtn = findButton('OK');
+    if (!okBtn) throw new Error('Bouton OK introuvable après saisie 1 chiffre');
+    fireEvent.click(okBtn);
+  }
+}
+
+// Joue les 15 questions du test de placement, toutes correctes et rapides
+// (boîte 3 pour les directs, boîte 2 pour les inférés par dominance).
+function playPlacementAllCorrect(): void {
+  for (let i = 0; i < 15; i++) {
+    const q = readPlacementQuestion();
+    if (!q) throw new Error(`Question de placement ${i + 1} introuvable`);
+    typeAnswer(q[0] * q[1]);
+    // Le feedback bref est dismissé via setTimeout (600 ms si correct).
+    act(() => {
+      vi.advanceTimersByTime(600);
+    });
+  }
+}
+
 /**
  * Joue une séance du début à la fin puis clique « À demain ! » pour
  * revenir à l'écran d'accueil. Pilote le vrai DOM : introductions,
  * saisie NumPad, dismissal du feedback, et recap.
+ *
+ * `shouldErr(answerIdx)` permet d'injecter des erreurs déterministes :
+ * quand il renvoie true, on tape `correct - 1` au lieu de `correct`.
  */
-function playSessionAndDismissRecap(): void {
+function playSessionAndDismissRecap(opts: { shouldErr?: (answerIdx: number) => boolean } = {}): void {
   const MAX_ITERS = 2000;
+  let answerIdx = 0;
 
   for (let i = 0; i < MAX_ITERS; i++) {
     // Priorité aux états les plus fréquents pour limiter les scans DOM.
 
     const feedback = document.querySelector<HTMLElement>('.feedback-overlay');
     if (feedback) {
-      fireEvent.click(feedback);
+      // Correct overlay dismisses sur clic global ; incorrect exige le
+      // bouton « J'ai compris » (l'overlay incorrect montre la stratégie
+      // et la grille, pas de dismiss-on-tap).
+      if (feedback.classList.contains('incorrect')) {
+        const okBtn = findButton(/J'ai compris/);
+        if (!okBtn) throw new Error('Bouton « J\'ai compris » introuvable sur feedback incorrect');
+        fireEvent.click(okBtn);
+      } else {
+        fireEvent.click(feedback);
+      }
       continue;
     }
 
     const question = readCurrentQuestion();
     if (question) {
       const [a, b] = question;
-      const digits = (a * b).toString();
-
-      for (const d of digits) {
-        const btn = document.querySelector<HTMLButtonElement>(
-          `.numpad-btn[aria-label="${d}"]`,
-        );
-        if (!btn) throw new Error(`NumPad button ${d} introuvable`);
-        fireEvent.click(btn);
-      }
-
-      // Produits à 1 chiffre (4, 6, 8, 9) : le NumPad n'auto-valide
-      // qu'à partir de 2 chiffres.
-      if (digits.length === 1) {
-        const okBtn = findButton('OK');
-        if (!okBtn) throw new Error('Bouton OK introuvable après saisie 1 chiffre');
-        fireEvent.click(okBtn);
-      }
+      const correct = a * b;
+      const wantWrong = opts.shouldErr?.(answerIdx) ?? false;
+      // `correct - 1` est toujours > 0 (a, b >= 2 donc correct >= 4) et
+      // toujours différent du bon produit → garanti faux.
+      typeAnswer(wantWrong ? correct - 1 : correct);
+      answerIdx++;
       continue;
     }
 
@@ -217,6 +258,84 @@ describe('Parcours utilisateur de bout en bout (DOM)', () => {
       for (let t = 2; t <= 9; t++) {
         expect(badgeIds.has(`${BADGE_IDS.TABLE_PREFIX}${t}`)).toBe(true);
       }
+    },
+  );
+
+  it(
+    "passe par le test de placement et atteint la maîtrise même avec des erreurs occasionnelles",
+    () => {
+      render(<App />);
+
+      // -- WelcomeScreen + saisie prénom --
+      fireEvent.click(findButton(/^Suivant/)!);
+      const nameInput = document.querySelector<HTMLInputElement>('input.welcome-input')!;
+      fireEvent.change(nameInput, { target: { value: 'Zoe' } });
+      fireEvent.click(findButton(/^C'est moi/)!);
+
+      // -- Test de placement : 15 questions, toutes correctes rapides --
+      // Lance le placement (et non « Passer le test »). Le bouton « C'est
+      // parti ! » et « Passer le test » coexistent à cet écran.
+      fireEvent.click(findButton(/C'est parti/)!);
+      playPlacementAllCorrect();
+
+      // -- RulesIntroScreen --
+      fireEvent.click(findButton(/C'est parti/)!);
+      fireEvent.click(findButton(/Suivant/)!);
+      fireEvent.click(findButton(/J'ai compris/)!);
+
+      const seeded = loadProfile()!;
+      // Le seeding par dominance doit avoir introduit 34 faits sur 36
+      // (8×9 et 9×9 ne sont dominés par aucun fait du set placement).
+      expect(seeded.facts.filter((f) => f.introduced)).toHaveLength(34);
+      expect(seeded.facts.find((f) => f.a === 8 && f.b === 9)?.introduced).toBe(false);
+      expect(seeded.facts.find((f) => f.a === 9 && f.b === 9)?.introduced).toBe(false);
+
+      // -- Boucle quotidienne avec erreurs : ~14 % d'erreurs (1/7) --
+      // Garantit qu'au moins un fait est en boîte 1 régulièrement, ce qui
+      // exerce le chemin où shouldIntroduceNew se bloquerait sans
+      // l'exception « phase finale » pour 8×9 et 9×9.
+      const shouldErr = (i: number) => i % 7 === 6;
+      const MAX_DAYS = 365;
+      let day = 0;
+      let sessionsPlayed = 0;
+
+      while (day < MAX_DAYS) {
+        const profile = loadProfile()!;
+        if (profile.facts.every((f) => f.box === 5)) break;
+
+        setDay(day);
+        if (day > 0) {
+          cleanup();
+          render(<App />);
+        }
+
+        const startBtn = findButton(/C'est parti/);
+        if (!startBtn) {
+          day++;
+          continue;
+        }
+        fireEvent.click(startBtn);
+
+        const sessionStarted =
+          document.querySelector('.session-intro') !== null ||
+          document.querySelector('.session-question-text') !== null;
+        if (!sessionStarted) {
+          day++;
+          continue;
+        }
+
+        playSessionAndDismissRecap({ shouldErr });
+        sessionsPlayed++;
+        day++;
+      }
+
+      const final = loadProfile()!;
+      // Tous les faits doivent finir introduits — le bug 8×9/9×9 doit
+      // être empêché par l'exception « phase finale ».
+      expect(final.facts.every((f) => f.introduced)).toBe(true);
+      expect(final.facts.every((f) => f.box === 5)).toBe(true);
+      expect(day).toBeLessThan(MAX_DAYS);
+      expect(sessionsPlayed).toBeGreaterThan(0);
     },
   );
 });
