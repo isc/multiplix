@@ -123,16 +123,7 @@ export function useTTS(isMuted: boolean) {
     setIsSpeaking(false);
   }, []);
 
-  useEffect(() => {
-    return () => {
-      callGenRef.current++;
-      if (activeRef.current) {
-        activeRef.current.stopped = true;
-        try { activeRef.current.source.stop(); } catch { /* ignore */ }
-        activeRef.current = null;
-      }
-    };
-  }, []);
+  useEffect(() => stop, [stop]);
 
   return { speak, stop, isSpeaking };
 }
