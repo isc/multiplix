@@ -17,8 +17,6 @@ interface ParentDashboardProps {
   onBack: () => void;
   onExport: () => void;
   onImport: (json: string) => void;
-  onResetFact: (a: number, b: number) => void;
-  onResetTable: (table: number) => void;
   onShowPrivacy: () => void;
   onShowChangelog: () => void;
 }
@@ -28,14 +26,11 @@ export default function ParentDashboard({
   onBack,
   onExport,
   onImport,
-  onResetFact,
-  onResetTable,
   onShowPrivacy,
   onShowChangelog,
 }: ParentDashboardProps) {
   const [showImport, setShowImport] = useState(false);
   const [importJson, setImportJson] = useState('');
-  const [confirmReset, setConfirmReset] = useState<string | null>(null);
   const [showFeedback, setShowFeedback] = useState(false);
 
   const { boxCounts, maxBoxCount, hardFacts, tableAvgTimes } = useMemo(() => {
@@ -293,36 +288,17 @@ export default function ParentDashboard({
         <div className="parent-section">
           <h3>Faits les plus difficiles</h3>
           <div className="parent-hard-facts">
-            {hardFacts.map((f) => {
-              const key = getFactKey(f.a, f.b);
-              return (
-                <div key={key} className="parent-hard-fact">
-                  <span className="parent-hard-fact-name">
-                    {f.a} {'\u00D7'} {f.b} = {f.product}
-                  </span>
-                  <span className="parent-hard-fact-errors">
-                    {f.errorCount} erreur{f.errorCount > 1 ? 's' : ''} | Boîte{' '}
-                    {f.box}
-                  </span>
-                  {confirmReset === key ? (
-                    <button
-                      className="parent-reset-confirm-btn"
-                      onClick={() => { onResetFact(f.a, f.b); setConfirmReset(null); }}
-                    >
-                      Confirmer
-                    </button>
-                  ) : (
-                    <button
-                      className="parent-reset-btn"
-                      onClick={() => setConfirmReset(key)}
-                      aria-label={`Réinitialiser ${f.a}×${f.b}`}
-                    >
-                      {'\u21BA'}
-                    </button>
-                  )}
-                </div>
-              );
-            })}
+            {hardFacts.map((f) => (
+              <div key={getFactKey(f.a, f.b)} className="parent-hard-fact">
+                <span className="parent-hard-fact-name">
+                  {f.a} {'\u00D7'} {f.b} = {f.product}
+                </span>
+                <span className="parent-hard-fact-errors">
+                  {f.errorCount} erreur{f.errorCount > 1 ? 's' : ''} | Boîte{' '}
+                  {f.box}
+                </span>
+              </div>
+            ))}
           </div>
         </div>
       )}
@@ -384,34 +360,6 @@ export default function ParentDashboard({
           </div>
         </div>
       )}
-
-      {/* Reset table */}
-      <div className="parent-section">
-        <h3>Réinitialiser une table</h3>
-        <div className="parent-reset-tables">
-          {[2, 3, 4, 5, 6, 7, 8, 9].map((t) => {
-            const tableFacts = factsForTable(profile.facts, t).filter((f) => f.introduced);
-            if (tableFacts.length === 0) return null;
-            const confirming = confirmReset === `table-${t}`;
-            return (
-              <button
-                key={t}
-                className={`parent-reset-table-btn ${confirming ? 'confirming' : ''}`}
-                onClick={() => {
-                  if (confirming) {
-                    onResetTable(t);
-                    setConfirmReset(null);
-                  } else {
-                    setConfirmReset(`table-${t}`);
-                  }
-                }}
-              >
-                {confirming ? `Confirmer \u00D7${t}\u00A0?` : `\u00D7${t}`}
-              </button>
-            );
-          })}
-        </div>
-      </div>
 
       {/* Actions */}
       <div className="parent-actions">

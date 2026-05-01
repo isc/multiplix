@@ -69,8 +69,7 @@ export default function PrivacyScreen({ onBack }: PrivacyScreenProps) {
           </p>
           <ul>
             <li><strong>Exporter</strong> toute la progression au format JSON,</li>
-            <li><strong>Importer</strong> une sauvegarde,</li>
-            <li><strong>Réinitialiser</strong> un fait ou une table entière.</li>
+            <li><strong>Importer</strong> une sauvegarde.</li>
           </ul>
           <p>
             Pour supprimer l'intégralité des données, videz les données du site

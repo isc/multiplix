@@ -411,7 +411,6 @@ Accessible depuis l'écran d'accueil via l'icône engrenage. Un tap ouvre une **
 - Graphe d'évolution : nombre de faits maîtrisés (boîte 4+) au fil du temps
 
 **Actions parent :**
-- Réinitialiser un fait ou une table (avec confirmation)
 - Exporter les données (JSON)
 - Importer les données (pour changer de téléphone)
 - **Guide utilisateur** : ouvre `/multiplix/guide/` dans un nouvel onglet (page statique servie depuis la même origine, générée par `scripts/generate-user-guide.mjs`)

@@ -710,7 +710,7 @@ const SECTIONS = [
       et 9) pour confirmer qu'un adulte est derrière l'écran. On y retrouve :
       les statistiques générales, un
       histogramme des boîtes Leitner, l'évolution du taux de réussite,
-      les faits les plus difficiles (avec possibilité de les réinitialiser),
+      les faits les plus difficiles,
       les temps de réponse moyens par table, l'historique des 10 dernières
       séances, et les actions export / import du profil (JSON).`,
     shots: [

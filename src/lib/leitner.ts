@@ -87,13 +87,6 @@ export function processAnswer(
   };
 }
 
-/**
- * Resets a fact to box 1 with cleared history.
- */
-export function resetFact(fact: MultiFact, today: string): MultiFact {
-  return { ...fact, box: 1 as BoxLevel, history: [], nextDue: today, lastSeen: today };
-}
-
 // Phase finale : seuil sous lequel on introduit les derniers faits restants
 // même si certains faits sont en boîte 1. Sans ça, un seul fait raté en
 // boîte 1 bloque indéfiniment l'intro des derniers faits (typiquement 8×9
