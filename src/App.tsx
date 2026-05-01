@@ -9,7 +9,8 @@ import { seedFromPlacement } from './lib/placement';
 import type { PlacementResult } from './lib/placement';
 import { todayISO, daysBetween } from './lib/utils';
 import { isStandalone, hasSkippedInstall, clearInstallSkipped } from './lib/install';
-import { usePreflightMicPermission } from './hooks/usePreflightMicPermission';
+import { preflightMicPermission } from './lib/micPreflight';
+import { isVoiceMode } from './hooks/useInputMode';
 import LandingScreen from './screens/LandingScreen';
 import WelcomeScreen from './screens/WelcomeScreen';
 import HomeScreen from './screens/HomeScreen';
@@ -49,7 +50,6 @@ function initialScreen(profile: UserProfile | null): Screen {
 }
 
 export default function App() {
-  usePreflightMicPermission();
   const [profile, setProfile] = useState<UserProfile | null>(() => loadProfile());
   const [screen, setScreen] = useState<Screen>(() => initialScreen(profile));
   const [sessionQuestions, setSessionQuestions] = useState<SessionQuestion[]>([]);
@@ -151,8 +151,15 @@ export default function App() {
   }, [profile, today]);
 
   // Start session
-  const handleStartSession = useCallback(() => {
+  const handleStartSession = useCallback(async () => {
     if (!profile || pendingSession.length === 0) return;
+
+    // En mode vocal, on attend la réponse au prompt micro avant d'entrer en
+    // séance — sinon la première question (et son timer) démarrerait pendant
+    // que l'utilisateur décide.
+    if (isVoiceMode()) {
+      await preflightMicPermission();
+    }
 
     sessionConsecutiveCorrect.current = 0;
     sessionMaxConsecutiveCorrect.current = 0;

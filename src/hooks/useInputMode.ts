@@ -15,6 +15,10 @@ function readMode(): InputMode {
   }
 }
 
+export function isVoiceMode(): boolean {
+  return readMode() === 'voice';
+}
+
 let currentMode: InputMode = readMode();
 const listeners = new Set<() => void>();
 
