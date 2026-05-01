@@ -2,7 +2,7 @@ import { useState, useRef, useCallback, useEffect } from 'react';
 import Mascot from '../components/Mascot';
 import NumPad from '../components/NumPad';
 import { shuffle } from '../lib/utils';
-import type { PlacementResult } from '../lib/placement';
+import { PLACEMENT_FACTS, type PlacementResult } from '../lib/placement';
 import { useSound } from '../hooks/useSound';
 import { useTTS } from '../hooks/useTTS';
 import './WelcomeScreen.css';
@@ -13,13 +13,6 @@ interface WelcomeScreenProps {
   onComplete: (name: string, placementResults: PlacementResult[]) => void;
 }
 
-// 15 well-spread facts for the placement test (mix of easy and hard)
-const PLACEMENT_FACTS = [
-  [2, 5], [3, 4], [5, 5], [2, 8], [3, 6],
-  [4, 7], [6, 6], [5, 8], [3, 9], [7, 7],
-  [4, 9], [6, 8], [7, 9], [8, 8], [6, 9],
-];
-
 export default function WelcomeScreen({ onComplete }: WelcomeScreenProps) {
   const [step, setStep] = useState(0);
   const [name, setName] = useState('');
@@ -28,7 +21,7 @@ export default function WelcomeScreen({ onComplete }: WelcomeScreenProps) {
   const { speak, stop: stopSpeech } = useTTS(isMuted);
 
   // Placement test state
-  const [testFacts] = useState(() => shuffle(PLACEMENT_FACTS));
+  const [testFacts] = useState(() => shuffle([...PLACEMENT_FACTS]));
   const [testIndex, setTestIndex] = useState(0);
   const [testResults, setTestResults] = useState<PlacementResult[]>([]);
   const [numpadDisabled, setNumpadDisabled] = useState(false);

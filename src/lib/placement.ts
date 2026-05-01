@@ -11,6 +11,14 @@ export interface PlacementResult {
   timeMs: number;
 }
 
+// 15 faits bien répartis pour le test de placement (mix facile/difficile).
+// Tous a ≤ b. Source unique consommée par WelcomeScreen et les tests.
+export const PLACEMENT_FACTS: ReadonlyArray<readonly [number, number]> = [
+  [2, 5], [3, 4], [5, 5], [2, 8], [3, 6],
+  [4, 7], [6, 6], [5, 8], [3, 9], [7, 7],
+  [4, 9], [6, 8], [7, 9], [8, 8], [6, 9],
+];
+
 function boxFromResult(result: PlacementResult): BoxLevel {
   if (!result.correct) return 1;
   if (result.timeMs < RESPONSE_TIME.FAST) return 3;
@@ -60,6 +68,12 @@ export function seedFromPlacement(
 ): void {
   if (results.length === 0) return;
 
+  // Pas d'history ajouté ici : le placement est un test de calibrage, pas
+  // une intro en cours d'apprentissage. Sans cette précision, les faits
+  // testés au placement seraient considérés comme « récemment introduits »
+  // par le filtre 48h de sessionComposer et bloqueraient l'intro de leurs
+  // voisins (ex : 8×9, 9×9 bloqués dès la 1ʳᵉ séance par tous les faits
+  // avec un 8 ou un 9 testés au placement).
   for (const result of results) {
     const fact = facts.find((f) => f.a === result.a && f.b === result.b);
     if (!fact) continue;
@@ -68,12 +82,6 @@ export function seedFromPlacement(
     fact.box = box;
     fact.lastSeen = today;
     fact.nextDue = computeNextDue(box, today);
-    fact.history = [{
-      date: today,
-      correct: result.correct,
-      responseTimeMs: result.timeMs,
-      answeredWith: null,
-    }];
   }
 
   const evidence: DominanceEvidence[] = results

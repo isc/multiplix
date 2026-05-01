@@ -198,27 +198,29 @@ export function composeSession(profile: UserProfile, now: string): SessionQuesti
   const allReview = interleave(reviewQuestions);
   const result = [...introQuestions, ...allReview];
 
-  // If the session is still too short, pad with bonus review of other introduced
-  // facts (not already in the session). Bonus reviews give feedback but don't
-  // change the Leitner box — the spaced repetition schedule is preserved.
-  // Prioritize weakest facts (lowest box, then closest nextDue).
+  // Padding par bonus reviews (feedback normal mais sans toucher au Leitner :
+  // le calendrier de répétition espacée est préservé). Tri box puis nextDue
+  // pour prioriser les faits les plus faibles ; shuffle stable d'abord pour
+  // que les ex-aequo (cas post-placement où tout est en B3, nextDue=J+3) ne
+  // suivent pas l'ordre de création (toute la table 2, puis 3, …).
   if (result.length < MIN_QUESTIONS) {
     const sessionFactKeys = new Set(
       result.map((q) => getFactKey(q.fact.a, q.fact.b)),
     );
-    const extraFacts = facts
-      .filter((f) => f.introduced && !sessionFactKeys.has(getFactKey(f.a, f.b)))
-      .sort((a, b) => a.box - b.box || a.nextDue.localeCompare(b.nextDue));
-    for (const fact of extraFacts) {
-      if (result.length >= MIN_QUESTIONS) break;
-      result.push({
+    const slotsLeft = MIN_QUESTIONS - result.length;
+    const bonusQuestions: SessionQuestion[] = shuffle(
+      facts.filter((f) => f.introduced && !sessionFactKeys.has(getFactKey(f.a, f.b))),
+    )
+      .sort((a, b) => a.box - b.box || a.nextDue.localeCompare(b.nextDue))
+      .slice(0, slotsLeft)
+      .map((fact) => ({
         fact,
         ...randomDisplayOrder(fact),
         isIntroduction: false,
         isRetry: false,
         isBonusReview: true,
-      });
-    }
+      }));
+    result.push(...interleave(bonusQuestions));
   }
 
   return result;

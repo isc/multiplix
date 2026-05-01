@@ -1,18 +1,15 @@
 // @vitest-environment node
 import { describe, it, expect } from 'vitest';
-import { seedFromPlacement, inferIntroductionsFromKnowns, type PlacementResult } from '../lib/placement';
+import {
+  PLACEMENT_FACTS,
+  seedFromPlacement,
+  inferIntroductionsFromKnowns,
+  type PlacementResult,
+} from '../lib/placement';
 import { createInitialFacts, getFactKey } from '../lib/facts';
 import type { MultiFact } from '../types';
 
 const TODAY = '2026-04-29';
-
-// Doit rester aligné avec PLACEMENT_FACTS de WelcomeScreen.tsx — duplication
-// volontaire pour ne pas exporter une constante UI uniquement pour les tests.
-const PLACEMENT_GRID: [number, number][] = [
-  [2, 5], [3, 4], [5, 5], [2, 8], [3, 6],
-  [4, 7], [6, 6], [5, 8], [3, 9], [7, 7],
-  [4, 9], [6, 8], [7, 9], [8, 8], [6, 9],
-];
 
 function findFact(facts: MultiFact[], a: number, b: number): MultiFact {
   const f = facts.find((x) => getFactKey(x.a, x.b) === getFactKey(a, b));
@@ -96,7 +93,7 @@ describe('seedFromPlacement', () => {
 
   it('n\'infère PAS un fait non dominé (9×9 ne peut être inféré par rien)', () => {
     const facts = createInitialFacts();
-    const results: PlacementResult[] = PLACEMENT_GRID.map(([a, b]) => ({
+    const results: PlacementResult[] = PLACEMENT_FACTS.map(([a, b]) => ({
       a, b, correct: true, timeMs: 1500,
     }));
     seedFromPlacement(facts, results, TODAY);
@@ -122,15 +119,14 @@ describe('seedFromPlacement', () => {
       { a: 6, b: 9, correct: true, timeMs: 1500 },
     ];
     seedFromPlacement(facts, results, TODAY);
-    const f = findFact(facts, 5, 8);
-    expect(f.box).toBe(2);
-    expect(f.history).toHaveLength(1);
-    expect(f.history[0].responseTimeMs).toBe(4500);
+    // 5×8 testé lent → box 2. Sans la priorité au direct, il aurait été
+    // inféré en box 3 par la dominance forte de 6×9 rapide.
+    expect(findFact(facts, 5, 8).box).toBe(2);
   });
 
   it('le placement complet d\'un enfant qui aces tout introduit 34 faits sur 36', () => {
     const facts = createInitialFacts();
-    const results: PlacementResult[] = PLACEMENT_GRID.map(([a, b]) => ({
+    const results: PlacementResult[] = PLACEMENT_FACTS.map(([a, b]) => ({
       a, b, correct: true, timeMs: 1500,
     }));
     seedFromPlacement(facts, results, TODAY);
