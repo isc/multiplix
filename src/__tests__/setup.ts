@@ -23,6 +23,16 @@ class FakeOscillatorNode {
   stop(): void {}
 }
 
+class FakeBufferSourceNode {
+  buffer: AudioBuffer | null = null;
+  onended: (() => void) | null = null;
+  connect(): void {}
+  start(): void {}
+  stop(): void {
+    if (this.onended) this.onended();
+  }
+}
+
 class FakeAudioContext {
   state: 'suspended' | 'running' | 'closed' = 'running';
   currentTime = 0;
@@ -32,6 +42,12 @@ class FakeAudioContext {
   }
   createGain(): GainNode {
     return new FakeGainNode() as unknown as GainNode;
+  }
+  createBufferSource(): AudioBufferSourceNode {
+    return new FakeBufferSourceNode() as unknown as AudioBufferSourceNode;
+  }
+  decodeAudioData(): Promise<AudioBuffer> {
+    return Promise.resolve({} as AudioBuffer);
   }
   resume(): Promise<void> {
     return Promise.resolve();
@@ -44,12 +60,26 @@ class FakeAudioContext {
 (globalThis as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext =
   FakeAudioContext as unknown as typeof AudioContext;
 
-// jsdom doesn't implement HTMLMediaElement.play/pause — stub them so useTTS can
-// call `audio.play().catch(...)` without throwing.
-// (Guarded so tests that opt into `node` environment don't crash.)
+// jsdom doesn't implement HTMLMediaElement.play/pause — stub them pour
+// éviter les crashs si du code legacy en utilise encore.
 if (typeof HTMLMediaElement !== 'undefined') {
   HTMLMediaElement.prototype.play = function () {
     return Promise.resolve();
   };
   HTMLMediaElement.prototype.pause = function () {};
 }
+
+// useTTS fait un fetch sur /audio/tts/*.mp3 ; en jsdom ça partirait en
+// vrai sur localhost et échouerait. On stub fetch pour ces chemins en
+// renvoyant un arrayBuffer vide — useTTS gère gracieusement le cas où
+// decodeAudioData renvoie un buffer vide.
+const realFetch = globalThis.fetch;
+globalThis.fetch = ((input: RequestInfo | URL, init?: RequestInit) => {
+  const url = typeof input === 'string' ? input : input.toString();
+  if (url.includes('/audio/tts/')) {
+    return Promise.resolve(
+      new Response(new ArrayBuffer(0), { status: 200, headers: { 'Content-Type': 'audio/mpeg' } }),
+    );
+  }
+  return realFetch(input as RequestInfo, init);
+}) as typeof fetch;

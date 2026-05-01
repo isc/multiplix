@@ -1,4 +1,5 @@
-import { useState, useCallback, useRef } from 'react';
+import { useState, useCallback } from 'react';
+import { getAudioContext } from '../lib/audioContext';
 
 const STORAGE_KEY = 'multiplix-muted';
 
@@ -23,18 +24,6 @@ function getInitialMuted(): boolean {
 
 export function useSound() {
   const [isMuted, setIsMuted] = useState(getInitialMuted);
-  const audioCtxRef = useRef<AudioContext | null>(null);
-
-  const getAudioContext = useCallback((): AudioContext => {
-    if (!audioCtxRef.current || audioCtxRef.current.state === 'closed') {
-      audioCtxRef.current = new AudioContext();
-    }
-    // Resume if suspended (browser autoplay policy)
-    if (audioCtxRef.current.state === 'suspended') {
-      audioCtxRef.current.resume();
-    }
-    return audioCtxRef.current;
-  }, []);
 
   const playNote = useCallback(
     (
@@ -77,7 +66,7 @@ export function useSound() {
     playNote(ctx, NOTE.C5, now, noteDuration, volume, 'triangle');
     playNote(ctx, NOTE.E5, now + noteDuration, noteDuration, volume, 'triangle');
     playNote(ctx, NOTE.G5, now + noteDuration * 2, noteDuration * 1.5, volume, 'triangle');
-  }, [isMuted, getAudioContext, playNote]);
+  }, [isMuted, playNote]);
 
   const playIncorrect = useCallback(() => {
     if (isMuted) return;
@@ -86,7 +75,7 @@ export function useSound() {
 
     // Single soft low tone: C4, 200ms, low volume -- gentle, not a buzzer
     playNote(ctx, NOTE.C4, now, 0.2, 0.08, 'sine');
-  }, [isMuted, getAudioContext, playNote]);
+  }, [isMuted, playNote]);
 
   const playBadge = useCallback(() => {
     if (isMuted) return;
@@ -100,7 +89,7 @@ export function useSound() {
     playNote(ctx, NOTE.E5, now + noteDuration, noteDuration, volume, 'triangle');
     playNote(ctx, NOTE.G5, now + noteDuration * 2, noteDuration, volume, 'triangle');
     playNote(ctx, NOTE.C6, now + noteDuration * 3, noteDuration * 2, volume, 'triangle');
-  }, [isMuted, getAudioContext, playNote]);
+  }, [isMuted, playNote]);
 
   const playTableComplete = useCallback(() => {
     if (isMuted) return;
@@ -116,7 +105,7 @@ export function useSound() {
       const dur = isLast ? noteDuration * 3 : noteDuration;
       playNote(ctx, freq, now + i * noteDuration, dur, volume, 'triangle');
     });
-  }, [isMuted, getAudioContext, playNote]);
+  }, [isMuted, playNote]);
 
   // Fuller completion melody for when the whole mystery image is revealed
   // (all 36 facts reach box 5). Played on the final table-complete event
@@ -138,7 +127,7 @@ export function useSound() {
       const dur = isLast ? noteDuration * 4 : noteDuration;
       playNote(ctx, freq, now + i * noteDuration, dur, volume, 'triangle');
     });
-  }, [isMuted, getAudioContext, playNote]);
+  }, [isMuted, playNote]);
 
   const toggleMute = useCallback(() => {
     setIsMuted((prev) => {
