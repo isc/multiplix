@@ -5,6 +5,9 @@
   gap: 10px;
   padding: 0;
   width: 100%;
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-touch-callout: none;
 }
 
 .numpad-display {
@@ -63,6 +66,7 @@
   -webkit-user-select: none;
   cursor: pointer;
   -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
 }
 
 .numpad-btn:active {
