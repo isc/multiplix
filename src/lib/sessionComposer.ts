@@ -146,13 +146,14 @@ export function composeSession(profile: UserProfile, now: string): SessionQuesti
     }
   }
 
-  // New facts to introduce (max 2)
-  // 48h inter-session similarity constraint: facts introduced in the last 48h
-  // block similar candidates (strong or medium similarity) from being introduced
-  // to prevent interference during the consolidation phase.
-  const recentlyIntroduced = facts.filter(
-    (f) => f.introduced && f.lastSeen && daysBetween(f.lastSeen, today) < 2,
-  );
+  // Similarité 48h (specs §1.2) : on espace les *introductions*, pas les
+  // révisions actives — l'interférence joue à l'apprentissage. Faits sans
+  // history (dominés au placement) exclus : sinon une table en révision
+  // active bloquerait à jamais l'intro de ses derniers faits (8×9, 9×9).
+  const recentlyIntroduced = facts.filter((f) => {
+    const introDate = f.history[0]?.date;
+    return f.introduced && introDate && daysBetween(introDate, today) < 2;
+  });
 
   const newFacts: MultiFact[] = [];
   if (shouldIntroduceNew(facts) && selected.length < MAX_QUESTIONS) {
