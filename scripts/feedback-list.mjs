@@ -1,6 +1,11 @@
 #!/usr/bin/env node
 // Lit les feedbacks depuis Supabase via la secret key (côté local uniquement).
 // Nécessite .env.local (chargé via `node --env-file=.env.local`).
+//
+// Usage:
+//   npm run feedback:list           # uniquement les feedbacks status='new'
+//   npm run feedback:list -- --all  # tous les feedbacks (new + done)
+//   npm run feedback:list -- 100    # ajuster la limite (défaut 50)
 
 const url = process.env.SUPABASE_URL;
 const secret = process.env.SUPABASE_SECRET_KEY;
@@ -10,8 +15,12 @@ if (!url || !secret) {
   process.exit(1);
 }
 
-const limit = Number(process.argv[2] ?? 50);
-const endpoint = `${url}/rest/v1/feedback?select=*&order=created_at.desc&limit=${limit}`;
+const args = process.argv.slice(2);
+const showAll = args.includes('--all');
+const limit = Number(args.find((a) => /^\d+$/.test(a)) ?? 50);
+
+const filter = showAll ? '' : '&status=eq.new';
+const endpoint = `${url}/rest/v1/feedback?select=*&order=created_at.desc&limit=${limit}${filter}`;
 
 const res = await fetch(endpoint, {
   headers: {
@@ -27,7 +36,7 @@ if (!res.ok) {
 
 const rows = await res.json();
 if (rows.length === 0) {
-  console.log('Aucun feedback pour le moment.');
+  console.log(showAll ? 'Aucun feedback.' : "Aucun feedback à traiter (utilise --all pour voir l'historique).");
   process.exit(0);
 }
 
@@ -37,11 +46,18 @@ for (const row of rows) {
   const stats = ctx.stats
     ? ` | ${ctx.stats.total_sessions} séances, ${ctx.stats.facts_mastered}/${ctx.stats.facts_total} maîtrisés`
     : '';
+  const shortId = row.id.slice(0, 8);
+  const statusTag = showAll ? ` [${row.status}]` : '';
   console.log('---');
-  console.log(`[${date}] ${row.email ?? '(sans email)'}${stats}`);
+  console.log(`${shortId}${statusTag} [${date}] ${row.email ?? '(sans email)'}${stats}`);
   console.log(`UA: ${ctx.user_agent ?? '?'} | ${ctx.viewport?.w ?? '?'}x${ctx.viewport?.h ?? '?'}`);
   console.log('');
   console.log(row.message);
 }
 console.log('---');
-console.log(`${rows.length} feedback${rows.length > 1 ? 's' : ''}.`);
+const noun = `feedback${rows.length > 1 ? 's' : ''}`;
+const suffix = showAll ? '' : ' à traiter';
+console.log(`${rows.length} ${noun}${suffix}.`);
+if (!showAll && rows.length > 0) {
+  console.log("Pour marquer comme traité : npm run feedback:treat -- <id> [<id>...]");
+}
