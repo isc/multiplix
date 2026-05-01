@@ -138,7 +138,7 @@ function buildEntries() {
   // Static phrases
   entries.push({
     key: 'welcome-hello',
-    text: "Bonjour ! Je suis un petit oeuf magique. Aide-moi à grandir en apprenant les tables de multiplication !",
+    text: "Bonjour ! Je suis Piou, ton petit copain d'apprentissage. On va apprendre les tables de multiplication ensemble !",
   });
   entries.push({
     key: 'welcome-name',
