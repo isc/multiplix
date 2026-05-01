@@ -18,33 +18,41 @@ function boxFromResult(result: PlacementResult): BoxLevel {
   return 1;
 }
 
-// Marque comme introduit (boîte 2) tout fait non encore introduit qui est
-// "dominé" par au moins un élément de `evidence` : un (eA, eB) domine un
-// fait (a, b) si eA ≥ a ET eB ≥ b. Repose sur l'invariant a ≤ b côté facts
-// et evidence.
+// Marque comme introduit tout fait non encore introduit qui est "dominé"
+// par au moins un élément de `evidence` : un (eA, eB) domine un fait (a, b)
+// si eA ≥ a ET eB ≥ b. Repose sur l'invariant a ≤ b côté facts et evidence.
+//
+// La boîte de départ dépend de la qualité de la dominance :
+// - boîte 3 si au moins un dominant a été répondu correct *et rapide* (< 3s),
+//   équivalent au niveau d'un fait testé directement et réussi rapidement ;
+// - boîte 2 sinon (dominance par corrects lents 3-5s seulement).
+type DominanceEvidence = { a: number; b: number; isFast: boolean };
+
 function markDominated(
   facts: MultiFact[],
-  evidence: Array<{ a: number; b: number }>,
+  evidence: DominanceEvidence[],
   today: string,
 ): void {
   for (const fact of facts) {
     if (fact.introduced) continue;
-    if (evidence.some((e) => e.a >= fact.a && e.b >= fact.b)) {
-      fact.introduced = true;
-      fact.box = 2;
-      fact.lastSeen = today;
-      fact.nextDue = computeNextDue(2, today);
-    }
+    const dominators = evidence.filter((e) => e.a >= fact.a && e.b >= fact.b);
+    if (dominators.length === 0) continue;
+    const box: BoxLevel = dominators.some((d) => d.isFast) ? 3 : 2;
+    fact.introduced = true;
+    fact.box = box;
+    fact.lastSeen = today;
+    fact.nextDue = computeNextDue(box, today);
   }
 }
 
 // Pass 1 : place chaque fait directement testé à la boîte qui correspond
 // à la vitesse de réponse.
 //
-// Pass 2 : marque comme introduits (boîte 2) les faits non testés mais
-// dominés par un test correct. Sans cette passe, 2×2 et 2×3 (jamais
-// testés) restent introduced=false, l'image mystère les cache, et
-// shouldIntroduceNew se bloque dès qu'un fait du placement est en boîte 1.
+// Pass 2 : marque comme introduits (boîte 2 ou 3 selon la qualité de la
+// dominance) les faits non testés mais dominés par un test correct. Sans
+// cette passe, 2×2 et 2×3 (jamais testés) restent introduced=false, l'image
+// mystère les cache, et shouldIntroduceNew se bloque dès qu'un fait du
+// placement est en boîte 1.
 export function seedFromPlacement(
   facts: MultiFact[],
   results: PlacementResult[],
@@ -68,7 +76,10 @@ export function seedFromPlacement(
     }];
   }
 
-  markDominated(facts, results.filter((r) => r.correct), today);
+  const evidence: DominanceEvidence[] = results
+    .filter((r) => r.correct)
+    .map((r) => ({ a: r.a, b: r.b, isFast: r.timeMs < RESPONSE_TIME.FAST }));
+  markDominated(facts, evidence, today);
 }
 
 // Migration : pour les profils créés avant l'ajout de la 2ᵉ passe de
@@ -79,9 +90,15 @@ export function inferIntroductionsFromKnowns(
   facts: MultiFact[],
   today: string,
 ): void {
-  const evidence = facts.filter(
-    (f) => f.introduced && f.history.some((h) => h.correct),
-  );
+  const evidence: DominanceEvidence[] = facts
+    .filter((f) => f.introduced && f.history.some((h) => h.correct))
+    .map((f) => ({
+      a: f.a,
+      b: f.b,
+      isFast: f.history.some(
+        (h) => h.correct && h.responseTimeMs < RESPONSE_TIME.FAST,
+      ),
+    }));
   if (evidence.length === 0) return;
   markDominated(facts, evidence, today);
 }

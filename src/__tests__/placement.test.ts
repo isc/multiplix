@@ -6,6 +6,14 @@ import type { MultiFact } from '../types';
 
 const TODAY = '2026-04-29';
 
+// Doit rester aligné avec PLACEMENT_FACTS de WelcomeScreen.tsx — duplication
+// volontaire pour ne pas exporter une constante UI uniquement pour les tests.
+const PLACEMENT_GRID: [number, number][] = [
+  [2, 5], [3, 4], [5, 5], [2, 8], [3, 6],
+  [4, 7], [6, 6], [5, 8], [3, 9], [7, 7],
+  [4, 9], [6, 8], [7, 9], [8, 8], [6, 9],
+];
+
 function findFact(facts: MultiFact[], a: number, b: number): MultiFact {
   const f = facts.find((x) => getFactKey(x.a, x.b) === getFactKey(a, b));
   if (!f) throw new Error(`fact ${a}×${b} not found`);
@@ -54,7 +62,7 @@ describe('seedFromPlacement', () => {
     expect(f.box).toBe(1);
   });
 
-  it('infère 2×3 comme connu si 6×9 est correct (dominance)', () => {
+  it('infère 2×3 en boîte 3 si dominé par un correct rapide (< 3s)', () => {
     const facts = createInitialFacts();
     const results: PlacementResult[] = [
       { a: 6, b: 9, correct: true, timeMs: 2000 },
@@ -62,17 +70,33 @@ describe('seedFromPlacement', () => {
     seedFromPlacement(facts, results, TODAY);
     const f = findFact(facts, 2, 3);
     expect(f.introduced).toBe(true);
+    expect(f.box).toBe(3);
+  });
+
+  it('infère 2×3 en boîte 2 si dominé seulement par des corrects lents (3-5s)', () => {
+    const facts = createInitialFacts();
+    const results: PlacementResult[] = [
+      { a: 6, b: 9, correct: true, timeMs: 4200 },
+    ];
+    seedFromPlacement(facts, results, TODAY);
+    const f = findFact(facts, 2, 3);
+    expect(f.introduced).toBe(true);
     expect(f.box).toBe(2);
+  });
+
+  it("un seul dominant rapide suffit à hisser le fait dominé en boîte 3", () => {
+    const facts = createInitialFacts();
+    const results: PlacementResult[] = [
+      { a: 5, b: 8, correct: true, timeMs: 4500 }, // lent
+      { a: 6, b: 9, correct: true, timeMs: 1500 }, // rapide
+    ];
+    seedFromPlacement(facts, results, TODAY);
+    expect(findFact(facts, 2, 3).box).toBe(3);
   });
 
   it('n\'infère PAS un fait non dominé (9×9 ne peut être inféré par rien)', () => {
     const facts = createInitialFacts();
-    const allPlacement: [number, number][] = [
-      [2, 5], [3, 4], [5, 5], [2, 8], [3, 6],
-      [4, 7], [6, 6], [5, 8], [3, 9], [7, 7],
-      [4, 9], [6, 8], [7, 9], [8, 8], [6, 9],
-    ];
-    const results: PlacementResult[] = allPlacement.map(([a, b]) => ({
+    const results: PlacementResult[] = PLACEMENT_GRID.map(([a, b]) => ({
       a, b, correct: true, timeMs: 1500,
     }));
     seedFromPlacement(facts, results, TODAY);
@@ -106,12 +130,7 @@ describe('seedFromPlacement', () => {
 
   it('le placement complet d\'un enfant qui aces tout introduit 34 faits sur 36', () => {
     const facts = createInitialFacts();
-    const allPlacement: [number, number][] = [
-      [2, 5], [3, 4], [5, 5], [2, 8], [3, 6],
-      [4, 7], [6, 6], [5, 8], [3, 9], [7, 7],
-      [4, 9], [6, 8], [7, 9], [8, 8], [6, 9],
-    ];
-    const results: PlacementResult[] = allPlacement.map(([a, b]) => ({
+    const results: PlacementResult[] = PLACEMENT_GRID.map(([a, b]) => ({
       a, b, correct: true, timeMs: 1500,
     }));
     seedFromPlacement(facts, results, TODAY);
@@ -121,7 +140,7 @@ describe('seedFromPlacement', () => {
 });
 
 describe('inferIntroductionsFromKnowns (migration)', () => {
-  it('infère les faits manquants à partir des faits déjà connus', () => {
+  it('infère les faits manquants à partir des faits déjà connus (rapide → boîte 3)', () => {
     const facts = createInitialFacts();
     const f69 = findFact(facts, 6, 9);
     f69.introduced = true;
@@ -132,7 +151,19 @@ describe('inferIntroductionsFromKnowns (migration)', () => {
 
     const f23 = findFact(facts, 2, 3);
     expect(f23.introduced).toBe(true);
-    expect(f23.box).toBe(2);
+    expect(f23.box).toBe(3);
+  });
+
+  it("infère un fait en boîte 2 si tous les dominants connus sont lents", () => {
+    const facts = createInitialFacts();
+    const f69 = findFact(facts, 6, 9);
+    f69.introduced = true;
+    f69.box = 2;
+    f69.history = [{ date: '2026-04-20', correct: true, responseTimeMs: 4200, answeredWith: 54 }];
+
+    inferIntroductionsFromKnowns(facts, TODAY);
+
+    expect(findFact(facts, 2, 3).box).toBe(2);
   });
 
   it('idempotent : un second appel ne change rien', () => {

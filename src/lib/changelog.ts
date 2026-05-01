@@ -10,6 +10,12 @@ export interface ChangelogEntry {
 // parent. Garder court et concret.
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    date: '2026-05-01',
+    items: [
+      "Les badges « Table de N » tombent plus vite quand l'enfant a réussi le test de placement : un fait inféré à partir d'une réponse rapide démarre désormais en boîte 3 (et plus en boîte 2), reconnaissant la maîtrise déjà démontrée.",
+    ],
+  },
+  {
     date: '2026-04-30',
     items: [
       "Les deux derniers faits (8×9 et 9×9) sont désormais bien introduits en fin de parcours, même si certains autres faits sont retombés en boîte 1.",
