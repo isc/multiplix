@@ -33,6 +33,7 @@ export default function WelcomeScreen({ onComplete }: WelcomeScreenProps) {
   const [testResults, setTestResults] = useState<PlacementResult[]>([]);
   const [numpadDisabled, setNumpadDisabled] = useState(false);
   const [feedback, setFeedback] = useState<'correct' | 'incorrect' | null>(null);
+  const [lastAnswer, setLastAnswer] = useState<number | null>(null);
   const questionStartTime = useRef(0);
 
   // TTS for the welcome steps
@@ -88,6 +89,7 @@ export default function WelcomeScreen({ onComplete }: WelcomeScreenProps) {
       setTimeout(() => {
         setFeedback(null);
         setNumpadDisabled(false);
+        setLastAnswer(null);
 
         if (testIndex + 1 >= testFacts.length) {
           // Test complete
@@ -104,6 +106,7 @@ export default function WelcomeScreen({ onComplete }: WelcomeScreenProps) {
   const handleTestAnswer = useCallback(
     (value: number) => {
       const [a, b] = testFacts[testIndex];
+      setLastAnswer(value);
       recordTestResult(value === a * b);
     },
     [testFacts, testIndex, recordTestResult],
@@ -160,7 +163,11 @@ export default function WelcomeScreen({ onComplete }: WelcomeScreenProps) {
             <span className="welcome-test-operator">{'\u00D7'}</span>
             {displayB}
             <span className="welcome-test-equals">=</span>
-            <span className="welcome-test-placeholder">?</span>
+            {lastAnswer != null ? (
+              <span className="welcome-test-answer">{lastAnswer}</span>
+            ) : (
+              <span className="welcome-test-placeholder">?</span>
+            )}
           </div>
           {feedback && (
             <div className={`welcome-test-feedback ${feedback}`}>

@@ -207,6 +207,11 @@
   font-weight: 400;
 }
 
+.welcome-test-answer {
+  color: var(--ink);
+  margin-left: 10px;
+}
+
 .welcome-dontknow {
   display: flex;
   align-items: center;
