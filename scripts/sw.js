@@ -1,4 +1,4 @@
-// Service Worker minimal pour la POC nobuild.
+// Service Worker minimal.
 //
 // Stratégie :
 //  - install : precache du shell (HTML, JS, CSS, vendor, icônes — pas
@@ -8,7 +8,7 @@
 //  - autre GET : cache-first puis lazy-cache si succès réseau.
 //
 // Les marqueurs de version, de base path et de liste d'assets sont
-// substitués par nobuild/build.mjs.
+// substitués par scripts/build.mjs.
 
 const CACHE = 'multiplix-' + __VERSION__
 const BASE = __BASE__

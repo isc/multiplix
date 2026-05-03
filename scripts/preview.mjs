@@ -1,7 +1,7 @@
-// Sert nobuild/dist/ pour preview locale du build de prod.
+// Sert dist/ pour preview locale du build de prod.
 //
-//   npm run nobuild:preview            →  http://localhost:5175/
-//   BASE=/multiplix/ npm run ...       →  http://localhost:5175/multiplix/
+//   npm run preview                    →  http://localhost:5175/
+//   BASE=/multiplix/ npm run preview   →  http://localhost:5175/multiplix/
 //
 // Le préfixe BASE est strippé de l'URL avant lookup dans dist/, ce qui
 // reproduit le comportement de GitHub Pages servant le repo sous un
@@ -12,7 +12,7 @@ import fs from 'node:fs/promises'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 
-const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), 'dist')
+const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../dist')
 const PORT = Number(process.env.PORT ?? 5175)
 const BASE = process.env.BASE ?? '/'
 

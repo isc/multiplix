@@ -1,16 +1,6 @@
-// Config Vitest dédiée à la validation Preact de la POC nobuild.
-//
-// Différences avec vite.config.ts (qui utilise React) :
-//  - alias `react`, `react-dom`, etc. → preact/compat
-//  - alias `@testing-library/react` → `@testing-library/preact`
-//  - JSX émis avec `jsxImportSource: 'preact'` (pas le plugin React)
-//  - alias `virtual:pwa-register` vers le stub no-op existant
-//
-//   npm run test:preact
-//
-// Permet de valider que le code applicatif tourne sous Preact sans
-// régression, en exécutant la même suite de tests que le build React.
-
+// Config Vitest. Aliase `react` vers `preact/compat` pour exécuter la suite
+// sous Preact tout en gardant le code applicatif écrit avec les imports
+// React (utilisés uniquement pour les types côté TS).
 import { defineConfig } from 'vitest/config'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
@@ -31,14 +21,14 @@ export default defineConfig({
       'react-dom':               'preact/compat',
       'react':                   'preact/compat',
       '@testing-library/react':  '@testing-library/preact',
-      'virtual:pwa-register':    path.join(ROOT, 'src/pwa-register-stub.ts'),
+      'virtual:pwa-register':    path.join(ROOT, 'scripts/pwa-register-noop.js'),
     },
   },
   test: {
     environment: 'jsdom',
     globals: false,
     setupFiles: ['./src/__tests__/setup.ts'],
-    exclude: ['node_modules/**', 'nobuild/dist/**'],
+    exclude: ['node_modules/**', 'dist/**'],
     testTimeout: 120_000,
   },
 })

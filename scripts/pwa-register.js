@@ -1,4 +1,4 @@
-// Le chemin du SW est substitué par nobuild/build.mjs.
+// Le chemin du SW est substitué par scripts/build.mjs.
 export function registerSW() {
   if (!('serviceWorker' in navigator)) return () => {}
   window.addEventListener('load', () => {

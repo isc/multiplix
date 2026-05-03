@@ -1,8 +1,7 @@
-// POC d'un dev server "nobuild" : esbuild en pur transformer (pas de bundling),
-// import maps pour les bare specifiers, ESM natif côté navigateur.
+// Dev server : esbuild en pur transformer (pas de bundling), import
+// maps pour les bare specifiers, ESM natif côté navigateur.
 //
-// Pour évaluer l'approche sans toucher au code applicatif :
-//   npm run nobuild   →   http://localhost:5174/
+//   npm run dev   →   http://localhost:5174/
 //
 // Ce qui est géré :
 //  - .ts/.tsx/.jsx → transformés à la volée (esbuild.transform, format ESM)
@@ -10,7 +9,7 @@
 //    qui renvoie un petit bout de JS injectant un <link rel="stylesheet">
 //  - imports sans extension → résolus en .tsx/.ts/.jsx/.js puis index.*
 //  - import.meta.env.* → remplacés via esbuild `define`
-//  - virtual:pwa-register → no-op via import map (pas de SW en POC)
+//  - virtual:pwa-register → no-op via import map (pas de SW en dev)
 
 import http from 'node:http'
 import fs from 'node:fs/promises'
@@ -46,8 +45,11 @@ const ENV_DEFINE = {
   'import.meta.env.PROD':                          'false',
   'import.meta.env.VITE_APP_VERSION':              '"nobuild-poc"',
   'import.meta.env.VITE_BASE_PATH':                '"/"',
-  'import.meta.env.VITE_SUPABASE_URL':             'undefined',
-  'import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY': 'undefined',
+  // Strings vides en dev : `feedbackEnabled` retombe sur false sans crash.
+  // À surcharger via .env.local + un mécanisme adhoc le jour où on reproduit
+  // le feedback en local.
+  'import.meta.env.VITE_SUPABASE_URL':             '""',
+  'import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY': '""',
 }
 
 const TRANSFORM_EXT = new Set(['.ts', '.tsx', '.jsx'])
@@ -87,7 +89,7 @@ const server = http.createServer(async (req, res) => {
   try {
     const u = new URL(req.url, `http://localhost:${PORT}`)
     let pathname = decodeURIComponent(u.pathname)
-    if (pathname === '/') pathname = '/nobuild/index.html'
+    if (pathname === '/') pathname = '/index.html'
 
     // Helper "import './foo.css?as=link'" : renvoie un JS qui injecte un <link>.
     if (pathname.endsWith('.css') && u.searchParams.get('as') === 'link') {
@@ -137,5 +139,5 @@ const server = http.createServer(async (req, res) => {
 })
 
 server.listen(PORT, () => {
-  console.log(`Nobuild POC dev server: http://localhost:${PORT}/`)
+  console.log(`Dev server: http://localhost:${PORT}/`)
 })

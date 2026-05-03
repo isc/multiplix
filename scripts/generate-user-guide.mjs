@@ -29,10 +29,10 @@ const OUT_DIR = join(ROOT, 'dist', 'guide');
 const SHOTS_DIR = join(OUT_DIR, 'screenshots');
 
 const PORT = Number(process.env.GUIDE_PORT ?? 4173);
-// Matches the base baked in at build time (see vite.config.ts). For main
+// Matches the base baked in at build time (see scripts/build.mjs). For main
 // deploys this is `/multiplix/`; for branch previews it's overridden via
-// the `VITE_BASE_PATH` env variable.
-const BASE_PATH = process.env.VITE_BASE_PATH ?? '/multiplix/';
+// the `BASE` env variable.
+const BASE_PATH = process.env.BASE ?? '/multiplix/';
 const BASE_URL = `http://localhost:${PORT}${BASE_PATH}`;
 
 // Mobile-ish portrait viewport. Matches the 360×760 iPhone logical frame
@@ -70,11 +70,11 @@ async function waitForUrl(url, timeoutMs = 30_000) {
 }
 
 function startPreviewServer() {
-  log(`starting vite preview on port ${PORT}`);
+  log(`starting nobuild preview on port ${PORT}`);
   const proc = spawn(
-    'npx',
-    ['vite', 'preview', '--port', String(PORT), '--strictPort'],
-    { cwd: ROOT, stdio: ['ignore', 'pipe', 'pipe'] },
+    'node',
+    ['scripts/preview.mjs'],
+    { cwd: ROOT, stdio: ['ignore', 'pipe', 'pipe'], env: { ...process.env, PORT: String(PORT) } },
   );
   proc.stdout.on('data', (d) => process.stdout.write(`[preview] ${d}`));
   proc.stderr.on('data', (d) => process.stderr.write(`[preview] ${d}`));

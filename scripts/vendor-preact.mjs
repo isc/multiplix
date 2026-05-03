@@ -1,5 +1,5 @@
-// Vendore Preact dans `nobuild/vendor/preact/` en COPIANT les fichiers ESM
-// publiés sur npm tels quels. Pas de bundling, pas de transformation. C'est
+// Vendore Preact dans `vendor/preact/` en COPIANT les fichiers ESM publiés
+// sur npm tels quels. Pas de bundling, pas de transformation. C'est
 // l'équivalent de `bin/importmap pin --download` côté Rails.
 //
 // À relancer manuellement au bump de Preact.
@@ -8,7 +8,7 @@ import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..')
-const OUT = path.join(ROOT, 'nobuild/vendor/preact')
+const OUT = path.join(ROOT, 'vendor/preact')
 const SRC = path.join(ROOT, 'node_modules/preact')
 
 const files = {

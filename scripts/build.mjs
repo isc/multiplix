@@ -1,18 +1,13 @@
-// Build de prod nobuild : produit un dossier `dist/` 100% statique
-// déployable tel quel sur GitHub Pages (ou n'importe quel CDN).
+// Build de prod : produit un dossier `dist/` 100% statique déployable
+// tel quel sur GitHub Pages (ou n'importe quel CDN).
 //
-//   BASE=/multiplix/ node nobuild/build.mjs   →   nobuild/dist/
+//   npm run build                         → dist/ (BASE=/)
+//   BASE=/multiplix/ npm run build        → dist/ pour sous-chemin
 //
 // Pas de bundling : chaque .ts/.tsx devient un .js indépendant. Les
 // imports relatifs sont réécrits pour pointer vers les .js générés. Les
 // imports CSS deviennent `./X.css.js` (shim qui injecte un <link>) avec
 // le vrai .css copié à côté.
-//
-// Note philosophique : un nobuild "pur" ne précompilerait rien — on
-// servirait depuis un petit serveur faisant la transformation à la
-// demande. Cette précompilation existe uniquement parce que GitHub
-// Pages (et la plupart des hébergeurs statiques) ne savent que servir
-// des fichiers tels quels. C'est le minimum incompressible.
 
 import esbuild from 'esbuild'
 import fs from 'node:fs/promises'
@@ -22,11 +17,11 @@ import { fileURLToPath } from 'node:url'
 const ROOT     = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..')
 const SRC      = path.join(ROOT, 'src')
 const PUBLIC   = path.join(ROOT, 'public')
-const VENDOR   = path.join(ROOT, 'nobuild/vendor')
-const TEMPLATE = path.join(ROOT, 'nobuild/index.html')
-const SW_SRC   = path.join(ROOT, 'nobuild/sw.js')
-const REG_SRC  = path.join(ROOT, 'nobuild/pwa-register.js')
-const OUT      = path.join(ROOT, 'nobuild/dist')
+const VENDOR   = path.join(ROOT, 'vendor')
+const TEMPLATE = path.join(ROOT, 'index.html')
+const SW_SRC   = path.join(ROOT, 'scripts/sw.js')
+const REG_SRC  = path.join(ROOT, 'scripts/pwa-register.js')
+const OUT      = path.join(ROOT, 'dist')
 
 const BASE    = process.env.BASE ?? '/'
 const VERSION = process.env.VERSION ?? new Date().toISOString().slice(0, 19).replace(/[-T:]/g, '')
@@ -36,10 +31,12 @@ const ENV_DEFINE = {
   'import.meta.env.MODE':                          '"production"',
   'import.meta.env.DEV':                           'false',
   'import.meta.env.PROD':                          'true',
-  'import.meta.env.VITE_APP_VERSION':              JSON.stringify(`nobuild-${VERSION}`),
+  'import.meta.env.VITE_APP_VERSION':              JSON.stringify(VERSION),
   'import.meta.env.VITE_BASE_PATH':                JSON.stringify(BASE),
-  'import.meta.env.VITE_SUPABASE_URL':             'undefined',
-  'import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY': 'undefined',
+  // Pour le moment l'envoi de feedback n'est pas branché côté nobuild ; les
+  // valeurs vides désactivent feedbackEnabled au runtime.
+  'import.meta.env.VITE_SUPABASE_URL':             JSON.stringify(process.env.VITE_SUPABASE_URL ?? ''),
+  'import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY': JSON.stringify(process.env.VITE_SUPABASE_PUBLISHABLE_KEY ?? ''),
 }
 
 const SRC_EXTS = ['.tsx', '.ts', '.jsx', '.js']
@@ -136,14 +133,13 @@ for await (const file of walk(SRC)) {
 await copyTree(VENDOR, path.join(OUT, 'vendor'))
 await copyTree(PUBLIC, OUT)
 
-// 3) index.html avec import map adaptée à BASE
+// 3) index.html avec import map et chemins absolus adaptés à BASE
 let html = await fs.readFile(TEMPLATE, 'utf8')
 html = html
-  .replace(/\/nobuild\/vendor\//g, BASE + 'vendor/')
-  .replace(/\/nobuild\/pwa-register-noop\.js/g, BASE + 'pwa-register.js')
-  .replace(/\/icons\//g, BASE + 'icons/')
+  .replace(/\/vendor\//g, BASE + 'vendor/')
+  .replace(/\/scripts\/pwa-register-noop\.js/g, BASE + 'pwa-register.js')
+  .replace(/(["'])\/(icons|splash)\//g, `$1${BASE}$2/`)
   .replace(/\/src\/main\.tsx/g, BASE + 'src/main.js')
-  .replace(/Multiplix \(nobuild POC — Preact\)/, 'Multiplix')
 await fs.writeFile(path.join(OUT, 'index.html'), html)
 
 // 4) Liste les assets pour le SW :
@@ -165,7 +161,7 @@ for await (const f of walk(OUT)) {
 // 5) SW + pwa-register
 let sw = await fs.readFile(SW_SRC, 'utf8')
 sw = sw
-  .replaceAll('__VERSION__', JSON.stringify(`nobuild-${VERSION}`))
+  .replaceAll('__VERSION__', JSON.stringify(VERSION))
   .replaceAll('__BASE__', JSON.stringify(BASE))
   .replaceAll('__ASSETS__', JSON.stringify(shellAssets, null, 2))
 await fs.writeFile(path.join(OUT, 'sw.js'), sw)
