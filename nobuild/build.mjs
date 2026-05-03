@@ -106,6 +106,7 @@ for await (const file of walk(SRC)) {
 
   if (['.ts', '.tsx', '.jsx'].includes(ext)) {
     const source = await fs.readFile(file, 'utf8')
+    const outName = path.basename(rel, ext) + '.js'
     const result = await esbuild.transform(source, {
       loader: ext.slice(1),
       format: 'esm',
@@ -115,10 +116,13 @@ for await (const file of walk(SRC)) {
       define: ENV_DEFINE,
       sourcefile: rel,
       minify: true,
+      sourcemap: 'external',
     })
     const code = await rewriteImports(result.code, file)
-    const outName = path.basename(rel, ext) + '.js'
-    await fs.writeFile(path.join(outDir, outName), code)
+    // Lien vers la source map à côté (esbuild ne l'ajoute pas en mode external).
+    const codeWithMap = code + `\n//# sourceMappingURL=${outName}.map\n`
+    await fs.writeFile(path.join(outDir, outName), codeWithMap)
+    await fs.writeFile(path.join(outDir, outName + '.map'), result.map)
   } else if (ext === '.css') {
     const base = path.basename(rel)
     await fs.copyFile(file, path.join(outDir, base))
@@ -142,29 +146,43 @@ html = html
   .replace(/Multiplix \(nobuild POC — Preact\)/, 'Multiplix')
 await fs.writeFile(path.join(OUT, 'index.html'), html)
 
-// 4) Liste tous les assets pour le SW (precache du shell)
-const allAssets = []
+// 4) Liste les assets pour le SW :
+//    - shell : tout ce qui est nécessaire pour le 1er render (HTML, JS, CSS,
+//      vendor, icônes, manifest). Précaché à l'install.
+//    - lazy : audio + grosses images (mystery, splash). Caché à la demande
+//      lors de la 1re utilisation, pour éviter un install lourd de 10 Mo.
+const shellAssets = []
 for await (const f of walk(OUT)) {
   const rel = '/' + path.relative(OUT, f).split(path.sep).join('/')
   if (rel.endsWith('/sw.js')) continue
-  allAssets.push(BASE.replace(/\/$/, '') + rel)
+  if (rel.endsWith('.map')) continue
+  if (rel.startsWith('/audio/')) continue
+  if (rel.startsWith('/mystery/')) continue
+  if (rel.startsWith('/splash/')) continue
+  shellAssets.push(BASE.replace(/\/$/, '') + rel)
 }
 
 // 5) SW + pwa-register
 let sw = await fs.readFile(SW_SRC, 'utf8')
 sw = sw
   .replaceAll('__VERSION__', JSON.stringify(`nobuild-${VERSION}`))
-  .replaceAll('__ASSETS__', JSON.stringify(allAssets, null, 2))
+  .replaceAll('__BASE__', JSON.stringify(BASE))
+  .replaceAll('__ASSETS__', JSON.stringify(shellAssets, null, 2))
 await fs.writeFile(path.join(OUT, 'sw.js'), sw)
 
 let reg = await fs.readFile(REG_SRC, 'utf8')
 reg = reg.replaceAll('__SW_PATH__', JSON.stringify(BASE + 'sw.js'))
 await fs.writeFile(path.join(OUT, 'pwa-register.js'), reg)
 
-console.log(`Build OK : ${allAssets.length} assets, ~${Math.round((await du(OUT)) / 1024)} KB`)
+const totalKB = Math.round((await du(OUT)) / 1024)
+const shellKB = Math.round((await du(OUT, (f) => {
+  const rel = path.relative(OUT, f)
+  return !rel.startsWith('audio') && !rel.startsWith('mystery') && !rel.startsWith('splash') && !rel.endsWith('.map')
+})) / 1024)
+console.log(`Build OK : ${shellAssets.length} shell assets (precache), shell ${shellKB} KB / total ${totalKB} KB`)
 
-async function du(dir) {
+async function du(dir, filter = () => true) {
   let total = 0
-  for await (const f of walk(dir)) total += (await fs.stat(f)).size
+  for await (const f of walk(dir)) if (filter(f)) total += (await fs.stat(f)).size
   return total
 }

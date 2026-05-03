@@ -1,0 +1,41 @@
+name: Nobuild CI
+
+# Garde-fou pour la POC nobuild (branche claude/nobuild-approach-*) :
+# vérifie que la suite de tests passe sous Preact et que le build de
+# prod compile. Pas de déploiement.
+#
+# Tourne sur PR ciblant main ET sur push vers les branches nobuild,
+# pour qu'on voie la régression dès qu'elle apparait.
+
+on:
+  pull_request:
+    paths:
+      - 'nobuild/**'
+      - 'vitest.preact.config.ts'
+      - 'src/**'
+      - 'package.json'
+      - 'package-lock.json'
+      - '.github/workflows/nobuild-ci.yml'
+  push:
+    branches:
+      - 'claude/nobuild-**'
+
+jobs:
+  preact-tests-and-build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 22
+          cache: npm
+
+      - run: npm ci
+
+      # 1) La suite vitest doit passer sous Preact (alias react→preact/compat).
+      - run: npm run test:preact
+
+      # 2) Les deux variantes du build de prod doivent compiler.
+      - run: npm run nobuild:build
+      - run: BASE=/multiplix/ npm run nobuild:build
