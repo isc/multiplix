@@ -10,6 +10,8 @@
     "dev": "vite",
     "nobuild": "node nobuild/dev-server.mjs",
     "nobuild:build": "node nobuild/build.mjs",
+    "nobuild:preview": "node nobuild/preview.mjs",
+    "nobuild:vendor": "node nobuild/vendor.mjs",
     "build": "tsc -b && vite build",
     "lint": "eslint .",
     "preview": "vite preview",
