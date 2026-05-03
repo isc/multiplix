@@ -370,10 +370,25 @@ async function captureSessionScreens(page) {
       ];
     }
   }
+  // On veut que les questions intro apparaissent en début de séance (pour
+  // capturer 06 / 06b). Pour ça, on évite deux pièges côté composeSession :
+  //
+  //  1. Le filtre "similar-recent" (< 2j via history[0].date) écarte les
+  //     nouveaux faits qui ressemblent à un fait récemment introduit. On
+  //     vieillit history[0].date à longAgo pour neutraliser ce filtre.
+  //
+  //  2. La migration `inferIntroductionsFromKnowns` (placement.ts) auto-
+  //     introduit tout fait dominé par un fait connu correctement. Sur un
+  //     profil avec beaucoup de faits hauts en box≥3, ça ré-introduit
+  //     SILENCIEUSEMENT nos cibles non-introduites au load. On force
+  //     correct=false sur l'history pour que la migration ait 0 evidence.
   let dueCount = 0;
   for (const f of profile.facts) {
     if (!f.introduced) continue;
     f.lastSeen = longAgo;
+    if (f.history.length > 0) {
+      f.history = f.history.map((h) => ({ ...h, date: longAgo, correct: false }));
+    }
     if (dueCount < 8) {
       f.box = 2;
       f.nextDue = SEED_TODAY;

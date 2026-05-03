@@ -94,7 +94,10 @@ console.log(`Building into ${OUT} (BASE=${BASE}, VERSION=${VERSION})`)
 await fs.rm(OUT, { recursive: true, force: true })
 await ensureDir(OUT)
 
-// 1) Transforme/copie src/
+// 1) Transforme/copie src/. On collecte aussi tous les .css pour les
+// pré-charger via <link> dans l'index.html (évite le FOUC : sinon chaque
+// import CSS attend que son shim JS s'exécute).
+const cssLinks = []
 for await (const file of walk(SRC)) {
   const rel = path.relative(SRC, file)
   const ext = path.extname(file)
@@ -123,7 +126,10 @@ for await (const file of walk(SRC)) {
   } else if (ext === '.css') {
     const base = path.basename(rel)
     await fs.copyFile(file, path.join(outDir, base))
-    await fs.writeFile(path.join(outDir, base + '.js'), cssShim(base))
+    // Shim no-op : le CSS est déjà chargé via <link> dans index.html. Un
+    // import './X.css' devient `import './X.css.js'` (vide), inoffensif.
+    await fs.writeFile(path.join(outDir, base + '.js'), '')
+    cssLinks.push(['src', ...rel.split(path.sep)].join('/'))
   } else {
     await fs.copyFile(file, path.join(outDir, path.basename(rel)))
   }
@@ -133,13 +139,19 @@ for await (const file of walk(SRC)) {
 await copyTree(VENDOR, path.join(OUT, 'vendor'))
 await copyTree(PUBLIC, OUT)
 
-// 3) index.html avec import map et chemins absolus adaptés à BASE
+// 3) index.html avec import map, chemins absolus adaptés à BASE, et
+// <link> pour tous les CSS (évite le FOUC).
 let html = await fs.readFile(TEMPLATE, 'utf8')
+const linkTags = cssLinks
+  .sort()
+  .map((p) => `    <link rel="stylesheet" href="${BASE}${p}" />`)
+  .join('\n')
 html = html
   .replace(/\/vendor\//g, BASE + 'vendor/')
   .replace(/\/scripts\/pwa-register-noop\.js/g, BASE + 'pwa-register.js')
   .replace(/(["'])\/(icons|splash)\//g, `$1${BASE}$2/`)
   .replace(/\/src\/main\.tsx/g, BASE + 'src/main.js')
+  .replace(/(<\/head>)/, `${linkTags}\n  $1`)
 await fs.writeFile(path.join(OUT, 'index.html'), html)
 
 // 4) Liste les assets pour le SW :

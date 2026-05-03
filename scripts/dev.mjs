@@ -85,17 +85,47 @@ async function resolveUrl(pathname) {
   return null
 }
 
+// Liste tous les .css de src/ pour les pré-charger via <link> dans
+// l'index.html — évite le FOUC (sinon les CSS importés depuis JS arrivent
+// après le 1er render).
+async function listSrcCssFiles() {
+  const out = []
+  async function walk(dir, prefix) {
+    for (const e of await fs.readdir(dir, { withFileTypes: true })) {
+      const p = path.join(dir, e.name)
+      const rel = prefix ? prefix + '/' + e.name : e.name
+      if (e.isDirectory()) await walk(p, rel)
+      else if (e.name.endsWith('.css')) out.push('/src/' + rel)
+    }
+  }
+  await walk(path.join(ROOT, 'src'), '')
+  return out.sort()
+}
+
 const server = http.createServer(async (req, res) => {
   try {
     const u = new URL(req.url, `http://localhost:${PORT}`)
     let pathname = decodeURIComponent(u.pathname)
     if (pathname === '/') pathname = '/index.html'
 
-    // Helper "import './foo.css?as=link'" : renvoie un JS qui injecte un <link>.
+    // Sert l'index.html avec les <link> CSS pré-injectés.
+    if (pathname === '/index.html') {
+      let html = await fs.readFile(path.join(ROOT, 'index.html'), 'utf8')
+      const cssFiles = await listSrcCssFiles()
+      const linkTags = cssFiles.map((p) => `    <link rel="stylesheet" href="${p}" />`).join('\n')
+      html = html.replace(/(<\/head>)/, `${linkTags}\n  $1`)
+      res.writeHead(200, { 'Content-Type': MIME['.html'] })
+      return res.end(html)
+    }
+
+    // Helper "import './foo.css?as=link'" : renvoie un JS qui injecte un
+    // <link>. Inutile maintenant que tous les CSS sont pré-chargés via
+    // index.html, mais on le garde pour ne pas avoir à modifier le
+    // transform (qui rewrites les imports CSS vers ce shim).
     if (pathname.endsWith('.css') && u.searchParams.get('as') === 'link') {
-      const js = `const l=document.createElement('link');l.rel='stylesheet';l.href=${JSON.stringify(pathname)};document.head.appendChild(l);`
+      // No-op : le CSS est déjà chargé.
       res.writeHead(200, { 'Content-Type': MIME['.js'] })
-      return res.end(js)
+      return res.end('')
     }
 
     const filePath = await resolveUrl(pathname)
