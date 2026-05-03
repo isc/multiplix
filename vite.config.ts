@@ -60,6 +60,9 @@ export default defineConfig({
     environment: 'jsdom',
     globals: false,
     setupFiles: ['./src/__tests__/setup.ts'],
+    // Évite que vitest ne découvre les artefacts générés par
+    // `npm run nobuild:build` (ils sont compilés pour Preact).
+    exclude: ['node_modules/**', 'nobuild/dist/**'],
     // The long e2e scenario runs ~25 sessions × ~15 questions; give it room.
     testTimeout: 120_000,
   },

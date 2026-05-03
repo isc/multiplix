@@ -16,6 +16,7 @@
     "check-node": "node scripts/check-node.mjs",
     "pretest": "npm run check-node",
     "test": "vitest run",
+    "test:preact": "vitest run --config vitest.preact.config.ts",
     "user-guide": "node scripts/generate-user-guide.mjs",
     "mystery-levels": "node scripts/generate-mystery-levels.mjs",
     "icons": "node scripts/generate-icons.mjs",
@@ -31,6 +32,7 @@
   "devDependencies": {
     "@eslint/js": "^9.39.4",
     "@playwright/cli": "^0.1.9",
+    "@testing-library/preact": "^3.2.4",
     "@testing-library/react": "^16.3.2",
     "@testing-library/user-event": "^14.6.1",
     "@types/node": "^24.12.0",
