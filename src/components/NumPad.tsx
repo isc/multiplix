@@ -1,4 +1,4 @@
-import { useState, useCallback, useEffect } from 'react';
+import { useState, useCallback, useEffect, useRef } from 'react';
 import './NumPad.css';
 
 interface NumPadProps {
@@ -7,13 +7,24 @@ interface NumPadProps {
 }
 
 export default function NumPad({ onSubmit, disabled = false }: NumPadProps) {
+  // `input` est miroré dans `inputRef` pour éviter les closures stales :
+  // sous Preact, deux pressions clavier rapides peuvent voir la même closure
+  // capturée si on dépend de `input` dans les useCallback.
   const [input, setInput] = useState('');
-  const [prevDisabled, setPrevDisabled] = useState(disabled);
+  const inputRef = useRef('');
+  const setInputBoth = useCallback((next: string) => {
+    inputRef.current = next;
+    setInput(next);
+  }, []);
 
-  // Reset input when re-enabled (new question) — render-time state adjustment
-  if (disabled !== prevDisabled) {
-    setPrevDisabled(disabled);
-    if (!disabled) {
+  // Reset l'input quand on re-active le pad (= nouvelle question). On le fait
+  // en render-time synchrone : un useEffect serait async-microtask sous Preact
+  // et laisserait passer des touches avec une closure stale.
+  const prevDisabled = useRef(disabled);
+  if (prevDisabled.current !== disabled) {
+    prevDisabled.current = disabled;
+    if (!disabled && inputRef.current !== '') {
+      inputRef.current = '';
       setInput('');
     }
   }
@@ -21,42 +32,45 @@ export default function NumPad({ onSubmit, disabled = false }: NumPadProps) {
   const handleDigit = useCallback(
     (digit: number) => {
       if (disabled) return;
-      const newInput = input + digit.toString();
-      setInput(newInput);
-
-      // Auto-validate at 2 digits (all products are <= 90, so max 2 digits)
+      const newInput = inputRef.current + digit.toString();
+      setInputBoth(newInput);
       if (newInput.length >= 2) {
         onSubmit(parseInt(newInput, 10));
       }
     },
-    [input, disabled, onSubmit],
+    [disabled, onSubmit, setInputBoth],
   );
 
   const handleBackspace = useCallback(() => {
     if (disabled) return;
-    setInput((prev) => prev.slice(0, -1));
-  }, [disabled]);
+    setInputBoth(inputRef.current.slice(0, -1));
+  }, [disabled, setInputBoth]);
 
   const handleOk = useCallback(() => {
-    if (disabled || input.length === 0) return;
-    onSubmit(parseInt(input, 10));
-  }, [disabled, input, onSubmit]);
+    if (disabled || inputRef.current.length === 0) return;
+    onSubmit(parseInt(inputRef.current, 10));
+  }, [disabled, onSubmit]);
 
-  // Keyboard support
+  // Listener clavier : attaché UNE fois au montage, dispatch via ref pour
+  // éviter de dé-/réattacher à chaque render. Sans ça, sous Preact, des
+  // pressions peuvent tomber dans la fenêtre où l'ancien listener a été
+  // retiré et le nouveau pas encore attaché.
+  const callbacksRef = useRef({ handleDigit, handleBackspace, handleOk });
+  callbacksRef.current = { handleDigit, handleBackspace, handleOk };
   useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (disabled) return;
+    const onKey = (e: KeyboardEvent) => {
+      const cb = callbacksRef.current;
       if (e.key >= '0' && e.key <= '9') {
-        handleDigit(parseInt(e.key, 10));
+        cb.handleDigit(parseInt(e.key, 10));
       } else if (e.key === 'Backspace') {
-        handleBackspace();
+        cb.handleBackspace();
       } else if (e.key === 'Enter') {
-        handleOk();
+        cb.handleOk();
       }
     };
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [disabled, handleDigit, handleBackspace, handleOk]);
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, []);
 
   return (
     <div className="numpad-container">
