@@ -91,7 +91,9 @@ export default function SessionScreen({
   if (currentIndex !== prevIndex && currentQuestion) {
     // Reset le guard ici (pas dans un useEffect plus bas), sinon une réponse
     // trop rapide après le changement de question voit submittingRef encore
-    // à true (l'effet est microtask-async).
+    // à true (l'effet est microtask-async sous Preact). Garde de transition
+    // (prev !== next) → ne peut pas boucler.
+    // eslint-disable-next-line react-hooks/refs
     submittingRef.current = false;
     setPrevIndex(currentIndex);
     if (currentQuestion.isIntroduction) {

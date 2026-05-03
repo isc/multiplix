@@ -18,12 +18,15 @@ export default function NumPad({ onSubmit, disabled = false }: NumPadProps) {
   }, []);
 
   // Reset l'input quand on re-active le pad (= nouvelle question). On le fait
-  // en render-time synchrone : un useEffect serait async-microtask sous Preact
-  // et laisserait passer des touches avec une closure stale.
-  const prevDisabled = useRef(disabled);
-  if (prevDisabled.current !== disabled) {
-    prevDisabled.current = disabled;
-    if (!disabled && inputRef.current !== '') {
+  // en render-time synchrone (pattern React 18 pour state dérivé de props) :
+  // un useEffect serait async-microtask sous Preact et laisserait passer des
+  // touches voyant encore l'ancienne valeur d'`inputRef`.
+  const [prevDisabled, setPrevDisabled] = useState(disabled);
+  if (prevDisabled !== disabled) {
+    setPrevDisabled(disabled);
+    if (!disabled) {
+      // Garde de transition (prev !== next) → ne peut pas créer de boucle.
+      // eslint-disable-next-line react-hooks/refs
       inputRef.current = '';
       setInput('');
     }
@@ -55,7 +58,12 @@ export default function NumPad({ onSubmit, disabled = false }: NumPadProps) {
   // éviter de dé-/réattacher à chaque render. Sans ça, sous Preact, des
   // pressions peuvent tomber dans la fenêtre où l'ancien listener a été
   // retiré et le nouveau pas encore attaché.
+  // L'écriture du ref est synchrone (en render-time) : repousser dans un
+  // useEffect serait microtask-async sous Preact et laisserait passer des
+  // touches dispatchées vers des callbacks stales (ex: `disabled=true` après
+  // une réponse, alors qu'on vient de passer à false).
   const callbacksRef = useRef({ handleDigit, handleBackspace, handleOk });
+  // eslint-disable-next-line react-hooks/refs
   callbacksRef.current = { handleDigit, handleBackspace, handleOk };
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
