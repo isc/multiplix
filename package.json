@@ -23,6 +23,7 @@
     "feedback:treat": "node --env-file=.env.local scripts/feedback-treat.mjs"
   },
   "dependencies": {
+    "preact": "^10.29.1",
     "react": "^19.2.4",
     "react-dom": "^19.2.4"
   },

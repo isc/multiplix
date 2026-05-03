@@ -111,6 +111,9 @@ const server = http.createServer(async (req, res) => {
         format: 'esm',
         target: 'es2022',
         jsx: 'automatic',
+        // Cible Preact : esbuild émet `import { jsx } from "preact/jsx-runtime"`
+        // au lieu de `react/jsx-runtime`. L'import map fait le reste.
+        jsxImportSource: 'preact',
         sourcemap: 'inline',
         sourcefile: pathname,
         define: ENV_DEFINE,
