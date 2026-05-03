@@ -1,0 +1,25 @@
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, interactive-widget=resizes-content" />
+    <meta name="theme-color" content="#4F46BA" />
+    <link rel="icon" type="image/png" href="/icons/icon-192.png" />
+    <title>Multiplix (nobuild POC)</title>
+
+    <script type="importmap">
+    {
+      "imports": {
+        "react":               "/nobuild/vendor/react.js",
+        "react/jsx-runtime":   "/nobuild/vendor/react-jsx-runtime.js",
+        "react-dom/client":    "/nobuild/vendor/react-dom-client.js",
+        "virtual:pwa-register":"/nobuild/pwa-register-noop.js"
+      }
+    }
+    </script>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>
