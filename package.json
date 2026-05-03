@@ -9,6 +9,7 @@
   "scripts": {
     "dev": "vite",
     "nobuild": "node nobuild/dev-server.mjs",
+    "nobuild:build": "node nobuild/build.mjs",
     "build": "tsc -b && vite build",
     "lint": "eslint .",
     "preview": "vite preview",
