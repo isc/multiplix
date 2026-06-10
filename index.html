@@ -30,7 +30,7 @@
       <ol id="steps">
         <li><b>1.</b> Sauvegarde ta progression&nbsp;:<br><button id="copy">Copier ma progression</button></li>
         <li id="step2"><b>2.</b> Installe <b>tablito.app</b>.</li>
-        <li><b>3.</b> Ouvre l'icône <b>Tablito</b> → sur l'écran d'accueil, touche <b>«&nbsp;Déjà une progression&nbsp;? L'importer&nbsp;»</b> → colle, puis <b>«&nbsp;Importer ma progression&nbsp;»</b>.</li>
+        <li><b>3.</b> Ouvre l'icône <b>Tablito</b> → sur l'écran d'accueil, touche <b>«&nbsp;Déjà une progression&nbsp;? L'importer&nbsp;»</b> → <b>«&nbsp;Coller depuis le presse-papiers&nbsp;»</b>.</li>
       </ol>
     </div>
     <a class="alt" id="go" href="https://tablito.app/">…ou juste ouvrir Tablito maintenant&nbsp;→</a>
@@ -44,22 +44,30 @@
       var copyBtn = document.getElementById('copy');
       function b64url(u8){var s='';for(var i=0;i<u8.length;i++)s+=String.fromCharCode(u8[i]);return btoa(s).replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,'');}
 
-      // Étape 2 dépendante de l'OS (plus de "Safari" en dur).
       var ua = navigator.userAgent || '';
       var isIOS = /iPhone|iPad|iPod/.test(ua) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
       var isAndroid = /Android/.test(ua);
+      var standalone = (window.matchMedia && window.matchMedia('(display-mode: standalone)').matches) || window.navigator.standalone === true;
+
+      // Étape 2 selon l'OS. Sur iOS, PAS de lien : un lien depuis une PWA ouvre
+      // une webview in-app (pas la vraie app Safari) d'où l'on ne peut pas
+      // « Ajouter à l'écran d'accueil ». On demande donc d'ouvrir Safari soi-même.
       if (isIOS) {
-        step2.innerHTML = '<b>2.</b> Ouvre <a href="' + DEST + '">tablito.app</a> dans <b>Safari</b>, puis bouton <b>Partager</b> → <b>«&nbsp;Sur l’écran d’accueil&nbsp;»</b>.';
+        step2.innerHTML = '<b>2.</b> Ouvre toi-même l’app <b>Safari</b> et va sur <b>tablito.app</b>, puis bouton <b>Partager</b> → <b>«&nbsp;Sur l’écran d’accueil&nbsp;»</b>.';
       } else if (isAndroid) {
-        step2.innerHTML = '<b>2.</b> Ouvre <a href="' + DEST + '">tablito.app</a> dans <b>Chrome</b>, puis menu <b>⋮</b> → <b>«&nbsp;Ajouter à l’écran d’accueil&nbsp;»</b>.';
+        step2.innerHTML = '<b>2.</b> Ouvre <a href="' + DEST + '" target="_blank" rel="noopener">tablito.app</a> dans <b>Chrome</b>, puis menu <b>⋮</b> → <b>«&nbsp;Ajouter à l’écran d’accueil&nbsp;»</b>.';
       } else {
-        step2.innerHTML = '<b>2.</b> Ouvre <a href="' + DEST + '">tablito.app</a> et installe-le (icône d’installation dans la barre d’adresse).';
+        step2.innerHTML = '<b>2.</b> Ouvre <a href="' + DEST + '" target="_blank" rel="noopener">tablito.app</a> et installe-le (icône d’installation dans la barre d’adresse).';
       }
+
+      // « Ouvrir maintenant » : utile seulement en navigateur (vraie navigation
+      // qui emporte les données). En PWA installée, ça n'ouvre qu'une webview
+      // inutile → on masque.
+      if (standalone) { go.style.display = 'none'; }
 
       var json=null; try{ json=localStorage.getItem('multiplix-profile'); }catch(e){}
 
       if (!json) {
-        // Pas de progression sur cet appareil → rien à transférer.
         steps.innerHTML = '<li class="none">Aucune progression enregistrée sur cet appareil — installe simplement Tablito.</li>';
         go.textContent = 'Ouvrir Tablito →';
         return;
@@ -80,8 +88,7 @@
         }
       });
 
-      // Lien "ouvrir maintenant" : emporte les données via #import (utile en
-      // navigateur classique / Android ; en PWA iOS ça ouvre une vue web).
+      // Lien "ouvrir maintenant" (navigateur uniquement) : emporte les données via #import.
       function setGo(p){ go.href = DEST + '#import=' + p; }
       var bytes = new TextEncoder().encode(json);
       if ('CompressionStream' in window) {
