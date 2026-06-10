@@ -53,7 +53,7 @@
       // une webview in-app (pas la vraie app Safari) d'où l'on ne peut pas
       // « Ajouter à l'écran d'accueil ». On demande donc d'ouvrir Safari soi-même.
       if (isIOS) {
-        step2.innerHTML = '<b>2.</b> Ouvre toi-même l’app <b>Safari</b> et va sur <b>tablito.app</b>, puis bouton <b>Partager</b> → <b>«&nbsp;Sur l’écran d’accueil&nbsp;»</b>.';
+        step2.innerHTML = '<b>2.</b> Ouvre <a href="' + DEST + '" target="_blank" rel="noopener">tablito.app</a>, puis le bouton <b>Partager</b> (en bas) → <b>«&nbsp;Sur l’écran d’accueil&nbsp;»</b>.';
       } else if (isAndroid) {
         step2.innerHTML = '<b>2.</b> Ouvre <a href="' + DEST + '" target="_blank" rel="noopener">tablito.app</a> dans <b>Chrome</b>, puis menu <b>⋮</b> → <b>«&nbsp;Ajouter à l’écran d’accueil&nbsp;»</b>.';
       } else {
