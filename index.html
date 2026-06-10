@@ -3,53 +3,68 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Tablito a déménagé</title>
+  <title>Multiplix devient Tablito</title>
   <link rel="canonical" href="https://tablito.app/" />
   <style>
     body{font-family:-apple-system,system-ui,sans-serif;background:#FBF6EC;color:#1E1A2E;margin:0;min-height:100vh;display:flex;align-items:center;justify-content:center;padding:22px;box-sizing:border-box}
-    .card{max-width:380px;width:100%}
-    h1{font-size:1.4rem;margin:0 0 .35rem;text-align:center}
-    .lead{color:#555;line-height:1.5;text-align:center;margin:.3rem 0 1.2rem}
-    ol{padding-left:0;list-style:none;margin:0}
+    .card{max-width:400px;width:100%}
+    h1{font-size:1.4rem;margin:0 0 .5rem;text-align:center}
+    .lead{color:#555;line-height:1.5;text-align:center;margin:.4rem 0}
+    .lead strong{color:#1E1A2E}
+    ol{padding-left:0;list-style:none;margin:14px 0 0}
     li{background:#fff;border-radius:14px;padding:14px 16px;margin:10px 0;line-height:1.45;box-shadow:0 1px 3px rgba(0,0,0,.06)}
     li b{color:#4F46BA}
-    button{background:#4F46BA;color:#fff;border:0;border-radius:999px;padding:13px 20px;font-weight:700;font-size:1rem;width:100%;margin-top:6px}
+    button{background:#4F46BA;color:#fff;border:0;border-radius:999px;padding:13px 20px;font-weight:700;font-size:1rem;width:100%;margin-top:8px}
     button.done{background:#1E9E5A}
     a{color:#4F46BA}
-    .alt{display:block;text-align:center;margin-top:16px;color:#888;font-size:.92rem}
+    .alt{display:block;text-align:center;margin-top:18px;color:#888;font-size:.92rem}
     .none{text-align:center;color:#555}
   </style>
 </head>
 <body>
   <div class="card">
-    <h1>Tablito a déménagé 🐣</h1>
-    <p class="lead">L'appli vit maintenant sur <strong>tablito.app</strong>. Pour la remettre sur ton écran d'accueil <strong>avec ta progression</strong> :</p>
-    <ol id="steps">
-      <li><b>1.</b> Sauvegarde ta progression :<br><button id="copy">Copier ma progression</button></li>
-      <li><b>2.</b> Ouvre <a href="https://tablito.app/" id="open">tablito.app</a> dans <b>Safari</b>, puis bouton Partager → <b>« Sur l'écran d'accueil »</b>.</li>
-      <li><b>3.</b> Ouvre l'icône <b>Tablito</b> → <b>Espace parent</b> → <b>Importer</b> → colle, puis valide.</li>
-    </ol>
-    <a class="alt" id="go" href="https://tablito.app/">…ou juste ouvrir Tablito maintenant (sans réinstaller) →</a>
+    <h1>Multiplix devient Tablito 🐣</h1>
+    <p class="lead"><strong>Multiplix change de nom</strong> et s'appelle désormais <strong>Tablito</strong> — et déménage sur <strong>tablito.app</strong>. C'est la même appli&nbsp;!</p>
+    <div id="manual">
+      <p class="lead">Pour la remettre sur l'écran d'accueil <strong>avec ta progression</strong>&nbsp;:</p>
+      <ol id="steps">
+        <li><b>1.</b> Sauvegarde ta progression&nbsp;:<br><button id="copy">Copier ma progression</button></li>
+        <li id="step2"><b>2.</b> Installe <b>tablito.app</b>.</li>
+        <li><b>3.</b> Ouvre l'icône <b>Tablito</b> → sur l'écran d'accueil, touche <b>«&nbsp;Déjà une progression&nbsp;? L'importer&nbsp;»</b> → colle, puis <b>«&nbsp;Importer ma progression&nbsp;»</b>.</li>
+      </ol>
+    </div>
+    <a class="alt" id="go" href="https://tablito.app/">…ou juste ouvrir Tablito maintenant&nbsp;→</a>
   </div>
   <script>
     (function () {
       var DEST = 'https://tablito.app/';
-      var copyBtn = document.getElementById('copy');
       var go = document.getElementById('go');
       var steps = document.getElementById('steps');
+      var step2 = document.getElementById('step2');
+      var copyBtn = document.getElementById('copy');
       function b64url(u8){var s='';for(var i=0;i<u8.length;i++)s+=String.fromCharCode(u8[i]);return btoa(s).replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,'');}
+
+      // Étape 2 dépendante de l'OS (plus de "Safari" en dur).
+      var ua = navigator.userAgent || '';
+      var isIOS = /iPhone|iPad|iPod/.test(ua) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+      var isAndroid = /Android/.test(ua);
+      if (isIOS) {
+        step2.innerHTML = '<b>2.</b> Ouvre <a href="' + DEST + '">tablito.app</a> dans <b>Safari</b>, puis bouton <b>Partager</b> → <b>«&nbsp;Sur l’écran d’accueil&nbsp;»</b>.';
+      } else if (isAndroid) {
+        step2.innerHTML = '<b>2.</b> Ouvre <a href="' + DEST + '">tablito.app</a> dans <b>Chrome</b>, puis menu <b>⋮</b> → <b>«&nbsp;Ajouter à l’écran d’accueil&nbsp;»</b>.';
+      } else {
+        step2.innerHTML = '<b>2.</b> Ouvre <a href="' + DEST + '">tablito.app</a> et installe-le (icône d’installation dans la barre d’adresse).';
+      }
+
       var json=null; try{ json=localStorage.getItem('multiplix-profile'); }catch(e){}
 
-      // Pas de profil sur cet appareil → rien à migrer, on ouvre juste l'app.
       if (!json) {
-        steps.innerHTML = '<li class="none">Aucune progression enregistrée sur cet appareil — rien à transférer.</li>';
+        // Pas de progression sur cet appareil → rien à transférer.
+        steps.innerHTML = '<li class="none">Aucune progression enregistrée sur cet appareil — installe simplement Tablito.</li>';
         go.textContent = 'Ouvrir Tablito →';
-        var standalone0 = (window.matchMedia && window.matchMedia('(display-mode: standalone)').matches) || window.navigator.standalone === true;
-        if (!standalone0) location.replace(DEST);
         return;
       }
 
-      // Bouton Copier (fiable sur iOS : HTTPS + geste utilisateur)
       copyBtn.addEventListener('click', function () {
         function ok(){ copyBtn.textContent='✓ Copié — passe à l’étape 2'; copyBtn.className='done'; }
         try {
@@ -60,23 +75,19 @@
         function fallback(){
           var ta=document.createElement('textarea'); ta.value=json; ta.style.position='fixed'; ta.style.opacity='0';
           document.body.appendChild(ta); ta.focus(); ta.select();
-          try{ document.execCommand('copy'); ok(); }catch(e){ copyBtn.textContent='Copie impossible — sélectionne et copie manuellement'; }
+          try{ document.execCommand('copy'); ok(); }catch(e){ copyBtn.textContent='Copie impossible — sélectionne et copie le texte manuellement'; }
           document.body.removeChild(ta);
         }
       });
 
-      // Lien "ouvrir maintenant" : emporte les données via #import (utile sur
-      // navigateur classique / Android ; sur iOS PWA ça ouvre une vue web).
-      function setGo(payload){ go.href = DEST + '#import=' + payload; }
+      // Lien "ouvrir maintenant" : emporte les données via #import (utile en
+      // navigateur classique / Android ; en PWA iOS ça ouvre une vue web).
+      function setGo(p){ go.href = DEST + '#import=' + p; }
       var bytes = new TextEncoder().encode(json);
       if ('CompressionStream' in window) {
         new Response(new Blob([bytes]).stream().pipeThrough(new CompressionStream('gzip'))).arrayBuffer()
           .then(function(buf){ setGo('z'+b64url(new Uint8Array(buf))); }).catch(function(){ setGo('r'+b64url(bytes)); });
       } else { setGo('r'+b64url(bytes)); }
-
-      // Navigateur classique (desktop/Android) : migration auto, pas besoin du manuel.
-      var standalone = (window.matchMedia && window.matchMedia('(display-mode: standalone)').matches) || window.navigator.standalone === true;
-      if (!standalone) { /* on laisse la page affichée : l'utilisateur choisit. Pas de saut auto pour ne pas perdre l'accès au bouton Copier. */ }
     })();
   </script>
 </body>
