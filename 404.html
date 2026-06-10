@@ -6,46 +6,77 @@
   <title>Tablito a déménagé</title>
   <link rel="canonical" href="https://tablito.app/" />
   <style>
-    body{font-family:-apple-system,system-ui,sans-serif;background:#FBF6EC;color:#1E1A2E;margin:0;min-height:100vh;display:flex;align-items:center;justify-content:center;text-align:center;padding:24px;box-sizing:border-box}
-    .card{max-width:360px}
-    h1{font-size:1.45rem;margin:0 0 .5rem}
-    p{color:#555;line-height:1.5;margin:.5rem 0}
-    a.btn{display:inline-block;margin-top:1.25rem;background:#4F46BA;color:#fff;text-decoration:none;padding:15px 30px;border-radius:999px;font-weight:700;font-size:1.05rem}
-    small{color:#999;display:block;margin-top:1rem}
+    body{font-family:-apple-system,system-ui,sans-serif;background:#FBF6EC;color:#1E1A2E;margin:0;min-height:100vh;display:flex;align-items:center;justify-content:center;padding:22px;box-sizing:border-box}
+    .card{max-width:380px;width:100%}
+    h1{font-size:1.4rem;margin:0 0 .35rem;text-align:center}
+    .lead{color:#555;line-height:1.5;text-align:center;margin:.3rem 0 1.2rem}
+    ol{padding-left:0;list-style:none;margin:0}
+    li{background:#fff;border-radius:14px;padding:14px 16px;margin:10px 0;line-height:1.45;box-shadow:0 1px 3px rgba(0,0,0,.06)}
+    li b{color:#4F46BA}
+    button{background:#4F46BA;color:#fff;border:0;border-radius:999px;padding:13px 20px;font-weight:700;font-size:1rem;width:100%;margin-top:6px}
+    button.done{background:#1E9E5A}
+    a{color:#4F46BA}
+    .alt{display:block;text-align:center;margin-top:16px;color:#888;font-size:.92rem}
+    .none{text-align:center;color:#555}
   </style>
 </head>
 <body>
   <div class="card">
     <h1>Tablito a déménagé 🐣</h1>
-    <p>L'appli vit maintenant sur <strong>tablito.app</strong>. On t'y emmène <strong>avec ta progression</strong>.</p>
-    <a id="go" class="btn" href="https://tablito.app/">Continuer vers Tablito →</a>
-    <small id="hint"></small>
+    <p class="lead">L'appli vit maintenant sur <strong>tablito.app</strong>. Pour la remettre sur ton écran d'accueil <strong>avec ta progression</strong> :</p>
+    <ol id="steps">
+      <li><b>1.</b> Sauvegarde ta progression :<br><button id="copy">Copier ma progression</button></li>
+      <li><b>2.</b> Ouvre <a href="https://tablito.app/" id="open">tablito.app</a> dans <b>Safari</b>, puis bouton Partager → <b>« Sur l'écran d'accueil »</b>.</li>
+      <li><b>3.</b> Ouvre l'icône <b>Tablito</b> → <b>Espace parent</b> → <b>Importer</b> → colle, puis valide.</li>
+    </ol>
+    <a class="alt" id="go" href="https://tablito.app/">…ou juste ouvrir Tablito maintenant (sans réinstaller) →</a>
   </div>
   <script>
     (function () {
       var DEST = 'https://tablito.app/';
-      var link = document.getElementById('go');
-      var hint = document.getElementById('hint');
+      var copyBtn = document.getElementById('copy');
+      var go = document.getElementById('go');
+      var steps = document.getElementById('steps');
       function b64url(u8){var s='';for(var i=0;i<u8.length;i++)s+=String.fromCharCode(u8[i]);return btoa(s).replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,'');}
-      var standalone = (window.matchMedia && window.matchMedia('(display-mode: standalone)').matches) || window.navigator.standalone === true;
-      function finish(target){
-        link.href = target;
-        if (target.indexOf('#import=') !== -1) { hint.textContent = 'Ta progression voyage avec toi.'; }
-        // En navigateur classique : saut auto. En PWA installée : iOS bloque le
-        // saut cross-origin auto → on laisse l'utilisateur toucher le bouton.
-        if (!standalone) { location.replace(target); }
-      }
-      try { if ('serviceWorker' in navigator) navigator.serviceWorker.getRegistrations().then(function(rs){rs.forEach(function(r){r.unregister();});}).catch(function(){}); } catch(e){}
       var json=null; try{ json=localStorage.getItem('multiplix-profile'); }catch(e){}
-      if (!json) { finish(DEST); return; }
+
+      // Pas de profil sur cet appareil → rien à migrer, on ouvre juste l'app.
+      if (!json) {
+        steps.innerHTML = '<li class="none">Aucune progression enregistrée sur cet appareil — rien à transférer.</li>';
+        go.textContent = 'Ouvrir Tablito →';
+        var standalone0 = (window.matchMedia && window.matchMedia('(display-mode: standalone)').matches) || window.navigator.standalone === true;
+        if (!standalone0) location.replace(DEST);
+        return;
+      }
+
+      // Bouton Copier (fiable sur iOS : HTTPS + geste utilisateur)
+      copyBtn.addEventListener('click', function () {
+        function ok(){ copyBtn.textContent='✓ Copié — passe à l’étape 2'; copyBtn.className='done'; }
+        try {
+          if (navigator.clipboard && navigator.clipboard.writeText) {
+            navigator.clipboard.writeText(json).then(ok).catch(fallback);
+          } else { fallback(); }
+        } catch (e) { fallback(); }
+        function fallback(){
+          var ta=document.createElement('textarea'); ta.value=json; ta.style.position='fixed'; ta.style.opacity='0';
+          document.body.appendChild(ta); ta.focus(); ta.select();
+          try{ document.execCommand('copy'); ok(); }catch(e){ copyBtn.textContent='Copie impossible — sélectionne et copie manuellement'; }
+          document.body.removeChild(ta);
+        }
+      });
+
+      // Lien "ouvrir maintenant" : emporte les données via #import (utile sur
+      // navigateur classique / Android ; sur iOS PWA ça ouvre une vue web).
+      function setGo(payload){ go.href = DEST + '#import=' + payload; }
       var bytes = new TextEncoder().encode(json);
       if ('CompressionStream' in window) {
         new Response(new Blob([bytes]).stream().pipeThrough(new CompressionStream('gzip'))).arrayBuffer()
-          .then(function(buf){ finish(DEST + '#import=z' + b64url(new Uint8Array(buf))); })
-          .catch(function(){ finish(DEST + '#import=r' + b64url(bytes)); });
-      } else {
-        finish(DEST + '#import=r' + b64url(bytes));
-      }
+          .then(function(buf){ setGo('z'+b64url(new Uint8Array(buf))); }).catch(function(){ setGo('r'+b64url(bytes)); });
+      } else { setGo('r'+b64url(bytes)); }
+
+      // Navigateur classique (desktop/Android) : migration auto, pas besoin du manuel.
+      var standalone = (window.matchMedia && window.matchMedia('(display-mode: standalone)').matches) || window.navigator.standalone === true;
+      if (!standalone) { /* on laisse la page affichée : l'utilisateur choisit. Pas de saut auto pour ne pas perdre l'accès au bouton Copier. */ }
     })();
   </script>
 </body>
